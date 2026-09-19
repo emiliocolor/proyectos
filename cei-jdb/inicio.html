@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, follow" />
+    <meta name="googlebot" content="noindex, follow" />
+    <link rel="canonical" href="https://proyectos.emiliocolor.com/cei-jdb/" />
+
+    <title>CEI “Juan de Dios Bátiz” · EmilioColor Proyectos</title>
+    <meta name="description" content="Comunidad de Estudios Independiente Juan de Dios Bátiz: información general, acta constitutiva y reglamento interno." />
+
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png" />
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-muted: #475569;
+            --blue-primary: #0e42ee;
+            --blue-soft: #DBEAFE;
+            --border-light: #E2E8F0;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 16px 40px rgba(14, 66, 238, 0.14);
+            --font: 'Inter', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font);
+            background-color: var(--bg-primary);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-top: 70px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        header {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 16px 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo img { height: 29px; width: auto; display: block; }
+
+        nav { display: flex; align-items: center; gap: 42px; }
+
+        nav a {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        nav a:hover { color: var(--blue-primary); }
+
+        nav a:not(.btn-outline-header)::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0%; height: 2px;
+            background: var(--blue-primary);
+            transition: 0.3s;
+        }
+
+        nav a:not(.btn-outline-header):hover::after { width: 100%; }
+
+        .btn-outline-header {
+            border: 1.5px solid var(--blue-primary);
+            padding: 8px 22px;
+            border-radius: 30px;
+            color: var(--blue-primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.3s;
+            margin-left: 12px;
+        }
+
+        .btn-outline-header:hover { background: var(--blue-primary); color: #fff; }
+        .btn-outline-header::after { display: none; }
+
+        .hamburger {
+            display: none;
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        .client-area {
+            flex: 1;
+            padding: 60px 0 90px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+            display: flex;
+            align-items: center;
+        }
+
+        .client-head {
+            text-align: center;
+            max-width: 780px;
+            margin: 0 auto 56px;
+        }
+
+        .client-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--blue-soft);
+            color: var(--blue-primary);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .client-head h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .client-head h1 span { color: var(--blue-primary); }
+
+        .client-head p { font-size: 1.15rem; color: var(--text-muted); }
+
+        .client-head .institucion {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--blue-primary);
+            background: var(--blue-soft);
+            padding: 6px 18px;
+            border-radius: 20px;
+        }
+
+        .brand-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            align-items: stretch;
+        }
+
+        .brand-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: 22px;
+            padding: 40px 28px 34px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+            cursor: pointer;
+        }
+
+        .brand-option:hover,
+        .brand-option:focus-visible {
+            transform: translateY(-6px);
+            border-color: var(--blue-primary);
+            box-shadow: var(--shadow-lg);
+            outline: none;
+        }
+
+        .brand-option .brand-logo {
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-option .brand-logo i {
+            font-size: 3.2rem;
+            color: var(--blue-primary);
+            line-height: 1;
+        }
+
+        .brand-option h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .brand-option p {
+            font-size: 0.93rem;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+        }
+
+        .brand-option .fecha {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--blue-primary);
+            background: var(--blue-soft);
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .brand-option .brand-cta {
+            margin-top: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            border-radius: 30px;
+            background: var(--blue-primary);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            box-shadow: 0 4px 14px rgba(14, 66, 238, 0.25);
+        }
+
+        .brand-option:hover .brand-cta {
+            background: #1E3A8A;
+            box-shadow: 0 8px 22px rgba(14, 66, 238, 0.35);
+        }
+
+        .brand-option .brand-cta i { font-size: 0.85rem; transition: transform 0.3s; }
+        .brand-option:hover .brand-cta i { transform: translateX(4px); }
+
+        .client-help {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 52px;
+            padding: 20px 26px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            max-width: 780px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .client-help i { color: var(--blue-primary); font-size: 1.2rem; }
+        .client-help p { margin: 0; font-size: 0.95rem; color: var(--text-muted); }
+        .client-help a { color: var(--blue-primary); font-weight: 600; }
+
+        footer {
+            padding: 28px 0;
+            background: var(--bg-white);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .footer-bottom a { color: var(--text-muted); transition: 0.3s; }
+        .footer-bottom a:hover { color: var(--blue-primary); }
+
+        @media (max-width: 1024px) {
+            nav { gap: 26px; }
+            .brand-options {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+                margin: 0 auto;
+            }
+            .client-head h1 { font-size: 2.3rem; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            nav {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px; left: 0;
+                width: 100%;
+                background: var(--bg-white);
+                padding: 24px 16px;
+                border-bottom: 1px solid var(--border-light);
+                gap: 16px;
+            }
+            nav.open { display: flex; }
+            .hamburger { display: block; }
+            .btn-outline-header { margin-left: 0; }
+            .client-area { padding: 40px 0 70px; }
+            .client-head h1 { font-size: 1.95rem; }
+            .client-head p { font-size: 1.02rem; }
+            .client-head { margin-bottom: 40px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .client-head h1 { font-size: 1.65rem; }
+            .brand-option { padding: 32px 20px 28px; }
+            .brand-option .brand-cta { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="https://proyectos.emiliocolor.com/" class="logo">
+                <img src="https://emiliocolor.com/img-logos/logo_azul_alargado.png" alt="EmilioColor · Proyectos" width="auto" height="29" />
+            </a>
+            <nav id="mainNav">
+                <a href="https://emiliocolor.com/#contact">Contacto</a>
+                <a href="https://proyectos.emiliocolor.com/" class="btn-outline-header">
+                    <i class="fas fa-arrow-left"></i> Volver a Proyectos
+                </a>
+            </nav>
+            <div class="hamburger" id="hamburger" role="button" aria-label="Abrir menú" tabindex="0">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="client-area" id="acceso">
+        <div class="container">
+
+            <div class="client-head">
+                <span class="institucion">
+                    <i class="fas fa-school"></i>
+                    Comunidad de Estudios Independiente “Juan de Dios Bátiz”
+                </span>
+                <br><br>
+                <h1>¿A dónde quieres <span>ingresar</span>?</h1>
+                <p>Selecciona la sección que deseas consultar del proyecto.</p>
+            </div>
+
+            <div class="brand-options">
+
+                <a class="brand-option"
+                   href="https://proyectos.emiliocolor.com/cei-jdb/informacion"
+                   data-servicio="Información general">
+                    <div class="brand-logo">
+                        <i class="fas fa-circle-info"></i>
+                    </div>
+                    <h2>Información General</h2>
+                    <p>Documento informativo del proyecto educativo de la comunidad de estudios.</p>
+                    <span class="fecha">
+                        <i class="far fa-calendar"></i> 6 de septiembre de 2026
+                    </span>
+                    <span class="brand-cta">
+                        Entrar <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+<a class="brand-option"
+   href="https://proyectos.emiliocolor.com/cei-jdb/deslinde-responsabilidades-ec.pdf"
+   data-servicio="Deslinde de Responsabilidades">
+    <div class="brand-logo">
+        <i class="fas fa-file-signature"></i>
+    </div>
+    <h2>Deslinde de Responsabilidades</h2>
+    <p>Documento formal que establece el alcance de las responsabilidades y la naturaleza independiente de la comunidad de estudios.</p>
+    <span class="fecha">
+        <i class="far fa-calendar"></i> 2 de septiembre de 2026
+    </span>
+    <span class="brand-cta">
+        Consultar <i class="fas fa-arrow-right"></i>
+    </span>
+</a>
+
+                <a class="brand-option"
+                   href="https://proyectos.emiliocolor.com/cei-jdb/acta-constitutiva.pdf"
+                   target="_blank" rel="noopener"
+                   data-servicio="Acta constitutiva">
+                    <div class="brand-logo">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h2>Acta Constitutiva</h2>
+                    <p>Documento oficial de constitución de la Comunidad de Estudios Independiente.</p>
+                    <span class="fecha">
+                        <i class="fas fa-file-pdf"></i> Formato PDF
+                    </span>
+                    <span class="brand-cta">
+                        Abrir PDF <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
+
+<a class="brand-option"
+   href="https://www.comunidaddeestudiocecyt9.com/"
+   data-servicio="Página oficial">
+    <div class="brand-logo">
+        <i class="fas fa-globe"></i>
+    </div>
+    <h2>Página Oficial</h2>
+    <p>Información oficial, actividades, proyectos y comunicados de la comunidad.</p>
+    <span class="fecha">
+        <i class="fas fa-building"></i> Sitio oficial
+    </span>
+    <span class="brand-cta">
+        Entrar <i class="fas fa-arrow-right"></i>
+    </span>
+</a>
+
+            </div>
+
+            <div class="client-help">
+                <i class="fas fa-circle-info"></i>
+                <p>
+                    ¿Necesitas más información sobre este proyecto? Escríbenos por
+                    <a href="https://wa.me/525655333139?text=Hola%2C%20necesito%20informaci%C3%B3n%20sobre%20la%20Comunidad%20de%20Estudios%20Independiente%20Juan%20de%20Dios%20B%C3%A1tiz." target="_blank" rel="noopener">WhatsApp</a>
+                    o al correo
+                    <a href="mailto:contacto@emiliocolor.com">contacto@emiliocolor.com</a>
+                    y con gusto te atendemos.
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <span>&copy; 2023-<span id="current-year"></span> EmilioColor · Proyectos. Todos los derechos reservados.</span>
+                <span>
+                    <a href="https://juridico.emiliocolor.com/privacidad" target="_blank" rel="noopener">Aviso de privacidad</a>
+                    &nbsp;·&nbsp;
+                    <a href="https://juridico.emiliocolor.com/terminos" target="_blank" rel="noopener">Términos y condiciones</a>
+                </span>
+                <span>Hecho con <i class="fas fa-heart" style="color:#1d4be1;"></i> en México</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+        function ejecutar(nombre, fn) {
+            try { fn(); } catch (e) {
+                if (window.console && console.warn) console.warn('[EmilioColor Proyectos] Falló "' + nombre + '":', e);
+            }
+        }
+
+        ejecutar('menu', function () {
+            var hamburger = document.getElementById('hamburger');
+            var nav = document.getElementById('mainNav');
+            if (!hamburger || !nav) return;
+            hamburger.addEventListener('click', function () { nav.classList.toggle('open'); });
+            nav.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () { nav.classList.remove('open'); });
+            });
+        });
+
+        ejecutar('anio', function () {
+            var el = document.getElementById('current-year');
+            if (el) el.textContent = new Date().getFullYear();
+        });
+
+        if (window.console && console.log) console.log('EmilioColor · Proyectos · CEI Juan de Dios Bátiz');
+    })();
+    </script>
+</body>
+</html>
