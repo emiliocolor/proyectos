@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Profesores - Laboratorio de Electromagnetismo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --primary: #0f172a;
+            --btn-dark-blue: #1c62d2;
+            --info-gray: #f1f5f9;
+            --success-bg: #ecfdf5;
+            --success-border: #6ee7b7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .login-wrapper { width: 100%; max-width: 500px; padding: 20px; }
+        .login-card { background: var(--card); border-radius: 12px; padding: 35px 30px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .login-header { text-align: center; margin-bottom: 20px; }
+        .login-header h1 { font-size: 1.5rem; color: var(--primary); margin: 0 0 8px 0; font-weight: 800; }
+        .login-header p { color: #64748b; font-size: 0.9rem; margin: 0; }
+
+        .alert-info { background-color: var(--info-gray); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; font-size: 0.85rem; color: #475569; }
+        .alert-info i { color: var(--btn-dark-blue); margin-right: 6px; }
+
+        .qr-container { display: flex; justify-content: center; margin: 15px 0 20px 0; }
+        #qrcode { padding: 10px; background: white; border: 1px solid var(--border-color); border-radius: 8px; }
+        .qr-label { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 6px; }
+
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 11px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; appearance: auto; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .input-wrapper .form-control { padding-left: 40px; }
+
+        /* Estilos para la contraseña mostrada */
+        .password-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--info-gray);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 8px 15px;
+            margin-top: 8px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--primary);
+            min-height: 44px;
+            word-break: break-all;
+            transition: all 0.2s ease;
+        }
+        .password-display .pass-placeholder {
+            color: #94a3b8;
+            font-weight: normal;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .password-display .pass-value {
+            flex: 1;
+        }
+        .password-display .copy-btn {
+            background: none;
+            border: none;
+            color: var(--btn-dark-blue);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .password-display .copy-btn:hover {
+            background-color: #dbeafe;
+        }
+        .password-display .copy-btn.copied {
+            color: #16a34a;
+        }
+
+        .btn-login { width: 100%; padding: 12px; background-color: var(--btn-dark-blue); color: #ffffff; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .error-message { color: #d01b1b; background-color: #fef2f2; border: 1px solid #fca5a5; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-top: 15px; display: none; align-items: center; gap: 8px; }
+
+        #dynamic-footer { margin-top: 30px; width: 100%; }
+        .footer-main {
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 20px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+        .footer-logos-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .footer-logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+        .footer-center-text {
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+        }
+        .footer-center-text a {
+            color: var(--btn-dark-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer-center-text a:hover {
+            text-decoration: none;
+        }
+        .footer-report {
+            flex-shrink: 0;
+        }
+        .footer-report a {
+            color: #475569;
+            text-decoration: none;
+            border-bottom: 1px dashed #cbd5e1;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        @media (max-width: 700px) {
+            .footer-main {
+                flex-direction: column;
+                text-align: center;
+                justify-content: center;
+            }
+            .footer-center-text {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>Panel de Profesores</h1>
+            <p><strong>Acceso a Simuladores</strong> · Laboratorio de Electromagnetismo</p>
+        </div>
+
+        <div class="alert-info">
+            <i class="fas fa-key"></i> Selecciona el simulador y usa la contraseña que se muestra.
+        </div>
+
+        <div class="qr-container">
+            <div id="qrcode"></div>
+        </div>
+        <div class="qr-label">
+            <i class="fas fa-headset"></i> <strong>Escanea el código QR</strong> para soporte técnico.
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="selectorSimulador">Simulador a ingresar:</label>
+                <select id="selectorSimulador" class="form-control" required>
+                    <option value="" disabled selected>-- Selecciona un simulador --</option>
+                    <option value="s23ds">Momento de Torsión e Inducción (Problema 48)</option>
+                    <option value="p36mx">Equilibrio Magnético en Plano Inclinado (Problema 55)</option>
+                    <option value="t78fg">Trayectoria Helicoidal (Problema 31)</option>
+                    <option value="m42kl">Conducción Magnética en Rieles (Problema 42)</option>
+                </select>
+            </div>
+
+            <!-- Contraseña mostrada (solo lectura, para copiar) -->
+            <div class="form-group">
+                <label>Contraseña para este simulador:</label>
+                <div class="password-display" id="passwordDisplay">
+                    <span class="pass-placeholder"><i class="fas fa-arrow-left"></i> Selecciona un simulador</span>
+                    <span class="pass-value" id="passValue"></span>
+                    <button type="button" class="copy-btn" id="copyPasswordBtn" title="Copiar contraseña">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <small style="color: #64748b; display: block; margin-top: 4px; font-size: 0.75rem;">
+                    <i class="fas fa-info-circle"></i> Haz clic en el icono para copiar la contraseña.
+                </small>
+            </div>
+
+            <!-- Campo oculto de contraseña (para el formulario, se llena automáticamente) -->
+            <div class="form-group" style="display: none;">
+                <label for="credencial">Contraseña (oculta):</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="credencial" class="form-control" placeholder="••••••">
+                </div>
+            </div>
+        </form>
+
+        <div id="errorBox" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> Credencial incorrecta para el simulador seleccionado.
+        </div>
+    </div>
+</div>
+
+<div id="dynamic-footer"></div>
+
+<script src="footer.js"></script>
+<script src="proteccion.js"></script>
+<script>
+    // Mapeo de códigos -> contraseña (misma que el código) y destino
+    const credencialesValidas = {
+        "s23ds": { pass: "s23ds", destino: "simulador_1.html" },
+        "p36mx": { pass: "p36mx", destino: "simulador_2.html" },
+        "t78fg": { pass: "t78fg", destino: "simulador_3.html" },
+        "m42kl": { pass: "m42kl", destino: "simulador_4.html" }
+    };
+
+    // Elementos DOM
+    const selector = document.getElementById("selectorSimulador");
+    const passValue = document.getElementById("passValue");
+    const passwordDisplay = document.getElementById("passwordDisplay");
+    const copyBtn = document.getElementById("copyPasswordBtn");
+    const credencialInput = document.getElementById("credencial");
+    const errorBox = document.getElementById("errorBox");
+
+    // Función para actualizar la contraseña mostrada y el campo oculto
+    function actualizarPassword() {
+        const codigo = selector.value;
+        const placeholderSpan = document.querySelector('.pass-placeholder');
+        const passSpan = passValue;
+
+        if (codigo && credencialesValidas[codigo]) {
+            const pass = credencialesValidas[codigo].pass;
+            // Mostrar contraseña en texto plano
+            passSpan.textContent = pass;
+            passSpan.style.display = 'inline';
+            placeholderSpan.style.display = 'none';
+            // Actualizar campo oculto
+            credencialInput.value = pass;
+            // Cambiar estilo del display
+            passwordDisplay.style.borderStyle = 'solid';
+            passwordDisplay.style.borderColor = 'var(--success-border)';
+            passwordDisplay.style.backgroundColor = 'var(--success-bg)';
+            // Resetear estado del botón copiar
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+            copyBtn.classList.remove('copied');
+            copyBtn.title = 'Copiar contraseña';
+        } else {
+            // Sin selección
+            passSpan.textContent = '';
+            passSpan.style.display = 'none';
+            placeholderSpan.style.display = 'inline';
+            credencialInput.value = '';
+            passwordDisplay.style.borderStyle = 'dashed';
+            passwordDisplay.style.borderColor = 'var(--border-color)';
+            passwordDisplay.style.backgroundColor = 'var(--info-gray)';
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+            copyBtn.classList.remove('copied');
+            copyBtn.title = 'Selecciona un simulador primero';
+        }
+        // Ocultar error si estaba visible
+        errorBox.style.display = 'none';
+    }
+
+    // Copiar contraseña al portapapeles
+    function copiarPassword() {
+        const codigo = selector.value;
+        if (!codigo || !credencialesValidas[codigo]) {
+            alert('Primero selecciona un simulador para ver la contraseña.');
+            return;
+        }
+
+        const pass = credencialesValidas[codigo].pass;
+        navigator.clipboard.writeText(pass).then(() => {
+            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+            copyBtn.classList.add('copied');
+            copyBtn.title = '¡Copiado!';
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                copyBtn.classList.remove('copied');
+                copyBtn.title = 'Copiar contraseña';
+            }, 2000);
+        }).catch(() => {
+            // Fallback
+            const range = document.createRange();
+            range.selectNode(passValue);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        });
+    }
+
+    // Validar acceso al enviar el formulario
+    function validarAcceso(event) {
+        event.preventDefault();
+        const codigoSeleccionado = selector.value;
+        const passwordIngresado = credencialInput.value.trim();
+
+        if (!codigoSeleccionado) {
+            errorBox.innerHTML = '<i class="fas fa-exclamation-circle"></i> Por favor, selecciona un simulador.';
+            errorBox.style.display = 'flex';
+            setTimeout(() => { errorBox.style.display = 'none'; }, 3000);
+            return;
+        }
+
+        if (credencialesValidas[codigoSeleccionado] && passwordIngresado === credencialesValidas[codigoSeleccionado].pass) {
+            const destino = credencialesValidas[codigoSeleccionado].destino;
+            sessionStorage.setItem("simuladorAutorizado", destino);
+            window.location.href = destino;
+        } else {
+            errorBox.innerHTML = '<i class="fas fa-exclamation-circle"></i> Contraseña incorrecta. Asegúrate de copiar la contraseña mostrada.';
+            errorBox.style.display = 'flex';
+            setTimeout(() => {
+                errorBox.style.display = 'none';
+            }, 4000);
+        }
+    }
+
+    // Generar QR
+    function generarQR() {
+        const url = 'https://proyectos.emiliocolor.com/soporte';
+        const qrContainer = document.getElementById('qrcode');
+        new QRCode(qrContainer, {
+            text: url,
+            width: 140,
+            height: 140,
+            colorDark: '#0f172a',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+
+    // Inicializar eventos
+    document.addEventListener('DOMContentLoaded', function() {
+        generarQR();
+        selector.addEventListener('change', actualizarPassword);
+        copyBtn.addEventListener('click', copiarPassword);
+        document.getElementById("loginForm").addEventListener("submit", validarAcceso);
+        actualizarPassword();
+    });
+</script>
+</body>
+</html>
