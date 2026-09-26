@@ -8,7 +8,7 @@
     <link rel="canonical" href="https://proyectos.emiliocolor.com/" />
 
     <title>Proyectos Educativos · EmilioColor</title>
-    <meta name="description" content="Proyectos educativos de EmilioColor: Comunidad de Estudios Independiente Juan de Dios Bátiz, Laboratorio Virtual de Programación y Recursos Educativos Abiertos." />
+    <meta name="description" content="Proyectos educativos de EmilioColor: Comunidad de Estudios Independiente Juan de Dios Bátiz, Laboratorio Virtual de Programación, Laboratorio Virtual de Electromagnetismo y Repositorio Electrónico de Acceso Abierto (REAA)." />
 
     <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png" />
     <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png" />
@@ -28,6 +28,7 @@
             --text-muted: #475569;
             --blue-primary: #0e42ee;
             --blue-soft: #DBEAFE;
+            --blue-dark: #1E3A8A;
             --border-light: #E2E8F0;
             --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
             --shadow-lg: 0 16px 40px rgba(14, 66, 238, 0.14);
@@ -160,11 +161,14 @@
 
         .client-head p { font-size: 1.15rem; color: var(--text-muted); }
 
+        /* Cuadrícula 2×2 en escritorio por tener 4 proyectos */
         .brand-options {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 28px;
             align-items: stretch;
+            max-width: 960px;
+            margin: 0 auto;
         }
 
         .brand-option {
@@ -217,6 +221,18 @@
             margin-bottom: 22px;
         }
 
+        /* Etiqueta informativa (antes estaba embebida en el HTML) */
+        .brand-option .fecha {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--blue-primary);
+            background: var(--blue-soft);
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
         .brand-option .etiqueta {
             display: inline-block;
             font-size: 0.72rem;
@@ -246,7 +262,7 @@
         }
 
         .brand-option:hover .brand-cta {
-            background: #1E3A8A;
+            background: var(--blue-dark);
             box-shadow: 0 8px 22px rgba(14, 66, 238, 0.35);
         }
 
@@ -266,29 +282,28 @@
             border-radius: inherit;
         }
 
+        /* Enlace secundario (antes parecía botón) — ahora estilo enlace */
         .brand-acceso {
             position: relative;
             z-index: 2;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 16px;
-            padding: 8px 18px;
-            border-radius: 20px;
-            background: var(--blue-soft);
+            gap: 7px;
+            margin-top: 18px;
+            font-size: 0.85rem;
+            font-weight: 500;
             color: var(--blue-primary);
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-            transition: 0.3s;
+            padding-bottom: 2px;
+            border-bottom: 1px dashed currentColor;
+            transition: color 0.25s ease, border-color 0.25s ease, border-style 0.25s ease;
         }
 
-        .brand-acceso i { font-size: 0.78rem; }
+        .brand-acceso i { font-size: 0.78rem; opacity: 0.9; }
 
         .brand-acceso:hover,
         .brand-acceso:focus-visible {
-            background: var(--blue-primary);
-            color: #fff;
+            color: var(--blue-dark);
+            border-bottom-style: solid;
             outline: none;
         }
 
@@ -371,7 +386,7 @@
             .client-head h1 { font-size: 1.8rem; }
             .brand-option { padding: 32px 20px 28px; }
             .brand-option .brand-cta { width: 100%; justify-content: center; }
-            .brand-acceso { width: 100%; justify-content: center; }
+            .brand-acceso { width: auto; }
         }
     </style>
 </head>
@@ -382,13 +397,13 @@
             <a href="https://emiliocolor.com/" class="logo">
                 <img src="https://emiliocolor.com/img-logos/logo_azul_alargado.png" alt="EmilioColor · Proyectos" width="auto" height="29" />
             </a>
-<nav id="mainNav">
-    <a href="https://juridico.emiliocolor.com/proyectos_emiliocolor" target="_blank" rel="noopener">Términos y condiciones</a>
-    <a href="https://emiliocolor.com/#contact">Contacto</a>
-    <a href="https://emiliocolor.com/" class="btn-outline-header">
-        <i class="fas fa-arrow-left"></i> Ir al sitio oficial
-    </a>
-</nav>
+            <nav id="mainNav">
+                <a href="https://juridico.emiliocolor.com/proyectos_emiliocolor" target="_blank" rel="noopener">Términos y condiciones</a>
+                <a href="https://emiliocolor.com/#contact">Contacto</a>
+                <a href="https://emiliocolor.com/" class="btn-outline-header">
+                    <i class="fas fa-arrow-left"></i> Ir al sitio oficial
+                </a>
+            </nav>
             <div class="hamburger" id="hamburger" role="button" aria-label="Abrir menú" tabindex="0">
                 <i class="fas fa-bars"></i>
             </div>
@@ -408,52 +423,21 @@
 
             <div class="brand-options">
 
-<a class="brand-option"
-   href="https://proyectos.emiliocolor.com/cei-jdb/inicio"
-   data-proyecto="Comunidad de Estudios Independiente">
-    <div class="brand-logo">
-        <i class="fas fa-school"></i>
-    </div>
-    <h2>Comunidad de Estudios Independiente “Juan de Dios Bátiz”</h2>
-        <span class="fecha">
-        <i class="fas fa-circle-info"></i> Difusión Informativa
-    </span>
-    <p>
-        Comunidad académica independiente y sin fines de lucro. 
-        Su difusión en este sitio es únicamente informativa; EmilioColor® 
-        no participa directamente en su organización, administración o actividades.
-    </p>
-    <style>
-                .brand-option .fecha {
-            display: inline-block;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--blue-primary);
-            background: var(--blue-soft);
-            padding: 3px 12px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-    </style>
-    <span class="brand-cta">
-        Entrar <i class="fas fa-arrow-right"></i>
-    </span>
-</a>
-
+                                <!-- 4. Repositorio Electrónico de Acceso Abierto (REAA) -->
                 <a class="brand-option"
-                   href="https://proyectos.emiliocolor.com/laboratorio-programacion/inicio"
-                   data-proyecto="Laboratorio Virtual de Programación">
+                   href="https://proyectos.emiliocolor.com/reaa/inicio"
+                   data-proyecto="Repositorio Electrónico de Acceso Abierto">
                     <div class="brand-logo">
-                        <i class="fas fa-laptop-code"></i>
+                        <i class="fas fa-book-open"></i>
                     </div>
-                    <h2>Laboratorio Virtual de Programación</h2>
-                    <p>Entorno de práctica con ejercicios, guías de estudio y documentación técnica.</p>
+                    <h2>Repositorio Electrónico de Acceso Abierto (REAA)</h2>
+                    <p>Colección digital de documentos, publicaciones y materiales educativos de libre consulta y descarga para la comunidad.</p>
                     <span class="brand-cta">
                         Entrar <i class="fas fa-arrow-right"></i>
                     </span>
                 </a>
 
-                <!-- Tarjeta de Electromagnetismo: contenedor con enlace principal + acceso a claves -->
+                <!-- 3. Laboratorio Virtual de Electromagnetismo -->
                 <div class="brand-option"
                      data-proyecto="Laboratorio Virtual de Electromagnetismo">
                     <div class="brand-logo">
@@ -461,11 +445,14 @@
                     </div>
                     <h2>Laboratorio Virtual de Electromagnetismo</h2>
                     <p>Simulaciones y recursos interactivos para explorar y comprender los fenómenos del electromagnetismo.</p>
+
+                    <!-- Enlace secundario con estilo de enlace (no botón) -->
                     <a class="brand-acceso"
                        href="https://proyectos.emiliocolor.com/lab_electromagnetismo/panel_profesores"
                        aria-label="Claves de acceso de las prácticas del Laboratorio de Electromagnetismo">
                         <i class="fas fa-key"></i> Claves de acceso de las prácticas
                     </a>
+
                     <a class="brand-cta stretched-link"
                        href="https://proyectos.emiliocolor.com/lab_electromagnetismo/panel"
                        aria-label="Entrar al Laboratorio Virtual de Electromagnetismo">
@@ -473,6 +460,26 @@
                     </a>
                 </div>
 
+                                <!-- 1. Comunidad de Estudios Independiente -->
+                <a class="brand-option"
+                   href="https://proyectos.emiliocolor.com/cei-jdb/inicio"
+                   data-proyecto="Comunidad de Estudios Independiente">
+                    <div class="brand-logo">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <h2>Comunidad de Estudios Independiente “Juan de Dios Bátiz”</h2>
+                    <span class="fecha">
+                        <i class="fas fa-circle-info"></i> Difusión Informativa
+                    </span>
+                    <p>
+                        Comunidad académica independiente y sin fines de lucro.
+                        Su difusión en este sitio es únicamente informativa; EmilioColor®
+                        no participa directamente en su organización, administración o actividades.
+                    </p>
+                    <span class="brand-cta">
+                        Entrar <i class="fas fa-arrow-right"></i>
+                    </span>
+                </a>
             </div>
 
             <div class="client-help">
