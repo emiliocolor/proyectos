@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Trayectoria Helicoidal - Ejercicio 31</title>
+    
+    <!-- Fuentes y Iconos (Incluyendo Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+<script>
+/**
+ * ======================================================================
+ * PROPIEDAD INTELECTUAL - EmilioColor®
+ * ======================================================================
+ * Este código fuente, su lógica, diseño visual y todos los contenidos
+ * asociados a las simulaciones son propiedad exclusiva de EmilioColor®.
+ * Queda prohibida la copia, reproducción, distribución o modificación
+ * no autorizada de este material.
+ * 
+ * © 2026 EmilioColor®. Todos los derechos reservados.
+ * ======================================================================
+ */
+</script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --inner-box-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7;
+            
+            --btn-blue: #0284c7;
+            --btn-blue-hover: #0369a1;
+            --btn-red: #ef4444;
+            --btn-red-hover: #dc2626;
+            --btn-teal: #0d9488;
+            --btn-orange: #ea580c;
+            --btn-gray: #475569;
+            --btn-gray-hover: #334155;
+
+            --vector-v: #059669;
+            --vector-b: #dc2626;
+            --vector-p: #ea580c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .header-logo {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 { 
+            text-align: left; 
+            color: #0f172a; 
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            flex: 1;
+        }
+
+        .btn-logout {
+            background-color: var(--btn-gray);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+        }
+
+        .btn-logout:hover {
+            background-color: var(--btn-gray-hover);
+            transform: translateY(-1px);
+        }
+
+        .description {
+            text-align: left;
+            margin: 0 0 30px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .canvas-area-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .canvas-box-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff; 
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            display: block;
+        }
+
+        #simCanvas {
+            cursor: crosshair;
+        }
+
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .controls-subgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            background: var(--inner-box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .label-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            outline: none;
+            margin-top: 8px;
+            accent-color: var(--primary-accent);
+            transition: background-color .15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease, background-color 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .value-badge {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .explanation-box, .vector-insights-box {
+            background: var(--inner-box-bg);
+            padding: 20px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .explanation-box h4, .vector-insights-box h4 {
+            margin: 0 0 16px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .formula-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .equation-step {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .equation-step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .equation-title {
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .equation-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .math-container {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+            border: 1px solid var(--card-border);
+            overflow-x: auto;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .btn-action {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .btn-action:hover { 
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        .btn-reset {
+            background-color: var(--btn-red);
+        }
+
+        .vector-row {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            padding-left: 16px;
+            position: relative;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        .vector-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .vector-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .row-v::before { background-color: var(--vector-v); }
+        .row-b::before { background-color: var(--vector-b); }
+        .row-p::before { background-color: var(--vector-p); }
+
+        .mono-val {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (max-width: 850px) {
+            .simulation-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls-subgrid {
+                grid-template-columns: 1fr;
+            }
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== VERIFICACIÓN DE SESIÓN ========== -->
+<script>
+    (function() {
+        const sesion = sessionStorage.getItem("simuladorAutorizado");
+        const paginaActual = "simulador_3.html";
+        if (!sesion || sesion !== paginaActual) {
+            window.location.href = "login.html";
+        }
+    })();
+</script>
+<!-- =========================================== -->
+
+<div class="container">
+    <div class="header-container">
+        <img src="log.png" alt="Logo Laboratorio" class="header-logo" onerror="this.style.display='none'">
+        <h1>Laboratorio de Mecánica y Electromagnetismo</h1>
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Volver a inicio
+        </button>
+    </div>
+
+    <p class="description">
+        <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-right: 6px;"></i>
+        Modelador dinámico de la trayectoria helicoidal de un positrón en un campo magnético uniforme. Modifica el ángulo y observa cómo la hélice se deforma y comprime hasta convertirse en un círculo perfecto cuando la velocidad es estrictamente perpendicular a B.
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span><i class="fas fa-atom" style="color: var(--primary-accent); margin-right: 8px;"></i> Movimiento de Cargas en Campos Magnéticos</span>
+            <button class="btn-action btn-reset" onclick="resetSimulador()"><i class="fas fa-undo"></i> Valores Originales</button>
+        </div>
+
+        <div class="simulation-grid">
+            
+            <div class="canvas-area-container">
+                <div class="canvas-box-wrapper" id="canvasWrapper">
+                    <canvas id="simCanvas" width="420" height="420"></canvas>
+                </div>
+
+                <div class="vector-insights-box">
+                    <h4>
+                        <span><i class="fas fa-chart-line" style="color: var(--primary-accent); margin-right: 6px;"></i> Vectores Dinámicos</span>
+                        <span class="formula-tag"><i class="fas fa-satellite-dish"></i> Telemetría</span>
+                    </h4>
+                    <div class="vector-row row-v">
+                        <strong>Velocidad (v):</strong> Magnitud de <span id="insight-v" class="mono-val" style="color: var(--vector-v); font-weight: bold;">0.00e+0</span> m/s. La componente paralela disminuye conforme el ángulo &phi; se aproxima a 90°.
+                    </div>
+                    <div class="vector-row row-b">
+                        <strong>Campo Magnético (B):</strong> Intensidad de <span id="insight-b" class="mono-val" style="color: var(--vector-b); font-weight: bold;">0.00</span> &mu;T, orientado de forma vertical uniforme (+Y).
+                    </div>
+                    <div class="vector-row row-p">
+                        <strong>Paso de Hélice (p):</strong> Avance longitudinal: <span id="insight-pitch" class="mono-val" style="color: var(--vector-p); font-weight: bold;">0.00 cm</span>. Tiende a <span class="mono-val" style="font-weight: bold; color: var(--btn-red);">0.00 cm</span> a 90°.
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="controls-subgrid">
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Energía K (eV)</span>
+                            <span id="val-K" class="value-badge" style="color: var(--btn-orange);">22.5 eV</span>
+                        </div>
+                        <input type="range" id="param-K" min="5" max="100" value="22.5" step="0.5">
+                    </div>
+                    
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Campo B (&mu;T)</span>
+                            <span id="val-B" class="value-badge" style="color: var(--primary-accent);">455 &mu;T</span>
+                        </div>
+                        <input type="range" id="param-B" min="100" max="1000" value="455" step="5">
+                    </div>
+
+                    <div style="grid-column: span 2;">
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Ángulo de inyección (&phi;)</span>
+                            <span id="val-angle" class="value-badge" style="color: var(--btn-teal);">65.5°</span>
+                        </div>
+                        <input type="range" id="param-angle" min="10" max="90" value="65.5" step="0.5">
+                    </div>
+                </div>
+
+                <div class="explanation-box" id="infoBox">
+                    <h4>
+                        <span><i class="fas fa-square-root-variable" style="color: var(--primary-accent); margin-right: 6px;"></i> Resultados y Memoria de Cálculo</span>
+                        <span class="formula-tag"><i class="fas fa-calculator"></i> Métricas</span>
+                    </h4>
+                    
+                    <div class="equation-step">
+                        <div class="equation-title">Velocidad del Positrón (v)</div>
+                        <div class="equation-desc">Determinada a partir de la energía cinética del positrón, transformando electronvoltios a Joules:</div>
+                        <div class="math-container" id="katex-v"></div>
+                    </div>
+
+                    <div class="equation-step">
+                        <div class="equation-title">Periodo de revolución (T)</div>
+                        <div class="equation-desc">Lapso requerido por la partícula para realizar un giro completo dentro del campo magnético:</div>
+                        <div class="math-container" id="katex-period"></div>
+                    </div>
+
+                    <div class="equation-step">
+                        <div class="equation-title">Radio de la hélice (r)</div>
+                        <div class="equation-desc">Radio de giro en el plano transversal, proporcional a la componente perpendicular de velocidad:</div>
+                        <div class="math-container" id="katex-radius"></div>
+                    </div>
+
+                    <div class="equation-step">
+                        <div class="equation-title">Paso de la hélice (p)</div>
+                        <div class="equation-desc">Avance vertical por ciclo completo, que disminuye a cero absoluto a 90 grados:</div>
+                        <div class="math-container" id="katex-pitch"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Función para cerrar sesión y volver al login
+    function cerrarSesion() {
+        sessionStorage.removeItem("simuladorAutorizado");
+        window.location.href = "login.html";
+    }
+
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const katexV = document.getElementById('katex-v');
+    const katexPeriod = document.getElementById('katex-period');
+    const katexRadius = document.getElementById('katex-radius');
+    const katexPitch = document.getElementById('katex-pitch');
+
+    const insightV = document.getElementById('insight-v');
+    const insightB = document.getElementById('insight-b');
+    const insightPitch = document.getElementById('insight-pitch');
+
+    let mousePos = { x: -100, y: -100 };
+    let vectorVPos = { x: 0, y: 0, valor: "" };
+
+    const inputs = {
+        K: document.getElementById('param-K'),
+        B: document.getElementById('param-B'),
+        angle: document.getElementById('param-angle')
+    };
+
+    const outputs = {
+        K: document.getElementById('val-K'),
+        B: document.getElementById('val-B'),
+        angle: document.getElementById('val-angle')
+    };
+
+    const m_e = 9.1093837e-31; 
+    const q = 1.60217663e-19;  
+    const eV_to_J = 1.60217663e-19;
+
+    function draw() {
+        const K_eV = parseFloat(inputs.K.value);
+        const B_uT = parseFloat(inputs.B.value);
+        const phiDeg = parseFloat(inputs.angle.value);
+
+        outputs.K.innerText = K_eV + " eV";
+        outputs.B.innerText = B_uT + " \u03bcT";
+        outputs.angle.innerText = phiDeg + "°";
+
+        const K = K_eV * eV_to_J;
+        const B = B_uT * 1e-6;
+        const phiRad = (phiDeg * Math.PI) / 180;
+
+        const v = Math.sqrt((2 * K) / m_e);
+        const v_parallel = v * Math.cos(phiRad);
+        const v_perpendicular = v * Math.sin(phiRad);
+
+        const T = (2 * Math.PI * m_e) / (q * B);
+        const r = (m_e * v_perpendicular) / (q * B);
+        const p = v_parallel * T;
+
+        if (typeof katex !== 'undefined') {
+            katex.render(`v = \\sqrt{\\frac{2K}{m}} = ${v.toExponential(3)}\\text{ m/s}`, katexV);
+            katex.render(`T = \\frac{2\\pi m}{qB} = ${T.toExponential(3)}\\text{ s}`, katexPeriod);
+            katex.render(`r = \\frac{m v_\\perp}{qB} = ${(r * 100).toFixed(2)}\\text{ cm}`, katexRadius);
+            katex.render(`p = v_\\parallel T = ${(p * 100).toFixed(2)}\\text{ cm}`, katexPitch);
+        }
+
+        insightV.innerText = v.toExponential(2);
+        insightB.innerText = B_uT.toFixed(0);
+        insightPitch.innerText = (p * 100).toFixed(2) + " cm";
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Renderizado del fondo del Canvas claro con líneas guía limpias
+        ctx.strokeStyle = 'rgba(220, 38, 38, 0.1)';
+        ctx.lineWidth = 1.5;
+        for (let x = 20; x < canvas.width; x += 40) {
+            ctx.beginPath();
+            ctx.moveTo(x, canvas.height - 20);
+            ctx.lineTo(x, 20);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(220, 38, 38, 0.25)';
+            ctx.beginPath();
+            ctx.moveTo(x, 20);
+            ctx.lineTo(x - 4, 28);
+            ctx.lineTo(x + 4, 28);
+            ctx.fill();
+        }
+        ctx.fillStyle = '#dc2626';
+        ctx.font = 'italic bold 16px "Inter", sans-serif';
+        ctx.fillText('B', canvas.width - 25, 35);
+
+        const visualRadius = Math.min(75, Math.max(20, r * 2800)); 
+        
+        const factorCompresion = Math.pow(Math.cos(phiRad), 1.2);
+        const visualPitch = p * 1900 * factorCompresion; 
+
+        const centerX = canvas.width / 2;
+        
+        const interpolacionCentro = Math.sin(phiRad);
+        const startY = (canvas.height - 70) * (1 - interpolacionCentro) + (canvas.height / 2 + (visualPitch * 2)) * interpolacionCentro;
+
+        // Trazo de la hélice en color naranja fuerte visible sobre fondo claro
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = '#ea580c'; 
+
+        ctx.beginPath();
+        let first = true;
+        const totalSteps = 500;
+        
+        const totalMaxTime = phiDeg >= 89.5 ? (2 * Math.PI) : (4 * 2 * Math.PI);
+
+        for (let i = 0; i <= totalSteps; i++) {
+            const t = (i / totalSteps) * totalMaxTime;
+            
+            const xPos = centerX + visualRadius * Math.cos(t);
+            const yPos = startY - (t / (2 * Math.PI)) * visualPitch + (visualRadius * 0.35 * Math.sin(t));
+
+            if (first) {
+                ctx.moveTo(xPos, yPos);
+                first = false;
+            } else {
+                ctx.lineTo(xPos, yPos);
+            }
+        }
+        ctx.stroke();
+
+        const currentX = centerX + visualRadius * Math.cos(0);
+        const currentY = startY + (visualRadius * 0.35 * Math.sin(0));
+
+        // Partícula positrón (+)
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 7, 0, 2 * Math.PI);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px "Inter", sans-serif';
+        ctx.fillText('+', currentX - 3, currentY + 3.5);
+
+        const vLength = 65;
+        const vx = vLength * Math.cos(phiRad);
+        const vy = vLength * Math.sin(phiRad);
+
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]);
+        ctx.moveTo(currentX, currentY);
+        ctx.lineTo(currentX, currentY - vLength);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        vectorVPos = { x: currentX + vx, y: currentY - vy, valor: `${v.toExponential(2)} m/s` };
+        ctx.strokeStyle = '#059669';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(currentX, currentY);
+        ctx.lineTo(vectorVPos.x, vectorVPos.y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#059669';
+        ctx.beginPath();
+        ctx.arc(vectorVPos.x, vectorVPos.y, 4.5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.font = 'bold 13px "Inter", sans-serif';
+        ctx.fillText('v', vectorVPos.x + 8, vectorVPos.y + 4);
+
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.fillStyle = '#475569';
+        ctx.font = '11px "JetBrains Mono", monospace';
+
+        if (phiDeg < 89.0 && visualPitch > 2) {
+            const pY1 = startY;
+            const pY2 = startY - visualPitch;
+            ctx.beginPath();
+            ctx.moveTo(centerX - visualRadius - 10, pY1);
+            ctx.lineTo(centerX - visualRadius - 25, pY1);
+            ctx.moveTo(centerX - visualRadius - 10, pY2);
+            ctx.lineTo(centerX - visualRadius - 25, pY2);
+            ctx.moveTo(centerX - visualRadius - 20, pY1);
+            ctx.lineTo(centerX - visualRadius - 20, pY2);
+            ctx.stroke();
+            ctx.fillText(`p = ${(p*100).toFixed(2)} cm`, centerX - visualRadius - 88, (pY1 + pY2)/2 + 4);
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, startY);
+        ctx.lineTo(centerX + visualRadius, startY);
+        ctx.stroke();
+        ctx.fillText(`r = ${(r*100).toFixed(2)} cm`, centerX + (visualRadius/4), startY - 6);
+
+        renderTooltip();
+    }
+
+    function renderTooltip() {
+        const distV = Math.hypot(mousePos.x - vectorVPos.x, mousePos.y - vectorVPos.y);
+        if (distV < 15) {
+            ctx.save();
+            ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
+            ctx.strokeStyle = "#059669";
+            ctx.lineWidth = 1;
+            
+            const boxX = mousePos.x + 15;
+            const boxY = mousePos.y + 15;
+            ctx.beginPath();
+            ctx.roundRect(boxX, boxY, 210, 48, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 11px 'Inter', sans-serif";
+            ctx.fillText("Velocidad Lineal Inyectada (v)", boxX + 10, boxY + 18);
+            ctx.fillStyle = "#cbd5e1";
+            ctx.font = "11px 'JetBrains Mono', monospace";
+            ctx.fillText("Magnitud: " + vectorVPos.valor, boxX + 10, boxY + 36);
+            ctx.restore();
+        }
+    }
+
+    function resetSimulador() {
+        inputs.K.value = "22.5";
+        inputs.B.value = "455";
+        inputs.angle.value = "65.5";
+        draw();
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mousePos.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        mousePos.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        draw();
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+        mousePos = { x: -100, y: -100 };
+        draw();
+    });
+
+    Object.values(inputs).forEach(input => input.addEventListener('input', draw));
+    window.addEventListener('DOMContentLoaded', () => setTimeout(draw, 100));
+</script>
+</body>
+</html>

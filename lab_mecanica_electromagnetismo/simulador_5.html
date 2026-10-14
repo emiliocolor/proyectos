@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Dinámica - Segunda Ley de Newton</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+<script>
+/**
+ * ======================================================================
+ * PROPIEDAD INTELECTUAL - EmilioColor®
+ * ======================================================================
+ * Este código fuente, su lógica, diseño visual y todos los contenidos
+ * asociados a las simulaciones son propiedad exclusiva de EmilioColor®.
+ * Queda prohibida la copia, reproducción, distribución o modificación
+ * no autorizada de este material.
+ *
+ * © 2026 EmilioColor®. Todos los derechos reservados.
+ * ======================================================================
+ */
+</script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --inner-box-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7;
+            --btn-red: #ef4444;
+            --btn-gray: #475569;
+            --btn-gray-hover: #334155;
+            --btn-green: #16a34a;
+            --vector-t: #059669;
+            --vector-f: #dc2626;
+            --vector-n: #2563eb;
+            --vector-w: #7c3aed;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1050px; width: 100%; }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .header-logo {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            text-align: left;
+            color: #0f172a;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            flex: 1;
+        }
+
+        .btn-logout {
+            background-color: var(--btn-gray);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+        }
+        .btn-logout:hover { background-color: var(--btn-gray-hover); transform: translateY(-1px); }
+
+        .description {
+            text-align: left;
+            margin: 0 0 30px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .scenario-section { margin-top: 22px; }
+
+        .section-label {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(122px, 1fr));
+            gap: 10px;
+        }
+
+        .scenario-btn {
+            --sc-color: #0284c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 8px;
+            border-radius: 10px;
+            border: 1.5px solid var(--card-border);
+            background: #fff;
+            color: #475569;
+            font-weight: 600;
+            font-size: .8rem;
+            cursor: pointer;
+            transition: all .18s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .scenario-btn i { font-size: .95rem; }
+        .scenario-btn:hover { border-color: var(--sc-color); color: var(--sc-color); transform: translateY(-1px); }
+        .scenario-btn.active {
+            background: var(--sc-color);
+            border-color: var(--sc-color);
+            color: #fff;
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,.45);
+        }
+
+        .scenario-desc {
+            margin: 14px 0 0 0;
+            font-size: .87rem;
+            line-height: 1.55;
+            color: #334155;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 0 10px 10px 0;
+        }
+        .scenario-desc i { color: #f59e0b; margin-right: 6px; }
+
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .canvas-area-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .canvas-box-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            display: block;
+            cursor: grab;
+        }
+        canvas:active { cursor: grabbing; }
+
+        #vectorCanvas {
+            max-width: 100% !important;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        #slidersZone {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            background: var(--inner-box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .label-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            outline: none;
+            margin-top: 8px;
+            accent-color: var(--primary-accent);
+            transition: background-color .15s;
+        }
+        input[type="range"].snapped {
+            background: #fca5a5;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .value-badge {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .snap-hint {
+            font-size: .66rem;
+            color: #ef4444;
+            font-weight: 600;
+            margin-top: 4px;
+            opacity: 0;
+            transition: opacity .2s;
+            min-height: 12px;
+        }
+        .snap-hint.show { opacity: 1; }
+
+        #unknownZone {
+            background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1.5px solid #fcd34d;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .unknown-header {
+            font-size: .86rem;
+            font-weight: 600;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .unknown-header i { font-size: 1rem; }
+        .unknown-header strong { color: #78350f; }
+
+        .unit-chip {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            background: #fff;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .unknown-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .unknown-input-row input {
+            flex: 1;
+            min-width: 130px;
+            padding: 10px 12px;
+            border-radius: 9px;
+            border: 1.5px solid #fcd34d;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .92rem;
+            outline: none;
+            background: #fff;
+            color: #0f172a;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .unknown-input-row input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, .2);
+        }
+
+        .btn-action {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .btn-action:hover { transform: translateY(-1px); opacity: .92; }
+        .btn-reset { background-color: var(--btn-red); }
+        .btn-toggle { background-color: var(--primary-accent); }
+        .btn-verify { background-color: var(--btn-green); }
+        .btn-reveal { background-color: #f59e0b; }
+
+        .feedback {
+            margin-top: 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            padding: 0;
+            line-height: 1.5;
+            border-radius: 8px;
+        }
+        .feedback.ok  { background: #dcfce7; color: #166534; padding: 10px 12px; border: 1px solid #86efac; }
+        .feedback.err { background: #fee2e2; color: #991b1b; padding: 10px 12px; border: 1px solid #fca5a5; }
+        .feedback.warn{ background: #fef3c7; color: #92400e; padding: 10px 12px; border: 1px solid #fcd34d; }
+
+        .explanation-box, .vector-insights-box {
+            background: var(--inner-box-bg);
+            padding: 20px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .explanation-box h4, .vector-insights-box h4 {
+            margin: 0 0 16px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .formula-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tel-item {
+            background: #fff;
+            border: 1px solid var(--card-border);
+            border-radius: 9px;
+            padding: 9px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .tel-label {
+            font-size: .66rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+        .tel-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .92rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .equation-step {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .equation-step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        .equation-title {
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .equation-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .math-container {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+            border: 1px solid var(--card-border);
+            overflow-x: auto;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .hidden-note {
+            font-size: .8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .locked-banner {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            font-size: .8rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 850px) {
+            .simulation-grid { grid-template-columns: 1fr; }
+            #slidersZone { grid-template-columns: 1fr; }
+            .header-container { flex-direction: column; align-items: flex-start; gap: 15px; }
+            h1 { font-size: 1.4rem; }
+            .scenario-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== VERIFICACIÓN DE SESIÓN ========== -->
+<script>
+    (function() {
+        const sesion = sessionStorage.getItem("simuladorAutorizado");
+        const paginaActual = "simulador_5.html";
+        if (!sesion || sesion !== paginaActual) {
+            window.location.href = "login.html";
+        }
+    })();
+</script>
+<!-- =========================================== -->
+
+<div class="container">
+    <div class="header-container">
+        <img src="log.png" alt="Logo Laboratorio" class="header-logo" onerror="this.style.display='none'">
+        <h1>Laboratorio de Mecánica y Electromagnetismo</h1>
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Volver a inicio
+        </button>
+    </div>
+
+    <p class="description">
+        <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-right: 6px;"></i>
+        Selecciona un <strong>escenario</strong> para elegir cuál variable debe calcularse. Los deslizadores solo permiten valores que tengan <strong>solución física real</strong>: si intentas salir del rango solucionable, el control vuelve automáticamente al último valor válido.
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span><i class="fas fa-cube" style="color: var(--primary-accent); margin-right: 8px;"></i> Dinámica de Traslación - Segunda Ley de Newton</span>
+            <button class="btn-action btn-reset" onclick="resetSimulador()"><i class="fas fa-undo"></i> Valores Originales</button>
+        </div>
+
+        <div class="scenario-section">
+            <div class="section-label"><i class="fas fa-flask"></i> Escenario de aprendizaje</div>
+            <div class="scenario-grid" id="scenarioGrid"></div>
+            <p class="scenario-desc" id="scenarioDesc"></p>
+        </div>
+
+        <div class="simulation-grid">
+
+            <div class="canvas-area-container">
+                <div class="canvas-box-wrapper">
+                    <canvas id="simCanvas" width="420" height="420"></canvas>
+                </div>
+
+                <div class="vector-insights-box">
+                    <h4>
+                        <span><i class="fas fa-chart-line" style="color: var(--primary-accent); margin-right: 6px;"></i> Telemetría</span>
+                        <span class="formula-tag"><i class="fas fa-satellite-dish"></i> Dinámica</span>
+                    </h4>
+                    <div class="tel-grid">
+                        <div class="tel-item"><span class="tel-label">Masa (m)</span><span class="tel-value" id="insight-m">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Normal (N)</span><span class="tel-value" id="insight-n">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Fricción (f<sub>k</sub>)</span><span class="tel-value" id="insight-fk">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Aceleración (a)</span><span class="tel-value" id="insight-a">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Distancia (d)</span><span class="tel-value" id="insight-d">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Velocidad final (v)</span><span class="tel-value" id="insight-v">--</span></div>
+                    </div>
+                </div>
+
+                <div class="canvas-box-wrapper">
+                    <canvas id="vectorCanvas" width="420" height="340"></canvas>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+
+                <div id="slidersZone"></div>
+
+                <div id="unknownZone" style="display:none;"></div>
+
+                <div class="explanation-box" id="infoBox">
+                    <h4>
+                        <span><i class="fas fa-square-root-variable" style="color: var(--primary-accent); margin-right: 6px;"></i> Memoria de Cálculo</span>
+                        <button class="btn-action btn-toggle" id="toggleCalcBtn" onclick="toggleMemoriaCalculo()"><i class="fas fa-eye-slash" id="toggleIcon"></i> Ocultar</button>
+                    </h4>
+                    <div id="calcContentContainer">
+                        <div id="calcContent"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+/* =====================================================================
+   PROPIEDAD INTELECTUAL - EmilioColor® (© 2026)
+   ===================================================================== */
+
+function cerrarSesion() {
+    sessionStorage.removeItem("simuladorAutorizado");
+    window.location.href = "login.html";
+}
+
+function toggleMemoriaCalculo() {
+    const container = document.getElementById('calcContentContainer');
+    const btn = document.getElementById('toggleCalcBtn');
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar';
+    } else {
+        container.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-eye"></i> Mostrar';
+    }
+}
+
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+        const r = typeof radii === 'number' ? radii : (radii || 0);
+        const rad = Math.min(r, Math.min(w, h) / 2);
+        this.moveTo(x + rad, y);
+        this.arcTo(x + w, y, x + w, y + h, rad);
+        this.arcTo(x + w, y + h, x, y + h, rad);
+        this.arcTo(x, y + h, x, y, rad);
+        this.arcTo(x, y, x + w, y, rad);
+        return this;
+    };
+}
+
+/* =====================================================================
+   1. PARÁMETROS, ESCENARIOS Y DEFAULTS VÁLIDOS
+   ===================================================================== */
+
+const PARAMS = {
+    W:     { name:'Peso del bloque',  sym:'W', unit:'N',    min:20,  max:400, step:1,    dec:1, color:'#7c3aed' },
+    T:     { name:'Tensión',          sym:'T', unit:'N',    min:0,   max:250, step:1,    dec:1, color:'#059669' },
+    theta: { name:'Ángulo',           sym:'θ', unit:'°',    min:0,   max:85,  step:0.5,  dec:1, color:'#ea580c' },
+    g:     { name:'Gravedad',         sym:'g', unit:'m/s²', min:1,   max:20,  step:0.1,  dec:2, color:'#0284c7' },
+    mu:    { name:'Coef. de fricción',sym:'μ', unit:'',     min:0,   max:0.9, step:0.01, dec:2, color:'#0d9488' },
+    a:     { name:'Aceleración',      sym:'a', unit:'m/s²', min:0,   max:15,  step:0.1,  dec:2, color:'#dc2626' },
+    d:     { name:'Distancia',        sym:'d', unit:'m',    min:0.5, max:40,  step:0.5,  dec:1, color:'#f59e0b' },
+    t:     { name:'Tiempo',           sym:'t', unit:'s',    min:0.1, max:20,  step:0.1,  dec:2, color:'#0d9488' }
+};
+
+const DEFAULTS = { W:160, T:40, theta:35, g:9.81, mu:0.25, a:2, d:4, t:2 };
+
+/* Valores iniciales garantizados solucionables por escenario */
+const SCENARIO_DEFAULTS = {
+    libre: { W:160, T:40,  theta:35, g:9.81, mu:0.25, a:2,  d:4, t:2 },
+    W:     { W:84,  T:40,  theta:35, g:9.81, mu:0.25, a:2,  d:4, t:2 },
+    T:     { W:160, T:75,  theta:35, g:9.81, mu:0.25, a:2,  d:4, t:2 },
+    theta: { W:100, T:80,  theta:25, g:10,   mu:0.1,  a:2,  d:4, t:2 },
+    g:     { W:160, T:60,  theta:30, g:10,   mu:0.2,  a:2,  d:4, t:2 },
+    mu:    { W:160, T:60,  theta:30, g:9.81, mu:0.15, a:2,  d:4, t:2 },
+    a:     { W:160, T:60,  theta:30, g:9.81, mu:0.2,  a:2,  d:4, t:2 },
+    t:     { W:160, T:60,  theta:30, g:9.81, mu:0.2,  a:2,  d:5, t:2 }
+};
+
+const SCENARIOS = {
+    libre: {
+        label:'Modo libre', icon:'fa-infinity', color:'#0284c7',
+        unknown:null,
+        sliders:['W','T','theta','g','mu','t'],
+        desc:'Todos los datos son ajustables. La aceleración se calcula automáticamente aplicando la Segunda Ley de Newton.'
+    },
+    W: {
+        label:'Hallar W', icon:'fa-weight-hanging', color:'#7c3aed',
+        unknown:'W',
+        sliders:['T','theta','g','mu','a','t'],
+        desc:'Datos conocidos: T, θ, g, μ y a. Determina el PESO del bloque despejando de la ecuación de Newton.'
+    },
+    T: {
+        label:'Hallar T', icon:'fa-link', color:'#059669',
+        unknown:'T',
+        sliders:['W','theta','g','mu','a','t'],
+        desc:'Datos conocidos: W, θ, g, μ y a. Determina la TENSIÓN que ejerce la cuerda sobre el bloque.'
+    },
+    theta: {
+        label:'Hallar θ', icon:'fa-angle-up', color:'#ea580c',
+        unknown:'theta',
+        sliders:['W','T','g','mu','a','t'],
+        desc:'Datos conocidos: W, T, g, μ y a. Determina el ÁNGULO que forma la cuerda con la horizontal.'
+    },
+    g: {
+        label:'Hallar g', icon:'fa-globe', color:'#0284c7',
+        unknown:'g',
+        sliders:['W','T','theta','mu','a','t'],
+        desc:'Datos conocidos: W, T, θ, μ y a. Determina la GRAVEDAD del planeta donde ocurre el experimento.'
+    },
+    mu: {
+        label:'Hallar μ', icon:'fa-road', color:'#0d9488',
+        unknown:'mu',
+        sliders:['W','T','theta','g','a','t'],
+        desc:'Datos conocidos: W, T, θ, g y a. Determina el COEFICIENTE DE FRICCIÓN cinético entre el bloque y el suelo.'
+    },
+    a: {
+        label:'Hallar a', icon:'fa-gauge-high', color:'#dc2626',
+        unknown:'a',
+        sliders:['W','T','theta','g','mu','t'],
+        desc:'Datos conocidos: W, T, θ, g y μ. Determina la ACELERACIÓN del bloque aplicando ΣF = m·a.'
+    },
+    t: {
+        label:'Hallar t', icon:'fa-stopwatch', color:'#f59e0b',
+        unknown:'t',
+        sliders:['W','T','theta','g','mu','d'],
+        desc:'Datos conocidos: W, T, θ, g, μ y la distancia d. Determina el TIEMPO que tarda el bloque en recorrer esa distancia partiendo del reposo.'
+    }
+};
+
+const DESPEJES = {
+    W:     'T\\cos\\theta-\\mu\\,(W-T\\sin\\theta)=\\frac{W}{g}\\,a \\;\\Longrightarrow\\; \\boxed{\\,W=\\frac{T\\,(\\cos\\theta+\\mu\\sin\\theta)}{\\dfrac{a}{g}+\\mu}\\,}',
+    T:     'T\\,(\\cos\\theta+\\mu\\sin\\theta)=W\\!\\left(\\frac{a}{g}+\\mu\\right) \\;\\Longrightarrow\\; \\boxed{\\,T=\\frac{W\\!\\left(\\dfrac{a}{g}+\\mu\\right)}{\\cos\\theta+\\mu\\sin\\theta}\\,}',
+    theta: 'T\\cos\\theta+\\mu T\\sin\\theta=W\\!\\left(\\frac{a}{g}+\\mu\\right) \\;\\Longrightarrow\\; \\cos\\theta+\\mu\\sin\\theta=\\frac{K}{T}\\quad\\text{(se resuelve numéricamente)}',
+    g:     '\\frac{W a}{g}=T(\\cos\\theta+\\mu\\sin\\theta)-\\mu W \\;\\Longrightarrow\\; \\boxed{\\,g=\\frac{W\\,a}{T(\\cos\\theta+\\mu\\sin\\theta)-\\mu W}\\,}',
+    mu:    'T\\cos\\theta-\\mu(W-T\\sin\\theta)=\\frac{W a}{g} \\;\\Longrightarrow\\; \\boxed{\\,\\mu=\\frac{T\\cos\\theta-\\dfrac{W a}{g}}{W-T\\sin\\theta}\\,}',
+    a:     'a=\\frac{T\\cos\\theta-\\mu(W-T\\sin\\theta)}{W/g} \\;\\Longrightarrow\\; \\boxed{\\,a=\\frac{g\\,[\\,T\\cos\\theta-\\mu(W-T\\sin\\theta)\\,]}{W}\\,}',
+    t:     'a=\\frac{g\\,[\\,T\\cos\\theta-\\mu(W-T\\sin\\theta)\\,]}{W}\\qquad d=\\tfrac{1}{2}at^{2} \\;\\Longrightarrow\\; \\boxed{\\,t=\\sqrt{\\frac{2d}{a}}\\,}'
+};
+
+/* =====================================================================
+   2. MOTOR FÍSICO
+   ===================================================================== */
+
+function physics(v) {
+    const th = (v.theta || 0) * Math.PI / 180;
+    const m  = v.W / v.g;
+    const Tx = v.T * Math.cos(th);
+    const Ty = v.T * Math.sin(th);
+    const N  = Math.max(0, v.W - Ty);
+    const fk = v.T > 0 ? v.mu * N : 0;
+    const netX = Tx - fk;
+    const a = m > 0 ? netX / m : 0;
+    return { m, th, Tx, Ty, N, fk, netX, a };
+}
+
+function residual(v) {
+    const p = physics(v);
+    return p.netX - p.m * v.a;
+}
+
+function solveUnknownValue(key, base) {
+    const P = PARAMS[key];
+    const f = (x) => residual(Object.assign({}, base, { [key]: x }));
+
+    const N = 1400;
+    const dx = (P.max - P.min) / N;
+    const roots = [];
+
+    let prevX = P.min;
+    let prevF = f(prevX);
+    if (Math.abs(prevF) < 1e-9) roots.push(prevX);
+
+    for (let i = 1; i <= N; i++) {
+        const x  = P.min + i * dx;
+        const fx = f(x);
+        if (prevF * fx < 0) {
+            let lo = prevX, hi = x, flo = prevF;
+            for (let j = 0; j < 60; j++) {
+                const mid = (lo + hi) / 2;
+                const fm  = f(mid);
+                if (flo * fm <= 0) hi = mid;
+                else { lo = mid; flo = fm; }
+            }
+            roots.push((lo + hi) / 2);
+        }
+        prevX = x; prevF = fx;
+    }
+
+    if (!roots.length) return null;
+    return key === 'theta' ? roots[roots.length - 1] : roots[0];
+}
+
+/* ---------------------------------------------------------------------
+   isSolvable: ¿esta combinación de valores tiene solución real?
+   Comprueba: solución existe, dentro del rango, bloque apoyado (N>0)
+   --------------------------------------------------------------------- */
+function isSolvable(vals, scenKey) {
+    const cfg = SCENARIOS[scenKey];
+    if (!cfg.unknown) return true; // Modo libre siempre válido
+
+    const base = {};
+    cfg.sliders.forEach(k => base[k] = vals[k]);
+
+    let trueVal = null;
+    if (cfg.unknown === 't') {
+        const p0 = physics(Object.assign({}, DEFAULTS, base));
+        if (p0.a > 1e-6) trueVal = Math.sqrt(2 * base.d / p0.a);
+    } else {
+        trueVal = solveUnknownValue(cfg.unknown, Object.assign({}, DEFAULTS, base));
+    }
+
+    if (trueVal === null || !isFinite(trueVal)) return false;
+
+    const P = PARAMS[cfg.unknown];
+    if (trueVal < P.min - 1e-6 || trueVal > P.max + 1e-6) return false;
+
+    // Validación física: bloque sobre el suelo y aceleración coherente
+    const v = Object.assign({}, DEFAULTS, base, { [cfg.unknown]: trueVal });
+    const p = physics(v);
+    if (p.N <= 1e-3) return false;
+
+    if (cfg.unknown === 't' && p.a <= 1e-4) return false;
+
+    return true;
+}
+
+/* =====================================================================
+   3. ESTADO
+   ===================================================================== */
+
+let scen = 'libre';
+const sliderVals = Object.assign({}, SCENARIO_DEFAULTS.libre);
+let answerStr = '';
+let revealed  = false;
+
+/* =====================================================================
+   4. UI
+   ===================================================================== */
+
+function buildScenarioButtons() {
+    const grid = document.getElementById('scenarioGrid');
+    grid.innerHTML = '';
+    Object.entries(SCENARIOS).forEach(([key, cfg]) => {
+        const btn = document.createElement('button');
+        btn.className = 'scenario-btn' + (key === scen ? ' active' : '');
+        btn.style.setProperty('--sc-color', cfg.color);
+        btn.innerHTML = `<i class="fas ${cfg.icon}"></i><span>${cfg.label}</span>`;
+        btn.onclick = () => switchScenario(key);
+        grid.appendChild(btn);
+    });
+    document.getElementById('scenarioDesc').innerHTML =
+        `<i class="fas fa-lightbulb"></i>${SCENARIOS[scen].desc}`;
+}
+
+function switchScenario(key) {
+    if (scen === key) return;
+    scen = key;
+
+    // Si los valores actuales no funcionan en el nuevo escenario,
+    // cargamos los defaults garantizados.
+    if (!isSolvable(sliderVals, scen)) {
+        Object.assign(sliderVals, SCENARIO_DEFAULTS[scen]);
+    }
+
+    answerStr = '';
+    revealed  = false;
+    buildScenarioButtons();
+    buildControls();
+    clearFeedback();
+    update();
+}
+
+function buildControls() {
+    const cfg = SCENARIOS[scen];
+
+    /* ----- Sliders ----- */
+    const zone = document.getElementById('slidersZone');
+    zone.innerHTML = '';
+    cfg.sliders.forEach(k => {
+        const P = PARAMS[k];
+        const row = document.createElement('div');
+        row.innerHTML = `
+            <div class="slider-label-container">
+                <span class="label-tag" style="margin:0;">${P.name} (${P.sym})</span>
+                <span class="value-badge" id="val-${k}" style="color:${P.color};">--</span>
+            </div>
+            <input type="range" id="param-${k}" min="${P.min}" max="${P.max}" step="${P.step}" value="${sliderVals[k]}">
+            <div class="snap-hint" id="hint-${k}">Límite físico alcanzado</div>`;
+        zone.appendChild(row);
+
+        const input = row.querySelector('input');
+        const hint  = row.querySelector('.snap-hint');
+
+        input.addEventListener('input', (e) => {
+            const newVal = parseFloat(e.target.value);
+            const oldVal = sliderVals[k];
+            if (newVal === oldVal) return;
+
+            // ¿Es válido el nuevo valor?
+            if (isSolvable(Object.assign({}, sliderVals, { [k]: newVal }), scen)) {
+                sliderVals[k] = newVal;
+                input.classList.remove('snapped');
+                hint.classList.remove('show');
+            } else {
+                // Búsqueda binaria del último valor válido entre oldVal y newVal
+                let valid = oldVal, invalid = newVal;
+                for (let i = 0; i < 25; i++) {
+                    const mid = (valid + invalid) / 2;
+                    const snapped = Math.round(mid / P.step) * P.step;
+                    if (Math.abs(snapped - valid) < P.step * 0.5 ||
+                        Math.abs(snapped - invalid) < P.step * 0.5) break;
+                    if (isSolvable(Object.assign({}, sliderVals, { [k]: snapped }), scen)) {
+                        valid = snapped;
+                    } else {
+                        invalid = snapped;
+                    }
+                }
+                sliderVals[k] = valid;
+                e.target.value = valid;
+                input.classList.add('snapped');
+                hint.classList.add('show');
+                clearTimeout(input._snapTimer);
+                input._snapTimer = setTimeout(() => {
+                    input.classList.remove('snapped');
+                    hint.classList.remove('show');
+                }, 900);
+            }
+
+            revealed = false;
+            clearFeedback();
+            update();
+        });
+    });
+
+    /* ----- Incógnita ----- */
+    const uZone = document.getElementById('unknownZone');
+    if (cfg.unknown) {
+        const P = PARAMS[cfg.unknown];
+        uZone.style.display = 'block';
+        uZone.innerHTML = `
+            <div class="unknown-header">
+                <i class="fas fa-circle-question"></i>
+                Incógnita a determinar: <strong>${P.name} (${P.sym})</strong>
+                <span class="unit-chip">${P.unit || 'adimensional'}</span>
+            </div>
+            <div class="unknown-input-row">
+                <input type="number" id="answerInput" step="any" placeholder="Escribe tu resultado…" value="${answerStr}">
+                <button class="btn-action btn-verify" onclick="verificar()"><i class="fas fa-check"></i> Verificar</button>
+                <button class="btn-action btn-reveal" onclick="revelar()"><i class="fas fa-eye"></i> Ver solución</button>
+            </div>
+            <div id="feedback" class="feedback"></div>`;
+        const inp = document.getElementById('answerInput');
+        inp.addEventListener('input', (e) => {
+            answerStr = e.target.value;
+            revealed = false;
+            clearFeedback();
+            update();
+        });
+        inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') verificar(); });
+    } else {
+        uZone.style.display = 'none';
+        uZone.innerHTML = '';
+    }
+}
+
+function clearFeedback() {
+    const fb = document.getElementById('feedback');
+    if (fb) { fb.className = 'feedback'; fb.innerHTML = ''; }
+}
+
+/* =====================================================================
+   5. CÁLCULO DE LA INCÓGNITA
+   ===================================================================== */
+
+function computeTrue() {
+    const cfg = SCENARIOS[scen];
+    const base = {};
+    cfg.sliders.forEach(k => base[k] = sliderVals[k]);
+
+    const unknown = cfg.unknown;
+    if (!unknown) return { trueVal: null, errorMsg: '', base };
+
+    let trueVal = null, errorMsg = '';
+
+    if (unknown === 't') {
+        const p0 = physics(Object.assign({}, DEFAULTS, base));
+        if (p0.a > 1e-6) trueVal = Math.sqrt(2 * base.d / p0.a);
+        else errorMsg = 'La aceleración resultante es nula o negativa: el bloque no se desplaza.';
+    } else {
+        trueVal = solveUnknownValue(unknown, Object.assign({}, DEFAULTS, base));
+        if (trueVal === null) errorMsg = 'Con estos datos no existe una solución física dentro del rango permitido.';
+    }
+    return { trueVal, errorMsg, base };
+}
+
+/* =====================================================================
+   6. ACTUALIZACIÓN
+   ===================================================================== */
+
+const fmt = (x, P) => (isFinite(x) ? x.toFixed(P.dec) : '—');
+
+function update() {
+    const cfg = SCENARIOS[scen];
+    const unknown = cfg.unknown;
+    const { trueVal, errorMsg, base } = computeTrue();
+
+    const v = Object.assign({}, DEFAULTS, base);
+    if (unknown) {
+        if (revealed && trueVal !== null) {
+            v[unknown] = trueVal;
+        } else {
+            const ua = parseFloat(answerStr);
+            v[unknown] = (answerStr.trim() !== '' && isFinite(ua))
+                ? ua
+                : (PARAMS[unknown].min + PARAMS[unknown].max) / 2;
+        }
+    }
+    if (unknown !== 'a' && !cfg.sliders.includes('a')) v.a = physics(v).a;
+    const p = physics(v);
+
+    cfg.sliders.forEach(k => {
+        const el = document.getElementById('val-' + k);
+        if (el) el.innerText = fmt(v[k], PARAMS[k]) + (PARAMS[k].unit ? ' ' + PARAMS[k].unit : '');
+    });
+
+    const dist = 0.5 * p.a * v.t * v.t;
+    const vfin = p.a * v.t;
+    document.getElementById('insight-m').innerText  = p.m.toFixed(2) + ' kg';
+    document.getElementById('insight-n').innerText  = p.N.toFixed(2) + ' N';
+    document.getElementById('insight-fk').innerText = p.fk.toFixed(2) + ' N';
+    document.getElementById('insight-a').innerText  = p.a.toFixed(2) + ' m/s²';
+    document.getElementById('insight-d').innerText  = dist.toFixed(2) + ' m';
+    document.getElementById('insight-v').innerText  = vfin.toFixed(2) + ' m/s';
+
+    drawSim(v, p);
+    drawDCL(v, p);
+    renderMemoria(v, p, cfg, unknown, trueVal, errorMsg);
+}
+
+/* =====================================================================
+   7. VERIFICACIÓN
+   ===================================================================== */
+
+function verificar() {
+    const cfg = SCENARIOS[scen];
+    if (!cfg.unknown) return;
+    const P  = PARAMS[cfg.unknown];
+    const fb = document.getElementById('feedback');
+
+    const ua = parseFloat(answerStr);
+    if (answerStr.trim() === '' || !isFinite(ua)) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Escribe un valor numérico antes de verificar.';
+        return;
+    }
+
+    const { trueVal, errorMsg } = computeTrue();
+    if (trueVal === null) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + errorMsg;
+        return;
+    }
+
+    const tol  = Math.max(0.02 * Math.abs(trueVal), P.step * 0.4);
+    const diff = Math.abs(ua - trueVal);
+
+    if (diff <= tol) {
+        fb.className = 'feedback ok';
+        fb.innerHTML = `<i class="fas fa-circle-check"></i> ¡Correcto! ${P.sym} = <strong>${fmt(trueVal, P)} ${P.unit}</strong>.`;
+        revealed = true;
+        update();
+    } else {
+        fb.className = 'feedback err';
+        fb.innerHTML = `<i class="fas fa-circle-xmark"></i> Todavía no es correcto (tu valor: ${fmt(ua, P)} ${P.unit}). Revisa el despeje e inténtalo de nuevo.`;
+    }
+}
+
+function revelar() {
+    const cfg = SCENARIOS[scen];
+    if (!cfg.unknown) return;
+    const P  = PARAMS[cfg.unknown];
+    const fb = document.getElementById('feedback');
+    const { trueVal, errorMsg } = computeTrue();
+
+    if (trueVal === null) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + errorMsg;
+        return;
+    }
+    revealed = true;
+    answerStr = trueVal.toFixed(P.dec);
+    const inp = document.getElementById('answerInput');
+    if (inp) inp.value = answerStr;
+
+    fb.className = 'feedback warn';
+    fb.innerHTML = `<i class="fas fa-lightbulb"></i> Solución: ${P.sym} = <strong>${fmt(trueVal, P)} ${P.unit}</strong>. Revisa el procedimiento completo abajo.`;
+    update();
+}
+
+/* =====================================================================
+   8. MEMORIA DE CÁLCULO
+   ===================================================================== */
+
+function kx(el, tex) {
+    if (!el) return;
+    if (typeof katex === 'undefined') { el.textContent = tex; return; }
+    try { katex.render(tex, el, { throwOnError: false }); }
+    catch (e) { el.textContent = tex; }
+}
+
+function renderMemoria(v, p, cfg, unknown, trueVal, errorMsg) {
+    const box = document.getElementById('calcContent');
+    const f1 = x => x.toFixed(1);
+    const f2 = x => x.toFixed(2);
+    const f3 = x => x.toFixed(3);
+
+    let html = '';
+
+    if (!unknown) {
+        html = `
+        <div class="equation-step">
+            <div class="equation-title">1 · Masa del bloque</div>
+            <div class="equation-desc">La masa es la inercia del cuerpo; se obtiene del peso y la gravedad.</div>
+            <div class="math-container" id="kx-1"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">2 · Componentes de la tensión</div>
+            <div class="equation-desc">Descomposición trigonométrica del vector tensión sobre los ejes.</div>
+            <div class="math-container" id="kx-2"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">3 · Fuerza normal</div>
+            <div class="equation-desc">Equilibrio en el eje vertical (ΣF<sub>y</sub> = 0).</div>
+            <div class="math-container" id="kx-3"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">4 · Fuerza de fricción cinética</div>
+            <div class="equation-desc">Modelo de resistencia al deslizamiento.</div>
+            <div class="math-container" id="kx-4"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">5 · Segunda Ley de Newton</div>
+            <div class="equation-desc">Sumatoria de fuerzas en el eje horizontal.</div>
+            <div class="math-container" id="kx-5"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">6 · Cinemática</div>
+            <div class="equation-desc">Distancia y velocidad final partiendo del reposo.</div>
+            <div class="math-container" id="kx-6"></div>
+        </div>`;
+        box.innerHTML = html;
+
+        kx(document.getElementById('kx-1'),
+           `m=\\frac{W}{g}=\\frac{${f1(v.W)}}{${f2(v.g)}}=${f3(p.m)}\\;\\text{kg}`);
+        kx(document.getElementById('kx-2'),
+           `T_x=T\\cos\\theta=${f1(v.T)}\\cos ${f1(v.theta)}^\\circ=${f2(p.Tx)}\\;\\text{N}\\qquad T_y=T\\sin\\theta=${f1(v.T)}\\sin ${f1(v.theta)}^\\circ=${f2(p.Ty)}\\;\\text{N}`);
+        kx(document.getElementById('kx-3'),
+           `N=W-T_y=${f1(v.W)}-${f2(p.Ty)}=${f2(p.N)}\\;\\text{N}`);
+        kx(document.getElementById('kx-4'),
+           v.T > 0
+             ? `f_k=\\mu N=${f2(v.mu)}\\cdot${f2(p.N)}=${f2(p.fk)}\\;\\text{N}`
+             : `T=0\\;\\Rightarrow\\;f_k=0\\;\\text{N}`);
+        kx(document.getElementById('kx-5'),
+           `a=\\frac{T_x-f_k}{m}=\\frac{${f2(p.Tx)}-${f2(p.fk)}}{${f3(p.m)}}=${f2(p.a)}\\;\\text{m/s}^2`);
+        kx(document.getElementById('kx-6'),
+           `d=\\tfrac{1}{2}at^2=${f2(0.5*p.a*v.t*v.t)}\\;\\text{m}\\qquad v=at=${f2(p.a*v.t)}\\;\\text{m/s}`);
+        return;
+    }
+
+    const P = PARAMS[unknown];
+
+    html = `
+    <div class="locked-banner">
+        <i class="fas fa-shield-alt"></i>
+        Solo se muestran combinaciones de datos que garantizan una solución física real.
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">1 · Planteamiento (Segunda Ley de Newton)</div>
+        <div class="equation-desc">Con fricción cinética en el eje X y equilibrio en el eje Y:</div>
+        <div class="math-container" id="kx-p1"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">2 · Datos conocidos</div>
+        <div class="equation-desc">Valores que entrega el problema:</div>
+        <div class="math-container" id="kx-p2"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">3 · Despeje de ${P.name} (${P.sym})</div>
+        <div class="equation-desc">Álgebra de la ecuación gobernante:</div>
+        <div class="math-container" id="kx-p3"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">4 · Sustitución y resultado</div>
+        <div class="equation-desc">Reemplazo de los datos numéricos:</div>
+        <div class="math-container" id="kx-p4"></div>
+    </div>`;
+
+    box.innerHTML = html;
+
+    kx(document.getElementById('kx-p1'),
+       `T\\cos\\theta-\\mu\\,N=m\\,a,\\qquad N=W-T\\sin\\theta,\\qquad m=\\frac{W}{g}`);
+
+    const datos = cfg.sliders.map(k => {
+        const Q = PARAMS[k];
+        return `${Q.sym}=${fmt(v[k], Q)}\\,${Q.unit ? '\\text{' + Q.unit + '}' : ''}`;
+    }).join(',\\quad ');
+    kx(document.getElementById('kx-p2'), datos || '\\text{(ninguno)}');
+
+    kx(document.getElementById('kx-p3'), DESPEJES[unknown]);
+
+    if (!revealed || trueVal === null) {
+        const el = document.getElementById('kx-p4');
+        el.innerHTML = `<span class="hidden-note"><i class="fas fa-lock"></i> Escribe tu resultado y pulsa <strong>Verificar</strong>, o pulsa <strong>Ver solución</strong>, para desbloquear la sustitución numérica.</span>`;
+    } else {
+        const b = base;
+        const th = b.theta;
+        let tex = '';
+        switch (unknown) {
+            case 'W':
+                tex = `W=\\frac{${f1(b.T)}\\left(\\cos ${f1(th)}^\\circ+${f2(b.mu)}\\sin ${f1(th)}^\\circ\\right)}{\\dfrac{${f2(b.a)}}{${f2(b.g)}}+${f2(b.mu)}}=${f2(trueVal)}\\;\\text{N}`;
+                break;
+            case 'T':
+                tex = `T=\\frac{${f1(b.W)}\\left(\\dfrac{${f2(b.a)}}{${f2(b.g)}}+${f2(b.mu)}\\right)}{\\cos ${f1(th)}^\\circ+${f2(b.mu)}\\sin ${f1(th)}^\\circ}=${f2(trueVal)}\\;\\text{N}`;
+                break;
+            case 'theta': {
+                const K = (b.W / b.T) * (b.a / b.g + b.mu);
+                tex = `\\cos\\theta+${f2(b.mu)}\\sin\\theta=${K.toFixed(4)}\\;\\Longrightarrow\\;\\theta=${f2(trueVal)}^\\circ`;
+                break;
+            }
+            case 'g':
+                tex = `g=\\frac{${f1(b.W)}\\cdot${f2(b.a)}}{${f1(b.T)}\\left(\\cos ${f1(th)}^\\circ+${f2(b.mu)}\\sin ${f1(th)}^\\circ\\right)-${f2(b.mu)}\\cdot${f1(b.W)}}=${f2(trueVal)}\\;\\text{m/s}^2`;
+                break;
+            case 'mu':
+                tex = `\\mu=\\frac{${f1(b.T)}\\cos ${f1(th)}^\\circ-\\dfrac{${f1(b.W)}\\cdot${f2(b.a)}}{${f2(b.g)}}}{${f1(b.W)}-${f1(b.T)}\\sin ${f1(th)}^\\circ}=${f2(trueVal)}`;
+                break;
+            case 'a':
+                tex = `a=\\frac{${f2(b.g)}\\left[${f1(b.T)}\\cos ${f1(th)}^\\circ-${f2(b.mu)}\\left(${f1(b.W)}-${f1(b.T)}\\sin ${f1(th)}^\\circ\\right)\\right]}{${f1(b.W)}}=${f2(trueVal)}\\;\\text{m/s}^2`;
+                break;
+            case 't': {
+                const p0 = physics(Object.assign({}, DEFAULTS, b));
+                tex = `a=${f2(p0.a)}\\;\\text{m/s}^2 \\;\\Longrightarrow\\; t=\\sqrt{\\frac{2\\cdot${f1(b.d)}}{${f2(p0.a)}}}=${f2(trueVal)}\\;\\text{s}`;
+                break;
+            }
+        }
+        kx(document.getElementById('kx-p4'), tex);
+    }
+}
+
+/* =====================================================================
+   9. DIBUJO
+   ===================================================================== */
+
+const canvas  = document.getElementById('simCanvas');
+const ctx     = canvas.getContext('2d');
+const vCanvas = document.getElementById('vectorCanvas');
+const vCtx    = vCanvas.getContext('2d');
+
+let stateSim = { zoom:1, panX:0, panY:0, dragging:false, startX:0, startY:0 };
+let stateDcl = { zoom:1, panX:0, panY:0, dragging:false, startX:0, startY:0 };
+
+canvas.addEventListener('mousedown', (e) => {
+    stateSim.dragging = true;
+    stateSim.startX = e.clientX - stateSim.panX;
+    stateSim.startY = e.clientY - stateSim.panY;
+});
+vCanvas.addEventListener('mousedown', (e) => {
+    stateDcl.dragging = true;
+    stateDcl.startX = e.clientX - stateDcl.panX;
+    stateDcl.startY = e.clientY - stateDcl.panY;
+});
+window.addEventListener('mousemove', (e) => {
+    if (stateSim.dragging) {
+        stateSim.panX = e.clientX - stateSim.startX;
+        stateSim.panY = e.clientY - stateSim.startY;
+        update();
+    }
+    if (stateDcl.dragging) {
+        stateDcl.panX = e.clientX - stateDcl.startX;
+        stateDcl.panY = e.clientY - stateDcl.startY;
+        update();
+    }
+});
+window.addEventListener('mouseup', () => {
+    stateSim.dragging = false;
+    stateDcl.dragging = false;
+});
+canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    stateSim.zoom = Math.max(0.5, Math.min(3.0, stateSim.zoom + (e.deltaY < 0 ? 0.1 : -0.1)));
+    update();
+}, { passive: false });
+vCanvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    stateDcl.zoom = Math.max(0.5, Math.min(3.0, stateDcl.zoom + (e.deltaY < 0 ? 0.1 : -0.1)));
+    update();
+}, { passive: false });
+
+function drawArrow(context, fromx, fromy, tox, toy, size) {
+    context.beginPath();
+    context.moveTo(fromx, fromy);
+    context.lineTo(tox, toy);
+    context.stroke();
+    const angle = Math.atan2(toy - fromy, tox - fromx);
+    context.beginPath();
+    context.moveTo(tox, toy);
+    context.lineTo(tox - size * Math.cos(angle - Math.PI / 6), toy - size * Math.sin(angle - Math.PI / 6));
+    context.lineTo(tox - size * Math.cos(angle + Math.PI / 6), toy - size * Math.sin(angle + Math.PI / 6));
+    context.closePath();
+    context.fillStyle = context.strokeStyle;
+    context.fill();
+}
+
+function drawSim(v, p) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(stateSim.panX, stateSim.panY);
+    ctx.scale(stateSim.zoom, stateSim.zoom);
+
+    const tSec  = Math.max(0, v.t);
+    const isDay = tSec <= 10.0;
+    ctx.fillStyle = isDay ? '#ffffff' : '#0f172a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const ang = ((tSec % 20) / 20) * Math.PI * 2;
+    const ox = 210 + Math.cos(ang) * 140;
+    const oy = 130 + Math.sin(ang) * 70;
+    ctx.fillStyle = isDay ? '#f59e0b' : '#e2e8f0';
+    ctx.beginPath();
+    ctx.arc(ox, oy, 17, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.strokeStyle = isDay ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(20, 340);
+    ctx.lineTo(400, 340);
+    ctx.stroke();
+
+    ctx.lineWidth = 1;
+    for (let sx = 30; sx < 390; sx += 15) {
+        ctx.beginPath();
+        ctx.moveTo(sx, 340);
+        ctx.lineTo(sx - 10, 352);
+        ctx.stroke();
+    }
+
+    const scaleFactor = Math.max(0.45, Math.min(1.9, v.W / 160));
+    const blockWidth  = Math.round(75 * Math.sqrt(scaleFactor));
+    const blockHeight = Math.round(60 * Math.sqrt(scaleFactor));
+    const blockX = 130;
+    const blockY = 340 - blockHeight;
+
+    ctx.fillStyle = '#cbd5e1';
+    ctx.beginPath();
+    ctx.roundRect(blockX, blockY, blockWidth, blockHeight, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 11px "Inter", sans-serif';
+    ctx.fillText('BLOQUE', blockX + 8, blockY + 20);
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.fillText('W=' + fmt(v.W, PARAMS.W) + 'N', blockX + 8, blockY + 36);
+
+    if (v.T > 0) {
+        const th = v.theta * Math.PI / 180;
+        const anchorX = blockX + blockWidth;
+        const anchorY = blockY + blockHeight / 2;
+        const ropeLen = 65;
+        const ropeEndX = anchorX + ropeLen * Math.cos(th);
+        const ropeEndY = anchorY - ropeLen * Math.sin(th);
+
+        ctx.strokeStyle = '#059669';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(anchorX, anchorY);
+        ctx.lineTo(ropeEndX, ropeEndY);
+        ctx.stroke();
+
+        drawArrow(ctx, anchorX, anchorY, ropeEndX, ropeEndY, 8);
+        ctx.fillStyle = '#059669';
+        ctx.font = 'bold 12px "Inter", sans-serif';
+        ctx.fillText(`T (${fmt(v.T, PARAMS.T)} N)`, ropeEndX + 5, ropeEndY - 6);
+
+        const fkLen = Math.min(65, Math.abs(p.fk) * 0.9) || 0;
+        if (fkLen > 2) {
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 3;
+            drawArrow(ctx, blockX, blockY + blockHeight - 10, blockX - fkLen, blockY + blockHeight - 10, 8);
+            ctx.fillStyle = '#dc2626';
+            ctx.font = 'bold 11px "Inter", sans-serif';
+            ctx.fillText('fk', blockX - fkLen - 16, blockY + blockHeight - 4);
+        }
+    } else {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'italic 11px "Inter", sans-serif';
+        ctx.fillText('Sin tensión aplicada', blockX + blockWidth + 12, blockY + blockHeight / 2);
+    }
+
+    ctx.restore();
+}
+
+function drawDCL(v, p) {
+    vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+    vCtx.save();
+    vCtx.translate(stateDcl.panX, stateDcl.panY);
+    vCtx.scale(stateDcl.zoom, stateDcl.zoom);
+
+    const cx = vCanvas.width / 2;
+    const cy = vCanvas.height / 2;
+
+    vCtx.strokeStyle = '#94a3b8';
+    vCtx.lineWidth = 1.8;
+    vCtx.beginPath();
+    vCtx.moveTo(cx - 170, cy); vCtx.lineTo(cx + 170, cy);
+    vCtx.moveTo(cx, cy - 120); vCtx.lineTo(cx, cy + 120);
+    vCtx.stroke();
+
+    vCtx.fillStyle = '#334155';
+    vCtx.font = '11px "Inter", sans-serif';
+    vCtx.fillText('+X', cx + 150, cy - 8);
+    vCtx.fillText('+Y', cx + 8, cy - 102);
+
+    vCtx.fillStyle = '#0f172a';
+    vCtx.beginPath();
+    vCtx.arc(cx, cy, 7, 0, 2 * Math.PI);
+    vCtx.fill();
+
+    const nLen = Math.min(85, Math.max(12, p.N * 0.42));
+    vCtx.strokeStyle = '#2563eb';
+    vCtx.lineWidth = 3.5;
+    drawArrow(vCtx, cx, cy, cx, cy - nLen, 8);
+    vCtx.fillStyle = '#2563eb';
+    vCtx.font = 'bold 12px "Inter", sans-serif';
+    vCtx.fillText(`N = ${p.N.toFixed(1)} N`, cx + 12, cy - nLen + 6);
+
+    const wLen = Math.min(85, Math.max(12, v.W * 0.42));
+    vCtx.strokeStyle = '#7c3aed';
+    vCtx.lineWidth = 3.5;
+    drawArrow(vCtx, cx, cy, cx, cy + wLen, 8);
+    vCtx.fillStyle = '#7c3aed';
+    vCtx.fillText(`W = ${v.W.toFixed(1)} N`, cx + 12, cy + wLen - 2);
+
+    if (v.T > 0) {
+        const fLen = Math.min(85, Math.max(10, p.fk * 1.1));
+        if (fLen > 2) {
+            vCtx.strokeStyle = '#dc2626';
+            vCtx.lineWidth = 3.5;
+            drawArrow(vCtx, cx, cy, cx - fLen, cy, 8);
+            vCtx.fillStyle = '#dc2626';
+            vCtx.fillText(`fk = ${p.fk.toFixed(1)} N`, cx - fLen - 118, cy - 8);
+        }
+        const tLen = 92;
+        const rad  = v.theta * Math.PI / 180;
+        const tEndX = cx + tLen * Math.cos(rad);
+        const tEndY = cy - tLen * Math.sin(rad);
+        vCtx.strokeStyle = '#059669';
+        vCtx.lineWidth = 3.5;
+        drawArrow(vCtx, cx, cy, tEndX, tEndY, 8);
+        vCtx.fillStyle = '#059669';
+        vCtx.fillText(`T = ${v.T.toFixed(1)} N (${v.theta.toFixed(1)}°)`, tEndX + 10, tEndY);
+    } else {
+        vCtx.fillStyle = '#94a3b8';
+        vCtx.font = 'italic 11px "Inter", sans-serif';
+        vCtx.fillText('T = 0 N  (no hay tracción)', cx + 14, cy - 100);
+    }
+
+    vCtx.restore();
+}
+
+/* =====================================================================
+   10. RESET E INICIALIZACIÓN
+   ===================================================================== */
+
+function resetSimulador() {
+    Object.assign(sliderVals, SCENARIO_DEFAULTS[scen] || DEFAULTS);
+    answerStr = '';
+    revealed  = false;
+    stateSim = { zoom:1, panX:0, panY:0, dragging:false, startX:0, startY:0 };
+    stateDcl = { zoom:1, panX:0, panY:0, dragging:false, startX:0, startY:0 };
+    buildControls();
+    clearFeedback();
+    update();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    buildScenarioButtons();
+    buildControls();
+    setTimeout(update, 120);
+});
+</script>
+</body>
+</html>

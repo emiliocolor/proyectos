@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Elasticidad Cruzada de la Demanda</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+<script>
+/**
+ * ======================================================================
+ * PROPIEDAD INTELECTUAL - EmilioColor®
+ * ======================================================================
+ * Este código fuente, su lógica, diseño visual y todos los contenidos
+ * asociados a las simulaciones son propiedad exclusiva de EmilioColor®.
+ * Queda prohibida la copia, reproducción, distribución o modificación
+ * no autorizada de este material.
+ *
+ * © 2026 EmilioColor®. Todos los derechos reservados.
+ * ======================================================================
+ */
+</script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --inner-box-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7;
+            --btn-red: #ef4444;
+            --btn-gray: #475569;
+            --btn-gray-hover: #334155;
+            --btn-green: #16a34a;
+            --btn-dark-blue: #1c62d2;
+            --c-comp: #0284c7;
+            --c-sust: #16a34a;
+            --c-indep: #7c3aed;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            min-height: 100vh;
+        }
+
+        /* ============================================================
+           HEADER (mismo estilo que el panel de login)
+           ============================================================ */
+        .site-header {
+            width: 100%;
+            background: #ffffff;
+            border-bottom: 1px solid var(--card-border);
+            padding: 18px 20px;
+        }
+        .site-header-inner {
+            max-width: 1120px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 0;
+        }
+        .header-logo {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+        .header-titles {
+            min-width: 0;
+        }
+        .header-titles h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+            margin: 0;
+            line-height: 1.25;
+        }
+        .header-titles p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin: 3px 0 0 0;
+            line-height: 1.3;
+        }
+        .btn-return-panel {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #334155;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        /* ============================================================
+           CONTENIDO PRINCIPAL
+           ============================================================ */
+        .main-content {
+            flex: 1 0 auto;
+            width: 100%;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 28px 20px 40px;
+        }
+
+        .description {
+            text-align: left;
+            margin: 0 0 26px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .card-title > span:first-child {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ---------- Escenarios ---------- */
+        .scenario-section { margin-top: 22px; }
+
+        .section-label {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px;
+        }
+
+        .scenario-btn {
+            --sc-color: #0284c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 13px 10px;
+            border-radius: 10px;
+            border: 1.5px solid var(--card-border);
+            background: #fff;
+            color: #475569;
+            font-weight: 600;
+            font-size: .84rem;
+            cursor: pointer;
+            transition: all .18s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .scenario-btn i { font-size: 1rem; }
+        .scenario-btn:hover { border-color: var(--sc-color); color: var(--sc-color); transform: translateY(-1px); }
+        .scenario-btn.active {
+            background: var(--sc-color);
+            border-color: var(--sc-color);
+            color: #fff;
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,.45);
+        }
+
+        .scenario-desc {
+            margin: 14px 0 0 0;
+            font-size: .87rem;
+            line-height: 1.55;
+            color: #334155;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 0 10px 10px 0;
+        }
+        .scenario-desc i { color: #f59e0b; margin-right: 6px; }
+
+        /* ---------- Canvas ---------- */
+        .canvas-box-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            margin-top: 24px;
+            overflow: hidden;
+            transition: opacity .25s ease;
+        }
+        .canvas-box-wrapper.hidden {
+            display: none;
+        }
+
+        #mainCanvas {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+            border: 1px solid #f1f5f9;
+            background: #ffffff;
+        }
+
+        /* ---------- Grid principal ---------- */
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-top: 24px;
+        }
+
+        .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+        /* ---------- Sliders ---------- */
+        #slidersZone {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            background: var(--inner-box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .label-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            outline: none;
+            margin-top: 8px;
+            accent-color: var(--primary-accent);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .value-badge {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        /* ---------- Telemetría ---------- */
+        .vector-insights-box, .explanation-box, .table-box, .quiz-box {
+            background: var(--inner-box-bg);
+            padding: 18px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%;
+        }
+
+        .box-title {
+            margin: 0 0 14px 0;
+            font-size: .98rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .formula-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+        .tel-item {
+            background: #fff;
+            border: 1px solid var(--card-border);
+            border-radius: 9px;
+            padding: 9px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+        .tel-label {
+            font-size: .64rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+        .tel-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .9rem;
+            font-weight: 600;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tel-item.highlight { background: #fffbeb; border-color: #fcd34d; }
+        .tel-item.highlight .tel-value { font-size: 1.02rem; }
+        .tel-value.pos { color: #16a34a; }
+        .tel-value.neg { color: #dc2626; }
+        .tel-value.neu { color: #7c3aed; }
+        .tel-value.locked { color: #94a3b8; letter-spacing: .12em; }
+
+        /* ---------- Tabla ---------- */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .84rem;
+        }
+        .data-table th {
+            background: #eef2f7;
+            color: #475569;
+            font-size: .66rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 9px 10px;
+            text-align: right;
+            border-bottom: 1px solid #dbe3ec;
+            font-weight: 700;
+        }
+        .data-table th:first-child { text-align: left; }
+        .data-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #eef2f7;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .82rem;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+        .data-table td:first-child {
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #334155;
+            font-size: .8rem;
+        }
+        .data-table tr.result-row td {
+            background: #fffbeb;
+            font-weight: 700;
+            border-bottom: none;
+        }
+        .data-table tr.result-row td:first-child { color: #92400e; }
+
+        /* ---------- Quiz ---------- */
+        .quiz-header {
+            font-size: .9rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quiz-header i { color: #f59e0b; }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 9px;
+        }
+
+        .quiz-btn {
+            --q-color: #0284c7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 14px 6px;
+            border-radius: 11px;
+            border: 1.5px solid var(--card-border);
+            background: #fff;
+            color: #475569;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: .76rem;
+            transition: all .16s ease;
+            text-align: center;
+        }
+        .quiz-btn i { font-size: 1.15rem; color: var(--q-color); }
+        .quiz-btn small {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .66rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .quiz-btn:hover { border-color: var(--q-color); transform: translateY(-2px); box-shadow: 0 6px 14px -8px rgba(0,0,0,.5); }
+
+        .quiz-btn.correct {
+            background: #dcfce7;
+            border-color: #16a34a;
+            color: #166534;
+        }
+        .quiz-btn.correct i, .quiz-btn.correct small { color: #15803d; }
+        .quiz-btn.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+            animation: shake .35s ease;
+        }
+        .quiz-btn.wrong i, .quiz-btn.wrong small { color: #b91c1c; }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .feedback {
+            margin-top: 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            padding: 0;
+            line-height: 1.5;
+            border-radius: 8px;
+        }
+        .feedback.ok  { background: #dcfce7; color: #166534; padding: 10px 12px; border: 1px solid #86efac; }
+        .feedback.err { background: #fee2e2; color: #991b1b; padding: 10px 12px; border: 1px solid #fca5a5; }
+        .feedback.warn{ background: #fef3c7; color: #92400e; padding: 10px 12px; border: 1px solid #fcd34d; }
+
+        /* ---------- Botones ---------- */
+        .btn-action {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .btn-action:hover { transform: translateY(-1px); opacity: .92; }
+        .btn-reset { background-color: var(--btn-red); }
+        .btn-toggle { background-color: var(--primary-accent); }
+        .btn-reveal { background-color: #f59e0b; }
+
+        /* ---------- Memoria ---------- */
+        .explanation-box { margin-top: 24px; }
+
+        .equation-step {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .equation-step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        .equation-title {
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .equation-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .math-container {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+            border: 1px solid var(--card-border);
+            overflow-x: auto;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .hidden-note {
+            font-size: .8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: block;
+            width: 100%;
+        }
+
+        .locked-banner {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            font-size: .8rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ============================================================
+           FOOTER (estructura inyectada por footer.js)
+           ============================================================ */
+        #dynamic-footer {
+            width: 100%;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+        .footer-main {
+            background-color: #ffffff;
+            border-top: 1px solid var(--card-border);
+            padding: 20px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #334155;
+            max-width: 100%;
+        }
+        .footer-logos-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .footer-logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+        .footer-logo-img:hover { transform: scale(1.05); }
+        .footer-center-text {
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+            min-width: 220px;
+        }
+        .footer-center-text a {
+            color: var(--btn-dark-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer-center-text a:hover { text-decoration: underline; }
+        .footer-report {
+            flex-shrink: 0;
+        }
+        .footer-report a {
+            color: #475569;
+            text-decoration: none;
+            border-bottom: 1px dashed #cbd5e1;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .footer-report a:hover { color: var(--btn-dark-blue); }
+
+        @media (max-width: 900px) {
+            .simulation-grid { grid-template-columns: 1fr; }
+            #slidersZone { grid-template-columns: 1fr; }
+            .header-titles h1 { font-size: 1.4rem; }
+            .header-titles p { font-size: 0.85rem; }
+            .header-logo { max-height: 44px; }
+            .quiz-options { grid-template-columns: 1fr; }
+            .card { padding: 22px 18px; }
+        }
+        @media (max-width: 700px) {
+            .footer-main {
+                flex-direction: column;
+                text-align: center;
+                justify-content: center;
+            }
+            .footer-center-text { order: 1; }
+            .site-header-inner { justify-content: center; text-align: center; }
+            .header-brand { justify-content: center; }
+            .header-titles h1 { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER (estilo del panel de login)
+     ============================================================ -->
+<header class="site-header">
+    <div class="site-header-inner">
+        <div class="header-brand">
+            <img src="log.png" alt="Logo Laboratorio" class="header-logo" onerror="this.style.display='none'">
+            <div class="header-titles">
+                <h1>Laboratorio de Economía</h1>
+                <p>Simulador de Elasticidad Cruzada de la Demanda</p>
+            </div>
+        </div>
+        <a href="https://emiliocolor.com/" class="btn-return-panel">
+            <i class="fas fa-arrow-left"></i> Ir a la Página principal
+        </a>
+    </div>
+</header>
+
+<!-- ============================================================
+     CONTENIDO PRINCIPAL
+     ============================================================ -->
+<main class="main-content">
+
+    <p class="description">
+        <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-right: 6px;"></i>
+        Mueve los deslizadores para cambiar el <strong>precio del bien Y</strong> y la <strong>cantidad demandada del bien X</strong>.
+        Observa cómo se desplaza la demanda y cómo cambia la pendiente de la relación cruzada. Cuando lo tengas claro,
+        <strong>clasifica el tipo de elasticidad</strong> con los botones de la derecha. El valor de E<sub>xy</sub> permanecerá oculto hasta que aciertes o pulses «Ver solución».
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span><i class="fas fa-arrows-left-right-to-line" style="color: var(--primary-accent); margin-right: 8px;"></i> Elasticidad Cruzada de la Demanda (E<sub>xy</sub>)</span>
+            <div class="card-actions">
+                <button class="btn-action btn-toggle" id="toggleGraphsBtn" onclick="toggleGraficas()">
+                    <i class="fas fa-eye-slash" id="toggleGraphIcon"></i>
+                    <span id="toggleGraphText">Ocultar gráficas</span>
+                </button>
+                <button class="btn-action btn-reset" onclick="resetSimulador()">
+                    <i class="fas fa-undo"></i> Valores Originales
+                </button>
+            </div>
+        </div>
+
+        <div class="scenario-section">
+            <div class="section-label"><i class="fas fa-flask"></i> Par de bienes a analizar</div>
+            <div class="scenario-grid" id="scenarioGrid"></div>
+            <p class="scenario-desc" id="scenarioDesc"></p>
+        </div>
+
+        <!-- ====== GRÁFICA ====== -->
+        <div class="canvas-box-wrapper" id="canvasWrapper">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+
+        <!-- ====== CONTROLES ====== -->
+        <div class="simulation-grid">
+
+            <!-- Columna izquierda -->
+            <div class="col">
+                <div id="slidersZone"></div>
+
+                <div class="table-box">
+                    <h4 class="box-title">
+                        <span><i class="fas fa-table" style="color: var(--primary-accent); margin-right: 6px;"></i> Tabla de datos</span>
+                        <span class="formula-tag"><i class="fas fa-percent"></i> Variaciones</span>
+                    </h4>
+                    <table class="data-table" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Magnitud</th>
+                                <th>Inicial</th>
+                                <th>Final</th>
+                                <th>Δ</th>
+                                <th>Δ %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="col">
+                <div class="vector-insights-box">
+                    <h4 class="box-title">
+                        <span><i class="fas fa-chart-line" style="color: var(--primary-accent); margin-right: 6px;"></i> Telemetría</span>
+                        <span class="formula-tag"><i class="fas fa-satellite-dish"></i> Mercado</span>
+                    </h4>
+                    <div class="tel-grid">
+                        <div class="tel-item">
+                            <span class="tel-label" id="lbl-py">Precio de Y</span>
+                            <span class="tel-value" id="ins-py">--</span>
+                        </div>
+                        <div class="tel-item">
+                            <span class="tel-label" id="lbl-qx">Cantidad de X</span>
+                            <span class="tel-value" id="ins-qx">--</span>
+                        </div>
+                        <div class="tel-item">
+                            <span class="tel-label">Δ % Precio Y</span>
+                            <span class="tel-value" id="ins-dpy">--</span>
+                        </div>
+                        <div class="tel-item">
+                            <span class="tel-label">Δ % Cantidad X</span>
+                            <span class="tel-value" id="ins-dqx">--</span>
+                        </div>
+                        <div class="tel-item highlight" style="grid-column: 1 / -1;">
+                            <span class="tel-label">Elasticidad cruzada E<sub>xy</sub> = %ΔQ<sub>x</sub> / %ΔP<sub>y</sub></span>
+                            <span class="tel-value locked" id="ins-e">? ? ?</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-box">
+                    <div class="quiz-header">
+                        <i class="fas fa-circle-question"></i>
+                        ¿Qué tipo de bienes son X e Y según estos datos?
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" data-tipo="comp" style="--q-color:#0284c7" onclick="checkQuiz('comp')">
+                            <i class="fas fa-link"></i>
+                            <span>Complementarios</span>
+                            <small>E &lt; 0</small>
+                        </button>
+                        <button class="quiz-btn" data-tipo="sust" style="--q-color:#16a34a" onclick="checkQuiz('sust')">
+                            <i class="fas fa-right-left"></i>
+                            <span>Sustitutos</span>
+                            <small>E &gt; 0</small>
+                        </button>
+                        <button class="quiz-btn" data-tipo="indep" style="--q-color:#7c3aed" onclick="checkQuiz('indep')">
+                            <i class="fas fa-equals"></i>
+                            <span>Independientes</span>
+                            <small>E ≈ 0</small>
+                        </button>
+                    </div>
+                    <div id="quizFeedback" class="feedback"></div>
+                    <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+                        <button class="btn-action btn-reveal" onclick="revelarE()"><i class="fas fa-eye"></i> Ver solución</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ====== MEMORIA DE CÁLCULO ====== -->
+        <div class="explanation-box" id="infoBox">
+            <h4 class="box-title">
+                <span><i class="fas fa-square-root-variable" style="color: var(--primary-accent); margin-right: 6px;"></i> Memoria de Cálculo</span>
+                <button class="btn-action btn-toggle" id="toggleCalcBtn" onclick="toggleMemoriaCalculo()"><i class="fas fa-eye-slash" id="toggleIcon"></i> Ocultar</button>
+            </h4>
+            <div id="calcContentContainer">
+                <div id="calcContent"></div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ============================================================
+     FOOTER (se inyecta dinámicamente desde footer.js)
+     ============================================================ -->
+<div id="dynamic-footer"></div>
+
+<script src="footer.js"></script>
+
+<script>
+/* =====================================================================
+   PROPIEDAD INTELECTUAL - EmilioColor® (© 2026)
+   ===================================================================== */
+
+function toggleMemoriaCalculo() {
+    const container = document.getElementById('calcContentContainer');
+    const btn = document.getElementById('toggleCalcBtn');
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar';
+    } else {
+        container.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-eye"></i> Mostrar';
+    }
+}
+
+/* ---------- Ocultar / Mostrar gráficas ---------- */
+function toggleGraficas() {
+    const wrap = document.getElementById('canvasWrapper');
+    const text = document.getElementById('toggleGraphText');
+    const icon = document.getElementById('toggleGraphIcon');
+
+    const isHidden = wrap.classList.toggle('hidden');
+
+    if (isHidden) {
+        text.innerText = 'Mostrar gráficas';
+        icon.className = 'fas fa-eye';
+    } else {
+        text.innerText = 'Ocultar gráficas';
+        icon.className = 'fas fa-eye-slash';
+        requestAnimationFrame(() => draw());
+    }
+}
+
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+        const r = typeof radii === 'number' ? radii : (radii || 0);
+        const rad = Math.min(r, Math.min(w, h) / 2);
+        this.moveTo(x + rad, y);
+        this.arcTo(x + w, y, x + w, y + h, rad);
+        this.arcTo(x + w, y + h, x, y + h, rad);
+        this.arcTo(x, y + h, x, y, rad);
+        this.arcTo(x, y, x + w, y, rad);
+        return this;
+    };
+}
+
+/* =====================================================================
+   1. ESCENARIOS
+   ===================================================================== */
+
+const SCENARIOS = {
+    cafe: {
+        label: 'Cafeteras ↔ Cápsulas',
+        icon: 'fa-mug-hot',
+        color: '#b45309',
+        X: { name: 'Cápsulas de café', short: 'Cápsulas', qUnit: 'cajas' },
+        Y: { name: 'Cafeteras de cápsulas', short: 'Cafeteras', pUnit: '$' },
+        desc: 'Si las cafeteras se vuelven muy caras, la gente compra menos cafeteras y, en consecuencia, disminuye el consumo de sus cápsulas.',
+        vals: { Py0: 120, Py1: 170, Qx0: 500, Qx1: 350 }
+    },
+    te: {
+        label: 'Café ↔ Té',
+        icon: 'fa-mug-saucer',
+        color: '#15803d',
+        X: { name: 'Té', short: 'Té', qUnit: 'cajas' },
+        Y: { name: 'Café', short: 'Café', pUnit: '$' },
+        desc: 'Si el café sube de precio, muchos consumidores se pasan al té: la cantidad demandada de té aumenta.',
+        vals: { Py0: 80, Py1: 110, Qx0: 300, Qx1: 390 }
+    },
+    sal: {
+        label: 'Sal ↔ Cine',
+        icon: 'fa-film',
+        color: '#7c3aed',
+        X: { name: 'Entradas de cine', short: 'Cine', qUnit: 'entradas' },
+        Y: { name: 'Sal de mesa', short: 'Sal', pUnit: '$' },
+        desc: 'La sal y las entradas de cine no tienen relación entre sí: aunque la sal cambie de precio, el consumo de cine no se altera.',
+        vals: { Py0: 50, Py1: 70, Qx0: 400, Qx1: 400 }
+    }
+};
+
+const SLIDERS = [
+    { key:'Py0', min:20,  max:500,  step:5,  color:'#7c3aed', which:'Y', kind:'precio',   pos:'inicial' },
+    { key:'Py1', min:20,  max:500,  step:5,  color:'#dc2626', which:'Y', kind:'precio',   pos:'final'   },
+    { key:'Qx0', min:50,  max:2000, step:10, color:'#0284c7', which:'X', kind:'cantidad', pos:'inicial' },
+    { key:'Qx1', min:50,  max:2000, step:10, color:'#059669', which:'X', kind:'cantidad', pos:'final'   }
+];
+
+/* =====================================================================
+   2. ESTADO
+   ===================================================================== */
+
+let scenKey    = 'cafe';
+let vals       = Object.assign({}, SCENARIOS.cafe.vals);
+let quizAnswer = null;
+let revealedE  = false;
+
+/* =====================================================================
+   3. MOTOR ECONÓMICO
+   ===================================================================== */
+
+function compute() {
+    const { Py0, Py1, Qx0, Qx1 } = vals;
+
+    const dPy = Py1 - Py0;
+    const dQx = Qx1 - Qx0;
+
+    const pctPy = Py0 !== 0 ? (dPy / Py0) * 100 : NaN;
+    const pctQx = Qx0 !== 0 ? (dQx / Qx0) * 100 : NaN;
+
+    let E = NaN, tipo = null, err = '';
+
+    if (!isFinite(pctPy) || Math.abs(pctPy) < 1e-9) {
+        err = 'La variación porcentual del precio del bien Y es cero: la elasticidad cruzada no está definida. Cambia el precio inicial o el final de Y.';
+    } else {
+        E = pctQx / pctPy;
+        if (E > 0.1)        tipo = 'sust';
+        else if (E < -0.1)  tipo = 'comp';
+        else                tipo = 'indep';
+    }
+
+    return { dPy, dQx, pctPy, pctQx, E, tipo, err };
+}
+
+const TIPO_INFO = {
+    comp:  { name:'Complementarios', icon:'fa-link',        color:'#0284c7', txt:'Al subir el precio de Y, baja el consumo de X. Los bienes se usan juntos.' },
+    sust:  { name:'Sustitutos',      icon:'fa-right-left',  color:'#16a34a', txt:'Al subir el precio de Y, sube el consumo de X. Los bienes compiten entre sí.' },
+    indep: { name:'Independientes',  icon:'fa-equals',      color:'#7c3aed', txt:'El precio de Y no afecta al consumo de X. No hay relación económica apreciable.' }
+};
+
+/* =====================================================================
+   4. CANVAS
+   ===================================================================== */
+
+const LW = 1000, LH = 440;
+const cv  = document.getElementById('mainCanvas');
+const ctx = cv.getContext('2d');
+let DPR = 1;
+
+function initCanvas() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width  = Math.round(LW * DPR);
+    cv.height = Math.round(LH * DPR);
+    cv.style.width  = '100%';
+    cv.style.height = 'auto';
+    cv.style.aspectRatio = LW + ' / ' + LH;
+}
+
+function drawArrow(c, fromx, fromy, tox, toy, size) {
+    c.beginPath();
+    c.moveTo(fromx, fromy);
+    c.lineTo(tox, toy);
+    c.stroke();
+    const angle = Math.atan2(toy - fromy, tox - fromx);
+    c.beginPath();
+    c.moveTo(tox, toy);
+    c.lineTo(tox - size * Math.cos(angle - Math.PI / 6), toy - size * Math.sin(angle - Math.PI / 6));
+    c.lineTo(tox - size * Math.cos(angle + Math.PI / 6), toy - size * Math.sin(angle + Math.PI / 6));
+    c.closePath();
+    c.fillStyle = c.strokeStyle;
+    c.fill();
+}
+
+const fmtTick = v => {
+    const a = Math.abs(v);
+    if (a >= 1000) return (v / 1000).toFixed(a % 1000 === 0 ? 0 : 1) + 'k';
+    if (a >= 100)  return v.toFixed(0);
+    if (a >= 10)   return v.toFixed(a % 1 === 0 ? 0 : 1);
+    return v.toFixed(1);
+};
+
+function draw() {
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, LW, LH);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, LW, LH);
+    drawMarketPanel();
+    drawCrossPanel();
+}
+
+/* ---------- Panel izquierdo: mercado del bien X ---------- */
+function drawMarketPanel() {
+    const S = SCENARIOS[scenKey];
+    const { Qx0, Qx1 } = vals;
+
+    const px = 26, py = 26, pw = 470, ph = 388;
+
+    ctx.beginPath();
+    ctx.roundRect(px, py, pw, ph, 14);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#0f172a';
+    ctx.font = '700 15px Inter, system-ui, sans-serif';
+    ctx.fillText('Mercado del bien X · ' + S.X.name, px + 22, py + 32);
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '400 11.5px Inter, system-ui, sans-serif';
+    ctx.fillText('Precio de X (eje vertical)  ·  Cantidad de X (eje horizontal)', px + 22, py + 50);
+
+    const ax0 = px + 70, ay0 = py + 78;
+    const ax1 = px + pw - 30, ay1 = py + ph - 60;
+
+    ctx.strokeStyle = '#e8eef5';
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 4; i++) {
+        const yy = ay0 + (ay1 - ay0) * i / 5;
+        ctx.beginPath(); ctx.moveTo(ax0, yy); ctx.lineTo(ax1, yy); ctx.stroke();
+    }
+    for (let i = 1; i <= 4; i++) {
+        const xx = ax0 + (ax1 - ax0) * i / 5;
+        ctx.beginPath(); ctx.moveTo(xx, ay0); ctx.lineTo(xx, ay1); ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(ax0, ay0 - 10);
+    ctx.lineTo(ax0, ay1);
+    ctx.lineTo(ax1 + 10, ay1);
+    ctx.stroke();
+
+    drawArrow(ctx, ax0, ay0 - 10, ax0, ay0 - 18, 7);
+    drawArrow(ctx, ax1 + 10, ay1, ax1 + 18, ay1, 7);
+
+    ctx.fillStyle = '#475569';
+    ctx.font = '700 11px Inter, system-ui, sans-serif';
+    ctx.fillText('Q_x', ax1 + 22, ay1 + 4);
+    ctx.fillText('P_x', ax0 - 26, ay0 - 22);
+
+    const qMax = Math.max(Qx0, Qx1, 1) * 1.5;
+    const xOf = q => ax0 + (q / qMax) * (ax1 - ax0);
+    const yRef = ay1 - (ay1 - ay0) * 0.58;
+
+    ctx.save();
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    ctx.moveTo(ax0, yRef);
+    ctx.lineTo(ax1, yRef);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 10px Inter, system-ui, sans-serif';
+    ctx.fillText('P_x vigente', ax1 - 68, yRef - 7);
+
+    const slope = 0.42;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(ax0 - 2, ay0 - 12, (ax1 - ax0) + 14, (ay1 - ay0) + 14);
+    ctx.clip();
+
+    const drawD = (qx, color) => {
+        const xc = xOf(qx);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(ax0 - 20, yRef + slope * ((ax0 - 20) - xc));
+        ctx.lineTo(ax1 + 20, yRef + slope * ((ax1 + 20) - xc));
+        ctx.stroke();
+    };
+
+    drawD(Qx0, '#0284c7');
+    drawD(Qx1, '#dc2626');
+    ctx.restore();
+
+    const labelD = (qx, text, color) => {
+        const lx = xOf(qx) - 62;
+        const ly = yRef - slope * 62;
+        ctx.fillStyle = color;
+        ctx.font = '700 13px Inter, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, lx, ly);
+        ctx.textAlign = 'left';
+    };
+    labelD(Qx0, 'D₀', '#0284c7');
+    labelD(Qx1, 'D₁', '#dc2626');
+
+    const markPoint = (q, color, tag) => {
+        const xp = xOf(q);
+
+        ctx.save();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(xp, yRef);
+        ctx.lineTo(xp, ay1);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.arc(xp, yRef, 6.5, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.font = '700 11.5px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(tag, xp, ay1 + 20);
+        ctx.textAlign = 'left';
+    };
+
+    markPoint(Qx0, '#0284c7', 'Q₀=' + Math.round(Qx0));
+    markPoint(Qx1, '#dc2626', 'Q₁=' + Math.round(Qx1));
+
+    const xa = xOf(Qx0), xb = xOf(Qx1);
+    if (Math.abs(xb - xa) > 6) {
+        const yArr = yRef + 34;
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2;
+        drawArrow(ctx, xa, yArr, xb, yArr, 9);
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '700 11px Inter, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ΔQ_x', (xa + xb) / 2, yArr + 20);
+        ctx.textAlign = 'left';
+    }
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '500 11px Inter, system-ui, sans-serif';
+    ctx.fillText('La demanda de X se desplaza de D₀ a D₁ al cambiar el precio de Y.', px + 22, py + ph - 18);
+}
+
+/* ---------- Panel derecho: relación cruzada ---------- */
+function drawCrossPanel() {
+    const S = SCENARIOS[scenKey];
+    const { Py0, Py1, Qx0, Qx1 } = vals;
+
+    const px = 512, py = 26, pw = 462, ph = 388;
+
+    ctx.beginPath();
+    ctx.roundRect(px, py, pw, ph, 14);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#0f172a';
+    ctx.font = '700 15px Inter, system-ui, sans-serif';
+    ctx.fillText('Relación cruzada · P_y  vs  Q_x', px + 22, py + 32);
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '400 11.5px Inter, system-ui, sans-serif';
+    ctx.fillText('Precio de Y (eje horizontal)  ·  Cantidad de X (eje vertical)', px + 22, py + 50);
+
+    const ax0 = px + 78, ay0 = py + 80;
+    const ax1 = px + pw - 34, ay1 = py + ph - 62;
+
+    const pLo = Math.min(Py0, Py1), pHi = Math.max(Py0, Py1);
+    const pPad = Math.max((pHi - pLo) * 0.8, pHi * 0.2, 8);
+    const pMin = Math.max(0, pLo - pPad), pMax = pHi + pPad;
+
+    const qLo = Math.min(Qx0, Qx1), qHi = Math.max(Qx0, Qx1);
+    const qPad = Math.max((qHi - qLo) * 0.8, qHi * 0.2, 8);
+    const qMin = Math.max(0, qLo - qPad), qMax = qHi + qPad;
+
+    const xOf = p => ax0 + ((p - pMin) / (pMax - pMin)) * (ax1 - ax0);
+    const yOf = q => ay1 - ((q - qMin) / (qMax - qMin)) * (ay1 - ay0);
+
+    ctx.strokeStyle = '#e8eef5';
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 4; i++) {
+        const yy = ay0 + (ay1 - ay0) * i / 5;
+        ctx.beginPath(); ctx.moveTo(ax0, yy); ctx.lineTo(ax1, yy); ctx.stroke();
+    }
+    for (let i = 1; i <= 4; i++) {
+        const xx = ax0 + (ax1 - ax0) * i / 5;
+        ctx.beginPath(); ctx.moveTo(xx, ay0); ctx.lineTo(xx, ay1); ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(ax0, ay0 - 10);
+    ctx.lineTo(ax0, ay1);
+    ctx.lineTo(ax1 + 10, ay1);
+    ctx.stroke();
+
+    drawArrow(ctx, ax0, ay0 - 10, ax0, ay0 - 18, 7);
+    drawArrow(ctx, ax1 + 10, ay1, ax1 + 18, ay1, 7);
+
+    ctx.fillStyle = '#475569';
+    ctx.font = '700 11px Inter, system-ui, sans-serif';
+    ctx.fillText('P_y', ax1 + 20, ay1 + 4);
+    ctx.fillText('Q_x', ax0 - 30, ay0 - 22);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '600 10px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    for (let i = 0; i <= 5; i++) {
+        const p = pMin + (pMax - pMin) * i / 5;
+        const xx = xOf(p);
+        ctx.fillText(fmtTick(p), xx, ay1 + 18);
+    }
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 5; i++) {
+        const q = qMin + (qMax - qMin) * i / 5;
+        const yy = yOf(q);
+        ctx.fillText(fmtTick(q), ax0 - 8, yy + 3.5);
+    }
+    ctx.textAlign = 'left';
+
+    const Ax = xOf(Py0), Ay = yOf(Qx0);
+    const Bx = xOf(Py1), By = yOf(Qx1);
+
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = '#dbe3ec';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(ax0, Ay); ctx.lineTo(Ax, Ay); ctx.lineTo(Ax, ay1);
+    ctx.moveTo(ax0, By); ctx.lineTo(Bx, By); ctx.lineTo(Bx, ay1);
+    ctx.stroke();
+    ctx.restore();
+
+    const dx = Bx - Ax, dy = By - Ay;
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len, uy = dy / len;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(ax0 - 1, ay0 - 12, (ax1 - ax0) + 12, (ay1 - ay0) + 12);
+    ctx.clip();
+
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2.6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(Ax - ux * 2000, Ay - uy * 2000);
+    ctx.lineTo(Ax + ux * 2000, Ay + uy * 2000);
+    ctx.stroke();
+    ctx.restore();
+
+    const drawPt = (x, y, color, label, sub) => {
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        const offX = x > (ax0 + ax1) / 2 ? -12 : 14;
+        ctx.textAlign = x > (ax0 + ax1) / 2 ? 'right' : 'left';
+        ctx.fillStyle = color;
+        ctx.font = '700 12px Inter, system-ui, sans-serif';
+        ctx.fillText(label, x + offX, y - 10);
+        ctx.font = '600 10px JetBrains Mono, monospace';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText(sub, x + offX, y + 4);
+        ctx.textAlign = 'left';
+    };
+
+    drawPt(Ax, Ay, '#0284c7', 'A', `(${Math.round(Py0)}, ${Math.round(Qx0)})`);
+    drawPt(Bx, By, '#dc2626', 'B', `(${Math.round(Py1)}, ${Math.round(Qx1)})`);
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '500 11px Inter, system-ui, sans-serif';
+    ctx.fillText('La pendiente de la recta refleja el signo de ΔQ_x / ΔP_y.', px + 22, py + ph - 18);
+}
+
+/* =====================================================================
+   5. UI
+   ===================================================================== */
+
+function buildScenarioButtons() {
+    const grid = document.getElementById('scenarioGrid');
+    grid.innerHTML = '';
+    Object.entries(SCENARIOS).forEach(([key, cfg]) => {
+        const btn = document.createElement('button');
+        btn.className = 'scenario-btn' + (key === scenKey ? ' active' : '');
+        btn.style.setProperty('--sc-color', cfg.color);
+        btn.innerHTML = `<i class="fas ${cfg.icon}"></i><span>${cfg.label}</span>`;
+        btn.onclick = () => switchScenario(key);
+        grid.appendChild(btn);
+    });
+    document.getElementById('scenarioDesc').innerHTML =
+        `<i class="fas fa-lightbulb"></i>${SCENARIOS[scenKey].desc}`;
+}
+
+function switchScenario(key) {
+    if (scenKey === key) return;
+    scenKey = key;
+    vals = Object.assign({}, SCENARIOS[key].vals);
+    quizAnswer = null;
+    revealedE  = false;
+    buildScenarioButtons();
+    buildControls();
+    clearQuizFeedback();
+    resetQuizButtons();
+    update();
+}
+
+function buildControls() {
+    const S = SCENARIOS[scenKey];
+    const zone = document.getElementById('slidersZone');
+    zone.innerHTML = '';
+
+    SLIDERS.forEach(sd => {
+        const bien = sd.which === 'X' ? S.X : S.Y;
+        const nombre = sd.kind === 'precio'
+            ? `Precio ${sd.pos} · ${bien.short}`
+            : `Cantidad ${sd.pos} · ${bien.short}`;
+
+        const row = document.createElement('div');
+        row.innerHTML = `
+            <div class="slider-label-container">
+                <span class="label-tag" style="margin:0;">${nombre}</span>
+                <span class="value-badge" id="val-${sd.key}" style="color:${sd.color};">--</span>
+            </div>
+            <input type="range" id="param-${sd.key}" min="${sd.min}" max="${sd.max}" step="${sd.step}" value="${vals[sd.key]}">`;
+        zone.appendChild(row);
+
+        const input = row.querySelector('input');
+        input.addEventListener('input', (e) => {
+            vals[sd.key] = parseFloat(e.target.value);
+            quizAnswer = null;
+            resetQuizButtons();
+            clearQuizFeedback();
+            update();
+        });
+    });
+
+    updateSliderBadges();
+}
+
+function updateSliderBadges() {
+    const S = SCENARIOS[scenKey];
+    SLIDERS.forEach(sd => {
+        const el = document.getElementById('val-' + sd.key);
+        if (!el) return;
+        const bien = sd.which === 'X' ? S.X : S.Y;
+        const unit = sd.kind === 'precio' ? (bien.pUnit || '$') : (bien.qUnit || 'u');
+        el.innerText = (sd.kind === 'precio' ? unit : '') + Math.round(vals[sd.key]) + (sd.kind === 'precio' ? '' : ' ' + unit);
+    });
+}
+
+function resetQuizButtons() {
+    document.querySelectorAll('.quiz-btn').forEach(b => b.classList.remove('correct', 'wrong'));
+}
+
+function clearQuizFeedback() {
+    const fb = document.getElementById('quizFeedback');
+    if (fb) { fb.className = 'feedback'; fb.innerHTML = ''; }
+}
+
+/* =====================================================================
+   6. ACTUALIZACIÓN
+   ===================================================================== */
+
+const f2 = x => (isFinite(x) ? x.toFixed(2) : '—');
+const f1 = x => (isFinite(x) ? x.toFixed(1) : '—');
+
+function update() {
+    const S = SCENARIOS[scenKey];
+    const R = compute();
+
+    updateSliderBadges();
+
+    document.getElementById('lbl-py').innerText = 'Precio de ' + S.Y.short;
+    document.getElementById('lbl-qx').innerText = 'Cantidad de ' + S.X.short;
+
+    document.getElementById('ins-py').innerText =
+        S.Y.pUnit + Math.round(vals.Py0) + ' → ' + S.Y.pUnit + Math.round(vals.Py1);
+    document.getElementById('ins-qx').innerText =
+        Math.round(vals.Qx0) + ' → ' + Math.round(vals.Qx1) + ' ' + S.X.qUnit;
+
+    document.getElementById('ins-dpy').innerText =
+        (R.pctPy >= 0 ? '+' : '') + f1(R.pctPy) + ' %';
+    document.getElementById('ins-dqx').innerText =
+        (R.pctQx >= 0 ? '+' : '') + f1(R.pctQx) + ' %';
+
+    const eEl = document.getElementById('ins-e');
+    eEl.className = 'tel-value';
+    if (revealedE || quizAnswer === R.tipo) {
+        if (!isFinite(R.E)) {
+            eEl.classList.add('locked');
+            eEl.innerText = 'no definida';
+        } else {
+            eEl.innerText = (R.E >= 0 ? '+' : '') + f2(R.E);
+            if (R.tipo === 'comp') eEl.classList.add('neg');
+            else if (R.tipo === 'sust') eEl.classList.add('pos');
+            else eEl.classList.add('neu');
+        }
+    } else {
+        eEl.classList.add('locked');
+        eEl.innerText = '? ? ?';
+    }
+
+    const tb = document.getElementById('dataTableBody');
+    const rows = [
+        {
+            name: 'Precio de ' + S.Y.short,
+            unit: S.Y.pUnit,
+            ini: Math.round(vals.Py0),
+            fin: Math.round(vals.Py1),
+            d: R.dPy,
+            pct: R.pctPy
+        },
+        {
+            name: 'Cantidad de ' + S.X.short,
+            unit: S.X.qUnit,
+            ini: Math.round(vals.Qx0),
+            fin: Math.round(vals.Qx1),
+            d: R.dQx,
+            pct: R.pctQx
+        }
+    ];
+
+    tb.innerHTML = rows.map(r => `
+        <tr>
+            <td>${r.name}</td>
+            <td>${r.ini} ${r.unit}</td>
+            <td>${r.fin} ${r.unit}</td>
+            <td>${r.d >= 0 ? '+' : ''}${r.d}</td>
+            <td>${(r.pct >= 0 ? '+' : '') + f1(r.pct)} %</td>
+        </tr>`).join('') + `
+        <tr class="result-row">
+            <td>E<sub>xy</sub></td>
+            <td colspan="4">${(!isFinite(R.E) ? 'no definida' : (R.E >= 0 ? '+' : '') + f2(R.E))}</td>
+        </tr>`;
+
+    draw();
+    renderMemoria(R);
+}
+
+/* =====================================================================
+   7. QUIZ
+   ===================================================================== */
+
+function checkQuiz(tipo) {
+    const R = compute();
+    const fb = document.getElementById('quizFeedback');
+    const btns = document.querySelectorAll('.quiz-btn');
+
+    if (!isFinite(R.E)) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + R.err;
+        return;
+    }
+
+    btns.forEach(b => b.classList.remove('correct', 'wrong'));
+    const btn = document.querySelector(`.quiz-btn[data-tipo="${tipo}"]`);
+
+    if (tipo === R.tipo) {
+        quizAnswer = tipo;
+        btn.classList.add('correct');
+        const info = TIPO_INFO[R.tipo];
+        fb.className = 'feedback ok';
+        fb.innerHTML = `<i class="fas fa-circle-check"></i> ¡Correcto! E<sub>xy</sub> = <strong>${(R.E >= 0 ? '+' : '') + f2(R.E)}</strong> → ${info.name}. ${info.txt}`;
+    } else {
+        btn.classList.add('wrong');
+        fb.className = 'feedback err';
+        fb.innerHTML = `<i class="fas fa-circle-xmark"></i> Esa no es la clasificación correcta con estos valores. Fíjate en el <strong>signo</strong> de ΔQ<sub>x</sub> y de ΔP<sub>y</sub>.`;
+    }
+    update();
+}
+
+function revelarE() {
+    const R = compute();
+    const fb = document.getElementById('quizFeedback');
+
+    if (!isFinite(R.E)) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + R.err;
+        return;
+    }
+
+    revealedE = true;
+    const info = TIPO_INFO[R.tipo];
+    const btn = document.querySelector(`.quiz-btn[data-tipo="${R.tipo}"]`);
+    if (btn) {
+        btn.classList.add('correct');
+    }
+    fb.className = 'feedback warn';
+    fb.innerHTML = `<i class="fas fa-lightbulb"></i> E<sub>xy</sub> = <strong>${(R.E >= 0 ? '+' : '') + f2(R.E)}</strong> → ${info.name}. ${info.txt}`;
+    update();
+}
+
+/* =====================================================================
+   8. MEMORIA DE CÁLCULO
+   ===================================================================== */
+
+function kx(el, tex) {
+    if (!el) return;
+    if (typeof katex === 'undefined') { el.textContent = tex; return; }
+    try { katex.render(tex, el, { throwOnError: false }); }
+    catch (e) { el.textContent = tex; }
+}
+
+function renderMemoria(R) {
+    const S = SCENARIOS[scenKey];
+    const box = document.getElementById('calcContent');
+
+    const tipoTxt = !isFinite(R.E)
+        ? 'Indefinida'
+        : TIPO_INFO[R.tipo].name;
+
+    const html = `
+    <div class="equation-step">
+        <div class="equation-title">1 · Fórmula de la elasticidad cruzada</div>
+        <div class="equation-desc">Mide cómo responde la cantidad demandada del bien X ante un cambio en el precio del bien Y.</div>
+        <div class="math-container" id="kx-1"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">2 · Variación porcentual del precio de Y</div>
+        <div class="equation-desc">Cambio relativo del precio del bien relacionado.</div>
+        <div class="math-container" id="kx-2"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">3 · Variación porcentual de la cantidad de X</div>
+        <div class="equation-desc">Cambio relativo en la cantidad demandada del bien analizado.</div>
+        <div class="math-container" id="kx-3"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">4 · Sustitución y resultado</div>
+        <div class="equation-desc">Cociente entre ambas variaciones porcentuales.</div>
+        <div class="math-container" id="kx-4"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">5 · Interpretación</div>
+        <div class="equation-desc">Lectura económica del signo y magnitud de E<sub>xy</sub>.</div>
+        <div class="math-container" id="kx-5"></div>
+    </div>`;
+
+    box.innerHTML = html;
+
+    kx(document.getElementById('kx-1'),
+       `E_{xy}=\\frac{\\%\\Delta Q_x}{\\%\\Delta P_y}`);
+
+    kx(document.getElementById('kx-2'),
+       `\\%\\Delta P_y=\\frac{P_{y1}-P_{y0}}{P_{y0}}\\times 100=\\frac{${Math.round(vals.Py1)}-${Math.round(vals.Py0)}}{${Math.round(vals.Py0)}}\\times 100=${f1(R.pctPy)}\\,\\%`);
+
+    kx(document.getElementById('kx-3'),
+       `\\%\\Delta Q_x=\\frac{Q_{x1}-Q_{x0}}{Q_{x0}}\\times 100=\\frac{${Math.round(vals.Qx1)}-${Math.round(vals.Qx0)}}{${Math.round(vals.Qx0)}}\\times 100=${f1(R.pctQx)}\\,\\%`);
+
+    if (!isFinite(R.E)) {
+        const el = document.getElementById('kx-4');
+        el.innerHTML = `<span class="hidden-note"><i class="fas fa-lock"></i> ${R.err}</span>`;
+    } else {
+        kx(document.getElementById('kx-4'),
+           `E_{xy}=\\frac{${f1(R.pctQx)}}{${f1(R.pctPy)}}=${f2(R.E)}`);
+    }
+
+    const signTxt = !isFinite(R.E)
+        ? '\\text{Sin definición}'
+        : (R.tipo === 'comp'
+            ? 'E_{xy}<0\\;\\Rightarrow\\;\\text{Bienes complementarios}'
+            : R.tipo === 'sust'
+                ? 'E_{xy}>0\\;\\Rightarrow\\;\\text{Bienes sustitutos}'
+                : 'E_{xy}\\approx 0\\;\\Rightarrow\\;\\text{Bienes independientes}');
+
+    kx(document.getElementById('kx-5'),
+       `${signTxt}\\qquad\\text{Clasificación: }\\textbf{${tipoTxt}}`);
+}
+
+/* =====================================================================
+   9. RESET E INICIALIZACIÓN
+   ===================================================================== */
+
+function resetSimulador() {
+    vals = Object.assign({}, SCENARIOS[scenKey].vals);
+    quizAnswer = null;
+    revealedE  = false;
+    buildControls();
+    resetQuizButtons();
+    clearQuizFeedback();
+    update();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    initCanvas();
+    buildScenarioButtons();
+    buildControls();
+    setTimeout(update, 100);
+});
+
+window.addEventListener('resize', () => {
+    const wrap = document.getElementById('canvasWrapper');
+    if (wrap && !wrap.classList.contains('hidden')) {
+        draw();
+    }
+});
+</script>
+</body>
+</html>
