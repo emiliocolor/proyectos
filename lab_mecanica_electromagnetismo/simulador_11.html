@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador - Plano Inclinado sin Fricción (Problema 4.19)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --inner-box-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7;
+            
+            --btn-blue: #0284c7;
+            --btn-blue-hover: #0369a1;
+            --btn-red: #ef4444;
+            --btn-red-hover: #dc2626;
+            --btn-teal: #0d9488;
+            --btn-orange: #ea580c;
+            --btn-gray: #475569;
+            --btn-gray-hover: #334155;
+
+            /* Paleta de vectores alineada con simulador_17 */
+            --vector-w: #dc2626;   /* Peso - rojo */
+            --vector-n: #2563eb;   /* Normal - azul */
+            --vector-wx: #059669;  /* Componente paralela - verde */
+            --vector-wy: #7c3aed;  /* Componente perpendicular - morado */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1050px; width: 100%; }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .header-logo { max-height: 50px; width: auto; object-fit: contain; }
+
+        h1 { 
+            text-align: left; 
+            color: #0f172a; 
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            flex: 1;
+        }
+
+        .btn-logout {
+            background-color: var(--btn-gray);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+        }
+        .btn-logout:hover { background-color: var(--btn-gray-hover); transform: translateY(-1px); }
+
+        .description {
+            text-align: left;
+            margin: 0 0 30px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .canvas-area-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .canvas-box-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff; 
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            display: block;
+        }
+
+        #simCanvas { cursor: pointer; }
+        #vectorCanvas {
+            max-width: 100% !important;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        .controls-subgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            background: var(--inner-box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .label-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            outline: none;
+            margin-top: 8px;
+            accent-color: var(--primary-accent);
+            transition: background-color .15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease, background-color 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .value-badge {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .explanation-box, .vector-insights-box {
+            background: var(--inner-box-bg);
+            padding: 20px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .explanation-box h4, .vector-insights-box h4 {
+            margin: 0 0 16px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .formula-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .equation-step {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .equation-step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        .equation-title {
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .equation-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .math-container {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+            border: 1px solid var(--card-border);
+            overflow-x: auto;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .btn-action {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .btn-action:hover { transform: translateY(-1px); opacity: 0.92; }
+
+        .btn-reset { background-color: var(--btn-red); max-width: 200px; }
+        .btn-play { background-color: var(--btn-teal); width: 100%; font-size: 0.9rem; padding: 12px; }
+
+        .vector-row {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            padding-left: 16px;
+            position: relative;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+        .vector-row:last-child { margin-bottom: 0; }
+        .vector-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .row-w::before { background-color: var(--vector-w); }
+        .row-n::before { background-color: var(--vector-n); }
+        .row-wx::before { background-color: var(--vector-wx); }
+        .row-wy::before { background-color: var(--vector-wy); }
+
+        .mono-val { font-family: 'JetBrains Mono', monospace; }
+
+        @media (max-width: 850px) {
+            .simulation-grid { grid-template-columns: 1fr; }
+            .controls-subgrid { grid-template-columns: 1fr; }
+            .btn-reset { max-width: 100%; }
+            .header-container { flex-direction: column; align-items: flex-start; gap: 15px; }
+            h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    (function() {
+        const sesion = sessionStorage.getItem("simuladorAutorizado");
+        const paginaActual = "simulador_11.html";
+        if (!sesion || sesion !== paginaActual) {
+            window.location.href = "login.html";
+        }
+    })();
+</script>
+
+<div class="container">
+    <div class="header-container">
+        <img src="log.png" alt="Logo Laboratorio" class="header-logo" onerror="this.style.display='none'">
+        <h1>Laboratorio de Mecánica</h1>
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Volver a inicio
+        </button>
+    </div>
+
+    <p class="description">
+        <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-right: 6px;"></i>
+        <strong>Problema 4.19:</strong> Una masa desconocida desciende deslizándose por un plano inclinado a 30°. ¿Cuál es la aceleración si no existe fricción alguna?
+        <br><em>Concepto clave: En un plano inclinado sin fricción, la aceleración es independiente de la masa y depende únicamente del ángulo de inclinación (\(a = g \cdot \sin\theta\)).</em>
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span><i class="fas fa-caret-down" style="color: var(--primary-accent); margin-right: 8px;"></i> Plano Inclinado sin Fricción</span>
+            <button class="btn-action btn-reset" onclick="resetSimulador()"><i class="fas fa-undo"></i> Valores Originales</button>
+        </div>
+
+        <div class="simulation-grid">
+            
+            <div class="canvas-area-container">
+                <div class="canvas-box-wrapper">
+                    <canvas id="simCanvas" width="420" height="420"></canvas>
+                </div>
+
+                <button class="btn-action btn-play" id="playBtn" onclick="toggleAnimation()">
+                    <i class="fas fa-play"></i> Iniciar Descenso
+                </button>
+
+                <div class="vector-insights-box">
+                    <h4>
+                        <span><i class="fas fa-chart-line" style="color: var(--primary-accent); margin-right: 6px;"></i> Telemetría y Fuerzas</span>
+                        <span class="formula-tag"><i class="fas fa-satellite-dish"></i> a = g·senθ</span>
+                    </h4>
+                    <div class="vector-row row-w">
+                        <strong>Peso Total (W = mg):</strong> Fuerza gravitacional total. Magnitud: <span id="insight-W" class="mono-val" style="color: var(--vector-w); font-weight: bold;">--</span> N.
+                    </div>
+                    <div class="vector-row row-n">
+                        <strong>Fuerza Normal (N):</strong> Reacción del plano. Magnitud: <span id="insight-N" class="mono-val" style="color: var(--vector-n); font-weight: bold;">--</span> N.
+                    </div>
+                    <div class="vector-row row-wx">
+                        <strong>Componente paralela (W<sub>x</sub>):</strong> Fuerza neta que causa la aceleración (\(mg \cdot \sin\theta\)). Magnitud: <span id="insight-Wx" class="mono-val" style="color: var(--vector-wx); font-weight: bold;">--</span> N.
+                    </div>
+                    <div class="vector-row row-wy">
+                        <strong>Componente perpendicular (W<sub>y</sub>):</strong> Equilibrada por la Normal (\(mg \cdot \cos\theta\)). Magnitud: <span id="insight-Wy" class="mono-val" style="color: var(--vector-wy); font-weight: bold;">--</span> N.
+                    </div>
+                    <div class="vector-row" style="margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
+                        <strong>Aceleración Resultante (a):</strong> <span id="insight-a" class="mono-val" style="color: var(--btn-teal); font-weight: bold; font-size: 1.1em;">--</span> m/s².
+                    </div>
+                </div>
+
+                <!-- Canvas para el Diagrama de Cuerpo Libre -->
+                <canvas id="vectorCanvas" width="420" height="240"></canvas>
+            </div>
+
+            <div class="controls-panel">
+                <div class="controls-subgrid" style="padding: 15px;">
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Ángulo (θ)</span>
+                            <span id="val-angle" class="value-badge" style="color: var(--primary-accent);">30°</span>
+                        </div>
+                        <input type="range" id="param-angle" min="10" max="60" value="30" step="1">
+                    </div>
+                    
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Masa (m)</span>
+                            <span id="val-m" class="value-badge" style="color: var(--btn-purple);">5.0 kg</span>
+                        </div>
+                        <input type="range" id="param-m" min="1" max="50" value="5" step="0.5">
+                    </div>
+                </div>
+
+                <div class="explanation-box" id="infoBox">
+                    <h4>
+                        <span><i class="fas fa-square-root-variable" style="color: var(--primary-accent); margin-right: 6px;"></i> Memoria de Cálculo</span>
+                        <span class="formula-tag"><i class="fas fa-calculator"></i> Derivación</span>
+                    </h4>
+                    
+                    <div class="equation-step">
+                        <div class="equation-title">1. Fuerza Resultante en el Eje X</div>
+                        <div class="equation-desc">La única fuerza que actúa en la dirección del movimiento es la componente paralela del peso:</div>
+                        <div class="math-container" id="katex-1"></div>
+                    </div>
+
+                    <div class="equation-step">
+                        <div class="equation-title">2. Segunda Ley de Newton</div>
+                        <div class="equation-desc">Aplicamos \(F = m \cdot a\) en la dirección del plano:</div>
+                        <div class="math-container" id="katex-2"></div>
+                    </div>
+
+                    <div class="equation-step">
+                        <div class="equation-title">3. Aceleración (Independiente de la masa)</div>
+                        <div class="equation-desc">La masa se cancela a ambos lados de la ecuación:</div>
+                        <div class="math-container" id="katex-3"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function cerrarSesion() {
+        sessionStorage.removeItem("simuladorAutorizado");
+        window.location.href = "login.html";
+    }
+
+    function drawArrow(ctx, fromX, fromY, toX, toY, color, headSize = 10) {
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const length = Math.hypot(dx, dy);
+        if (length < 1) return;
+        const angle = Math.atan2(dy, dx);
+
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+
+        // Cabeza de flecha triangular rellena (estilo simulador_17)
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - headSize * Math.cos(angle - Math.PI / 6), toY - headSize * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(toX - headSize * Math.cos(angle + Math.PI / 6), toY - headSize * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // Compatibilidad con roundRect
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+            const r = typeof radii === 'number' ? radii : (radii || 0);
+            const rad = Math.min(r, Math.min(w, h) / 2);
+            this.moveTo(x + rad, y);
+            this.arcTo(x + w, y, x + w, y + h, rad);
+            this.arcTo(x + w, y + h, x, y + h, rad);
+            this.arcTo(x, y + h, x, y, rad);
+            this.arcTo(x, y, x + w, y, rad);
+            return this;
+        };
+    }
+
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const vCanvas = document.getElementById('vectorCanvas');
+    const vCtx = vCanvas.getContext('2d');
+
+    const inputs = {
+        angle: document.getElementById('param-angle'),
+        m: document.getElementById('param-m')
+    };
+
+    const outputs = {
+        angle: document.getElementById('val-angle'),
+        m: document.getElementById('val-m')
+    };
+
+    const insights = {
+        W: document.getElementById('insight-W'),
+        N: document.getElementById('insight-N'),
+        Wx: document.getElementById('insight-Wx'),
+        Wy: document.getElementById('insight-Wy'),
+        a: document.getElementById('insight-a')
+    };
+
+    const katex1 = document.getElementById('katex-1');
+    const katex2 = document.getElementById('katex-2');
+    const katex3 = document.getElementById('katex-3');
+
+    let isAnimating = false;
+    let animProgress = 0;
+    let lastTime = 0;
+    let animFrameId = null;
+    
+    const G = 9.81;
+
+    function draw() {
+        const angleDeg = parseFloat(inputs.angle.value);
+        const m = parseFloat(inputs.m.value);
+        const thetaRad = (angleDeg * Math.PI) / 180;
+
+        // Actualizar UI
+        outputs.angle.innerText = angleDeg + "°";
+        outputs.m.innerText = m.toFixed(1) + " kg";
+
+        // Cálculos físicos
+        const W = m * G;
+        const N = W * Math.cos(thetaRad);
+        const Wx = W * Math.sin(thetaRad);
+        const Wy = W * Math.cos(thetaRad);
+        const a = G * Math.sin(thetaRad);
+
+        // Telemetría
+        insights.W.innerText = W.toFixed(2);
+        insights.N.innerText = N.toFixed(2);
+        insights.Wx.innerText = Wx.toFixed(2);
+        insights.Wy.innerText = Wy.toFixed(2);
+        insights.a.innerText = a.toFixed(2);
+
+        // Fórmulas KaTeX
+        if (typeof katex !== 'undefined') {
+            katex.render(`F_{res} = W_x = m \\cdot g \\cdot \\sin\\theta = ${m.toFixed(1)} \\cdot 9.81 \\cdot \\sin(${angleDeg}^\\circ) = ${Wx.toFixed(2)}\\text{ N}`, katex1);
+            katex.render(`F_{res} = m \\cdot a \\implies ${Wx.toFixed(2)} = ${m.toFixed(1)} \\cdot a`, katex2);
+            katex.render(`a = \\frac{m \\cdot g \\cdot \\sin\\theta}{m} = g \\cdot \\sin\\theta = 9.81 \\cdot \\sin(${angleDeg}^\\circ) = ${a.toFixed(2)}\\text{ m/s}^2`, katex3);
+        }
+
+        // --- DIBUJO PRINCIPAL (estilo madera/plateado del simulador_17) ---
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Fondo limpio
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Puntos de la rampa (Origen abajo a la izquierda, Fin arriba a la derecha)
+        const startX = 50;
+        const startY = 350;
+        const rampLen = 330;
+        
+        const endX = startX + rampLen * Math.cos(thetaRad);
+        const endY = startY - rampLen * Math.sin(thetaRad);
+
+        // --- Plano inclinado tono madera (como la figura de referencia) ---
+        ctx.fillStyle = '#7a4a2b';
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.lineTo(endX, startY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Sombra/borde vertical derecho (tono más oscuro)
+        ctx.fillStyle = '#543219';
+        ctx.fillRect(endX, endY, 12, startY - endY);
+
+        // Línea base plateada
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(startX - 20, startY);
+        ctx.lineTo(endX + 20, startY);
+        ctx.stroke();
+
+        // Borde superior de la rampa con brillo plateado
+        ctx.strokeStyle = '#b8c2cc';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        // Borde interior (efecto de bisel)
+        ctx.strokeStyle = '#3a2e0a';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(startX + 2, startY - 2);
+        ctx.lineTo(endX, endY + 2);
+        ctx.stroke();
+
+        // Arco del ángulo
+        ctx.strokeStyle = 'var(--primary-accent)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(startX, startY, 40, 0, -thetaRad, true);
+        ctx.stroke();
+        
+        ctx.fillStyle = '#0284c7';
+        ctx.font = 'bold 14px "JetBrains Mono", monospace';
+        ctx.fillText(`${angleDeg}°`, startX + 45, startY - 15);
+
+        // --- LÓGICA DE ANIMACIÓN (DE ARRIBA HACIA ABAJO) ---
+        const maxDistance = rampLen - 80;
+        const minDistance = 40;
+        const currentDistance = maxDistance - (animProgress * (maxDistance - minDistance));
+        
+        const blockX = startX + currentDistance * Math.cos(thetaRad);
+        const blockY = startY - currentDistance * Math.sin(thetaRad);
+
+        // Tamaño del bloque
+        const blockSize = 35 + (m / 10);
+
+        // Dibujar bloque dorado con argolla metálica (estilo simulador_17)
+        ctx.save();
+        ctx.translate(blockX, blockY);
+        ctx.rotate(-thetaRad); // Rotar para alinear con la rampa
+
+        // Gradiente dorado del bloque
+        const gradBlock = ctx.createLinearGradient(-blockSize/2, -blockSize, blockSize/2, 0);
+        gradBlock.addColorStop(0, '#d9b358');
+        gradBlock.addColorStop(1, '#a37f28');
+
+        ctx.fillStyle = gradBlock;
+        ctx.strokeStyle = '#3a2e0a';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.rect(-blockSize/2, -blockSize, blockSize, blockSize);
+        ctx.fill();
+        ctx.stroke();
+
+        // Argolla superior metálica
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, -blockSize, 3.5, 0, Math.PI*2);
+        ctx.stroke();
+
+        // Texto de la masa
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 12px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${m.toFixed(1)}`, 0, -blockSize/2 + 4);
+        ctx.font = '10px "Inter", sans-serif';
+        ctx.fillText(`kg`, 0, -blockSize/2 + 18);
+
+        ctx.restore();
+
+        drawDCL(thetaRad, W, N, Wx, Wy);
+
+        if (isAnimating) {
+            animFrameId = requestAnimationFrame(stepAnimation);
+        }
+    }
+
+    function stepAnimation(time) {
+        if (!lastTime) lastTime = time;
+        const deltaTime = (time - lastTime) / 1000;
+        lastTime = time;
+
+        animProgress += deltaTime * 0.4; 
+
+        if (animProgress >= 1) {
+            animProgress = 1;
+            isAnimating = false;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-undo"></i> Reiniciar Descenso';
+            document.getElementById('playBtn').classList.replace('btn-play', 'btn-toggle');
+        }
+
+        draw();
+    }
+
+    function toggleAnimation() {
+        if (animProgress >= 1) {
+            animProgress = 0;
+            isAnimating = true;
+            lastTime = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> Pausar';
+        } else {
+            isAnimating = !isAnimating;
+            if (isAnimating) {
+                lastTime = 0;
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> Pausar';
+                animFrameId = requestAnimationFrame(stepAnimation);
+            } else {
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> Continuar';
+                cancelAnimationFrame(animFrameId);
+            }
+        }
+        draw();
+    }
+
+    function drawDCL(thetaRad, W, N, Wx, Wy) {
+        vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+        
+        // Fondo blanco limpio (estilo simulador_17)
+        vCtx.fillStyle = '#ffffff';
+        vCtx.fillRect(0, 0, vCanvas.width, vCanvas.height);
+
+        // Título del DCL
+        vCtx.fillStyle = '#1e293b';
+        vCtx.font = 'bold 12px "Inter", sans-serif';
+        vCtx.textAlign = 'left';
+        vCtx.fillText("DIAGRAMA DE CUERPO LIBRE (DCL)", 15, 25);
+
+        const cx = vCanvas.width / 2;
+        const cy = vCanvas.height / 2 + 30;
+        
+        // Dibujar rampa en el DCL
+        vCtx.strokeStyle = '#94a3b8';
+        vCtx.lineWidth = 3;
+        vCtx.beginPath();
+        vCtx.moveTo(cx - 150, cy + 150 * Math.tan(thetaRad));
+        vCtx.lineTo(cx + 150, cy - 150 * Math.tan(thetaRad));
+        vCtx.stroke();
+        
+        // Sombreado del plano
+        vCtx.fillStyle = 'rgba(148, 163, 184, 0.1)';
+        vCtx.beginPath();
+        vCtx.moveTo(cx - 150, cy + 150 * Math.tan(thetaRad));
+        vCtx.lineTo(cx + 150, cy - 150 * Math.tan(thetaRad));
+        vCtx.lineTo(cx + 150, vCanvas.height);
+        vCtx.lineTo(cx - 150, vCanvas.height);
+        vCtx.fill();
+
+        // --- Bloque sólido (estilo simulador_17) ---
+        const sizeA = 56;
+        vCtx.save();
+        vCtx.translate(cx, cy);
+        vCtx.fillStyle = '#2563eb';
+        vCtx.strokeStyle = '#1e40af';
+        vCtx.lineWidth = 1.5;
+        vCtx.beginPath();
+        vCtx.rect(-sizeA/2, -sizeA/2, sizeA, sizeA);
+        vCtx.fill();
+        vCtx.stroke();
+        vCtx.fillStyle = '#ffffff';
+        vCtx.font = 'bold 14px "Inter", sans-serif';
+        vCtx.textAlign = 'center';
+        vCtx.fillText('m', 0, 5);
+        vCtx.restore();
+
+        // --- Vectores con flechas triangulares rellenas ---
+
+        // 1. Peso (W) - Vertical hacia abajo (rojo)
+        const wLen = 65;
+        drawArrow(vCtx, cx, cy, cx, cy + wLen, '#dc2626', 7);
+        vCtx.fillStyle = '#dc2626';
+        vCtx.font = 'bold 12px "Inter", sans-serif';
+        vCtx.textAlign = 'left';
+        vCtx.fillText('W = mg', cx + 8, cy + wLen * 0.65);
+
+        // 2. Normal (N) - Perpendicular a la rampa (azul)
+        const nLen = 65;
+        const nAngle = -thetaRad - Math.PI/2; 
+        const nx = cx + nLen * Math.cos(nAngle);
+        const ny = cy + nLen * Math.sin(nAngle);
+        drawArrow(vCtx, cx, cy, nx, ny, '#2563eb', 7);
+        vCtx.fillStyle = '#2563eb';
+        vCtx.fillText('N', nx + 8, ny - 6);
+
+        // 3. Componente Wx (paralela a la rampa, hacia abajo-izquierda) (verde)
+        const wxLen = 60;
+        const wxx = cx - wxLen * Math.cos(thetaRad); 
+        const wxy = cy + wxLen * Math.sin(thetaRad); 
+        drawArrow(vCtx, cx, cy, wxx, wxy, '#059669', 7);
+        vCtx.fillStyle = '#059669';
+        vCtx.textAlign = 'right';
+        vCtx.fillText('Wx = mg·senθ', wxx - 8, wxy + 14);
+
+        // 4. Componente Wy (perpendicular a la rampa, hacia abajo-derecha) (morado)
+        const wyLen = 55;
+        const wyAngle = -thetaRad + Math.PI/2;
+        const wyx = cx + wyLen * Math.cos(wyAngle);
+        const wyy = cy + wyLen * Math.sin(wyAngle);
+        drawArrow(vCtx, cx, cy, wyx, wyy, '#7c3aed', 6);
+        vCtx.fillStyle = '#7c3aed';
+        vCtx.textAlign = 'left';
+        vCtx.fillText('Wy = mg·cosθ', wyx + 6, wyy + 6);
+    }
+
+    // Eventos
+    Object.values(inputs).forEach(input => {
+        input.addEventListener('input', () => {
+            if (isAnimating) {
+                isAnimating = false;
+                cancelAnimationFrame(animFrameId);
+            }
+            animProgress = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> Iniciar Descenso';
+            document.getElementById('playBtn').className = 'btn-action btn-play';
+            draw();
+        });
+    });
+
+    function resetSimulador() {
+        inputs.angle.value = "30";
+        inputs.m.value = "5";
+        animProgress = 0;
+        isAnimating = false;
+        cancelAnimationFrame(animFrameId);
+        document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> Iniciar Descenso';
+        document.getElementById('playBtn').className = 'btn-action btn-play';
+        draw();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(draw, 100);
+    });
+</script>
+</body>
+</html>

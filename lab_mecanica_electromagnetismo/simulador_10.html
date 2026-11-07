@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador - Fuerza, Masa y Peso</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --inner-box-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7;
+            --btn-red: #ef4444;
+            --btn-gray: #475569;
+            --btn-gray-hover: #334155;
+            --btn-green: #16a34a;
+            --btn-purple: #7c3aed;
+            --vector-t: #059669;
+            --vector-f: #dc2626;
+            --vector-n: #2563eb;
+            --vector-w: #7c3aed;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1050px; width: 100%; }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .header-logo {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            text-align: left;
+            color: #0f172a;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            flex: 1;
+        }
+
+        .btn-logout {
+            background-color: var(--btn-gray);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+        }
+        .btn-logout:hover { background-color: var(--btn-gray-hover); transform: translateY(-1px); }
+
+        .description {
+            text-align: left;
+            margin: 0 0 30px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .card-title-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .scenario-section { margin-top: 22px; }
+
+        .section-label {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(122px, 1fr));
+            gap: 10px;
+        }
+
+        .scenario-btn {
+            --sc-color: #0284c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 8px;
+            border-radius: 10px;
+            border: 1.5px solid var(--card-border);
+            background: #fff;
+            color: #475569;
+            font-weight: 600;
+            font-size: .8rem;
+            cursor: pointer;
+            transition: all .18s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .scenario-btn i { font-size: .95rem; }
+        .scenario-btn:hover { border-color: var(--sc-color); color: var(--sc-color); transform: translateY(-1px); }
+        .scenario-btn.active {
+            background: var(--sc-color);
+            border-color: var(--sc-color);
+            color: #fff;
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,.45);
+        }
+
+        .scenario-desc {
+            margin: 14px 0 0 0;
+            font-size: .87rem;
+            line-height: 1.55;
+            color: #334155;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 0 10px 10px 0;
+        }
+        .scenario-desc i { color: #333333; margin-right: 6px; }
+
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .canvas-area-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .canvas-box-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            display: block;
+        }
+
+        #vectorCanvas {
+            max-width: 100% !important;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        #slidersZone {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            background: var(--inner-box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .label-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            outline: none;
+            margin-top: 8px;
+            accent-color: var(--primary-accent);
+            transition: background-color .15s;
+        }
+        input[type="range"].snapped { background: #fca5a5; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .value-badge {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .snap-hint {
+            font-size: .66rem;
+            color: #ef4444;
+            font-weight: 600;
+            margin-top: 4px;
+            opacity: 0;
+            transition: opacity .2s;
+            min-height: 12px;
+        }
+        .snap-hint.show { opacity: 1; }
+
+        #unknownZone {
+            background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1.5px solid #fcd34d;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .unknown-header {
+            font-size: .86rem;
+            font-weight: 600;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .unknown-header i { font-size: 1rem; }
+        .unknown-header strong { color: #78350f; }
+
+        .unit-chip {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            background: #fff;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .unknown-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .unknown-input-row input {
+            flex: 1;
+            min-width: 130px;
+            padding: 10px 12px;
+            border-radius: 9px;
+            border: 1.5px solid #fcd34d;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .92rem;
+            outline: none;
+            background: #fff;
+            color: #0f172a;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .unknown-input-row input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, .2);
+        }
+
+        .btn-action {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .btn-action:hover { transform: translateY(-1px); opacity: .92; }
+        .btn-action:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+        .btn-reset { background-color: var(--btn-red); }
+        .btn-toggle { background-color: var(--primary-accent); }
+        .btn-verify { background-color: var(--btn-green); }
+        .btn-reveal { background-color: #f59e0b; }
+
+        .feedback {
+            margin-top: 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            padding: 0;
+            line-height: 1.5;
+            border-radius: 8px;
+        }
+        .feedback.ok  { background: #dcfce7; color: #166534; padding: 10px 12px; border: 1px solid #86efac; }
+        .feedback.err { background: #fee2e2; color: #991b1b; padding: 10px 12px; border: 1px solid #fca5a5; }
+        .feedback.warn{ background: #fef3c7; color: #92400e; padding: 10px 12px; border: 1px solid #fcd34d; }
+
+        .explanation-box, .vector-insights-box {
+            background: var(--inner-box-bg);
+            padding: 20px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .explanation-box h4, .vector-insights-box h4 {
+            margin: 0 0 16px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .formula-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tel-item {
+            background: #fff;
+            border: 1px solid var(--card-border);
+            border-radius: 9px;
+            padding: 9px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .tel-label {
+            font-size: .66rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+        .tel-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .92rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .equation-step {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .equation-step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        .equation-title {
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .equation-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .math-container {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+            border: 1px solid var(--card-border);
+            overflow-x: auto;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .hidden-note {
+            font-size: .8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .locked-banner {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            font-size: .8rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 850px) {
+            .simulation-grid { grid-template-columns: 1fr; }
+            .header-container { flex-direction: column; align-items: flex-start; gap: 15px; }
+            h1 { font-size: 1.4rem; }
+            .scenario-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    (function() {
+        const sesion = sessionStorage.getItem("simuladorAutorizado");
+        const paginaActual = "simulador_10.html";
+        if (!sesion || sesion !== paginaActual) {
+            window.location.href = "login.html";
+        }
+    })();
+</script>
+
+<div class="container">
+    <div class="header-container">
+        <img src="log.png" alt="Logo Laboratorio" class="header-logo" onerror="this.style.display='none'">
+        <h1>Laboratorio de Mecánica y Electromagnetismo</h1>
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Volver a inicio
+        </button>
+    </div>
+
+    <p class="description">
+        <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-right: 6px;"></i>
+        <strong>Problema 4.11:</strong> Calcule la masa y el peso de un cuerpo si una fuerza resultante de 16 N basta para impartirle una aceleración igual a 5 m/s². 
+        Utiliza la Segunda Ley de Newton (\(F_{res} = m \cdot a\)) para encontrar la masa, y luego la relación de peso (\(W = m \cdot g\)) para encontrar su peso en la Tierra.
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span><i class="fas fa-cube" style="color: var(--primary-accent); margin-right: 8px;"></i> Fuerza, Masa y Peso</span>
+            <div class="card-title-actions">
+                <button class="btn-action btn-reset" onclick="resetSimulador()"><i class="fas fa-undo"></i> Valores Originales</button>
+            </div>
+        </div>
+
+        <div class="scenario-section">
+            <div class="section-label"><i class="fas fa-flask"></i> Escenario de aprendizaje</div>
+            <div class="scenario-grid" id="scenarioGrid"></div>
+            <p class="scenario-desc" id="scenarioDesc"></p>
+        </div>
+
+        <div class="simulation-grid">
+
+            <div class="canvas-area-container">
+                <div class="canvas-box-wrapper">
+                    <canvas id="simCanvas" width="420" height="420"></canvas>
+                </div>
+
+                <div class="vector-insights-box">
+                    <h4>
+                        <span><i class="fas fa-chart-line" style="color: var(--primary-accent); margin-right: 6px;"></i> Telemetría</span>
+                        <span class="formula-tag"><i class="fas fa-satellite-dish"></i> F = ma | W = mg</span>
+                    </h4>
+                    <div class="tel-grid">
+                        <div class="tel-item"><span class="tel-label">Fuerza Resultante (F)</span><span class="tel-value" id="insight-F">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Aceleración (a)</span><span class="tel-value" id="insight-a">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Masa (m)</span><span class="tel-value" id="insight-m">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Peso en Tierra (W)</span><span class="tel-value" id="insight-W">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Canvas para el Diagrama de Cuerpo Libre -->
+                <canvas id="vectorCanvas" width="420" height="300"></canvas>
+            </div>
+
+            <div class="controls-panel">
+
+                <div id="slidersZone"></div>
+
+                <div id="unknownZone" style="display:none;"></div>
+
+                <div class="explanation-box" id="infoBox">
+                    <h4>
+                        <span><i class="fas fa-square-root-variable" style="color: var(--primary-accent); margin-right: 6px;"></i> Memoria de Cálculo</span>
+                        <button class="btn-action btn-toggle" id="toggleCalcBtn" onclick="toggleMemoriaCalculo()"><i class="fas fa-eye-slash" id="toggleIcon"></i> Ocultar</button>
+                    </h4>
+                    <div id="calcContentContainer">
+                        <div id="calcContent"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function cerrarSesion() {
+    sessionStorage.removeItem("simuladorAutorizado");
+    window.location.href = "login.html";
+}
+
+function toggleMemoriaCalculo() {
+    const container = document.getElementById('calcContentContainer');
+    const btn = document.getElementById('toggleCalcBtn');
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar';
+    } else {
+        container.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-eye"></i> Mostrar';
+    }
+}
+
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+        const r = typeof radii === 'number' ? radii : (radii || 0);
+        const rad = Math.min(r, Math.min(w, h) / 2);
+        this.moveTo(x + rad, y);
+        this.arcTo(x + w, y, x + w, y + h, rad);
+        this.arcTo(x + w, y + h, x, y + h, rad);
+        this.arcTo(x, y + h, x, y, rad);
+        this.arcTo(x, y, x + w, y, rad);
+        return this;
+    };
+}
+
+const G_EARTH = 9.81;
+
+const PARAMS = {
+    F: { name:'Fuerza Resultante', sym:'F', unit:'N', min:1, max:100, step:0.1, dec:1, color:'#dc2626' },
+    a: { name:'Aceleración', sym:'a', unit:'m/s²', min:1, max:20, step:0.1, dec:1, color:'#0284c7' },
+    m: { name:'Masa', sym:'m', unit:'kg', min:0.1, max:50, step:0.01, dec:2, color:'#7c3aed' },
+    W: { name:'Peso en Tierra', sym:'W', unit:'N', min:1, max:500, step:0.1, dec:1, color:'#16a34a' }
+};
+
+const DEFAULTS = { F: 16, a: 5, m: 3.2, W: 31.39 };
+
+const SCENARIO_DEFAULTS = {
+    masa: { F: 16, a: 5 },
+    peso: { F: 16, a: 5 },
+    libre: { F: 16, a: 5 }
+};
+
+const SCENARIOS = {
+    masa: {
+        label:'Hallar Masa', icon:'fa-weight-hanging', color:'#7c3aed',
+        unknown:'m',
+        sliders:['F', 'a'],
+        desc:'Datos: Fuerza resultante = 16 N, Aceleración = 5 m/s². Determina la MASA del cuerpo (usa F = ma).'
+    },
+    peso: {
+        label:'Hallar Peso', icon:'fa-globe', color:'#16a34a',
+        unknown:'W',
+        sliders:['F', 'a'],
+        desc:'Datos: Fuerza resultante = 16 N, Aceleración = 5 m/s². Determina el PESO del cuerpo en la Tierra (g = 9.81 m/s²).'
+    },
+    libre: {
+        label:'Modo Libre', icon:'fa-infinity', color:'#0284c7',
+        unknown:null,
+        sliders:['F', 'a'],
+        desc:'Ajusta la fuerza y la aceleración para ver cómo varían la masa y el peso del cuerpo.'
+    }
+};
+
+const DESPEJES = {
+    m: 'F_{res} = m\\,a \\;\\Longrightarrow\\; \\boxed{\\,m=\\frac{F_{res}}{a}\\,}',
+    W: 'W = m\\,g \\;\\text{y}\\; F_{res} = m\\,a \\;\\Longrightarrow\\; \\boxed{\\,W=\\frac{F_{res}\\,g}{a}\\,}'
+};
+
+function computeTrue() {
+    const cfg = SCENARIOS[scen];
+    const base = { ...sliderVals };
+    
+    // Cálculos base
+    base.m = base.F / base.a;
+    base.W = base.m * G_EARTH;
+
+    let trueVal = null;
+    if (cfg.unknown === 'm') trueVal = base.m;
+    if (cfg.unknown === 'W') trueVal = base.W;
+    
+    return { trueVal, errorMsg: '', base };
+}
+
+let scen = 'masa';
+const sliderVals = Object.assign({}, SCENARIO_DEFAULTS.masa);
+let answerStr = '';
+let revealed  = false;
+
+const canvas  = document.getElementById('simCanvas');
+const ctx     = canvas.getContext('2d');
+const vCanvas = document.getElementById('vectorCanvas');
+const vCtx    = vCanvas.getContext('2d');
+
+function buildScenarioButtons() {
+    const grid = document.getElementById('scenarioGrid');
+    grid.innerHTML = '';
+    Object.entries(SCENARIOS).forEach(([key, cfg]) => {
+        const btn = document.createElement('button');
+        btn.className = 'scenario-btn' + (key === scen ? ' active' : '');
+        btn.style.setProperty('--sc-color', cfg.color);
+        btn.innerHTML = `<i class="fas ${cfg.icon}"></i><span>${cfg.label}</span>`;
+        btn.onclick = () => switchScenario(key);
+        grid.appendChild(btn);
+    });
+    document.getElementById('scenarioDesc').innerHTML =
+        `<i class="fas fa-lightbulb"></i>${SCENARIOS[scen].desc}`;
+}
+
+function switchScenario(key) {
+    if (scen === key) return;
+    scen = key;
+    const cfg = SCENARIOS[key];
+    
+    Object.assign(sliderVals, SCENARIO_DEFAULTS[key]);
+    answerStr = '';
+    revealed  = false;
+    
+    buildScenarioButtons();
+    buildControls();
+    clearFeedback();
+    update();
+}
+
+function buildControls() {
+    const cfg = SCENARIOS[scen];
+    const zone = document.getElementById('slidersZone');
+    zone.innerHTML = '';
+    
+    cfg.sliders.forEach(k => {
+        const P = PARAMS[k];
+        const row = document.createElement('div');
+        
+        row.innerHTML = `
+            <div class="slider-label-container">
+                <span class="label-tag" style="margin:0;">${P.name} (${P.sym})</span>
+                <span class="value-badge" id="val-${k}" style="color:${P.color};">--</span>
+            </div>
+            <input type="range" id="param-${k}" min="${P.min}" max="${P.max}" step="${P.step}" value="${sliderVals[k] || P.min}">
+        `;
+        const input = row.querySelector('input');
+        input.addEventListener('input', (e) => {
+            const newVal = parseFloat(e.target.value);
+            sliderVals[k] = newVal;
+            
+            revealed = false;
+            clearFeedback();
+            update();
+        });
+        zone.appendChild(row);
+    });
+
+    const uZone = document.getElementById('unknownZone');
+    if (cfg.unknown) {
+        const P = PARAMS[cfg.unknown];
+        uZone.style.display = 'block';
+        uZone.innerHTML = `
+            <div class="unknown-header">
+                <i class="fas fa-circle-question"></i>
+                Incógnita a determinar: <strong>${P.name} (${P.sym})</strong>
+                <span class="unit-chip">${P.unit || 'adimensional'}</span>
+            </div>
+            <div class="unknown-input-row">
+                <input type="number" id="answerInput" step="any" placeholder="Escribe tu resultado…" value="${answerStr}">
+                <button class="btn-action btn-verify" onclick="verificar()"><i class="fas fa-check"></i> Verificar</button>
+                <button class="btn-action btn-reveal" onclick="revelar()"><i class="fas fa-eye"></i> Ver solución</button>
+            </div>
+            <div id="feedback" class="feedback"></div>`;
+        const inp = document.getElementById('answerInput');
+        inp.addEventListener('input', (e) => {
+            answerStr = e.target.value;
+            revealed = false;
+            clearFeedback();
+            update();
+        });
+        inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') verificar(); });
+    } else {
+        uZone.style.display = 'none';
+        uZone.innerHTML = '';
+    }
+}
+
+function clearFeedback() {
+    const fb = document.getElementById('feedback');
+    if (fb) { fb.className = 'feedback'; fb.innerHTML = ''; }
+}
+
+const fmt = (x, P) => (isFinite(x) ? x.toFixed(P.dec) : '—');
+
+function buildVals() {
+    const cfg = SCENARIOS[scen];
+    const v = Object.assign({}, DEFAULTS);
+    
+    cfg.sliders.forEach(k => v[k] = sliderVals[k]);
+
+    v.m = v.F / v.a;
+    v.W = v.m * G_EARTH;
+
+    if (cfg.unknown) {
+        if (revealed) {
+            const { trueVal } = computeTrue();
+            if (trueVal !== null) v[cfg.unknown] = trueVal;
+        } else {
+            const ua = parseFloat(answerStr);
+            if (answerStr.trim() !== '' && isFinite(ua) && ua > 0) {
+                v[cfg.unknown] = ua;
+            } else {
+                v[cfg.unknown] = (cfg.unknown === 'm') ? 3.20 : 31.39;
+            }
+        }
+    }
+
+    return v;
+}
+
+function update() {
+    const cfg = SCENARIOS[scen];
+    const unknown = cfg.unknown;
+    const { trueVal, errorMsg } = computeTrue();
+    const v = buildVals();
+
+    cfg.sliders.forEach(k => {
+        const el = document.getElementById('val-' + k);
+        if (el) el.innerText = fmt(v[k], PARAMS[k]) + (PARAMS[k].unit ? ' ' + PARAMS[k].unit : '');
+    });
+
+    let mText = v.m.toFixed(2) + ' kg';
+    let wText = v.W.toFixed(1) + ' N';
+
+    if (scen === 'masa' && !revealed) mText = '?';
+    if (scen === 'peso' && !revealed) wText = '?';
+
+    document.getElementById('insight-F').innerText = v.F.toFixed(1) + ' N';
+    document.getElementById('insight-a').innerText = v.a.toFixed(1) + ' m/s²';
+    document.getElementById('insight-m').innerText = mText;
+    document.getElementById('insight-W').innerText = wText;
+
+    drawSim(v, scen, revealed);
+    drawDCL(v, scen, revealed);
+    renderMemoria(v, cfg, unknown, trueVal, errorMsg);
+}
+
+function verificar() {
+    const cfg = SCENARIOS[scen];
+    if (!cfg.unknown) return;
+    const P  = PARAMS[cfg.unknown];
+    const fb = document.getElementById('feedback');
+
+    const ua = parseFloat(answerStr);
+    if (answerStr.trim() === '' || !isFinite(ua)) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Escribe un valor numérico antes de verificar.';
+        return;
+    }
+
+    const { trueVal, errorMsg } = computeTrue();
+    if (trueVal === null) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + errorMsg;
+        return;
+    }
+
+    const tol  = Math.max(0.01 * Math.abs(trueVal), 1e-4);
+    const diff = Math.abs(ua - trueVal);
+
+    if (diff <= tol) {
+        fb.className = 'feedback ok';
+        fb.innerHTML = `<i class="fas fa-circle-check"></i> ¡Correcto! ${P.sym} = <strong>${fmt(trueVal, P)} ${P.unit}</strong>.`;
+        revealed = true;
+        update();
+    } else {
+        fb.className = 'feedback err';
+        fb.innerHTML = `<i class="fas fa-circle-xmark"></i> Todavía no es correcto (tu valor: ${fmt(ua, P)} ${P.unit}). Revisa el despeje e inténtalo de nuevo.`;
+    }
+}
+
+function revelar() {
+    const cfg = SCENARIOS[scen];
+    if (!cfg.unknown) return;
+    const P  = PARAMS[cfg.unknown];
+    const fb = document.getElementById('feedback');
+    const { trueVal, errorMsg } = computeTrue();
+
+    if (trueVal === null) {
+        fb.className = 'feedback warn';
+        fb.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + errorMsg;
+        return;
+    }
+    revealed = true;
+    answerStr = trueVal.toFixed(P.dec);
+    const inp = document.getElementById('answerInput');
+    if (inp) inp.value = answerStr;
+
+    fb.className = 'feedback warn';
+    fb.innerHTML = `<i class="fas fa-lightbulb"></i> Solución: ${P.sym} = <strong>${fmt(trueVal, P)} ${P.unit}</strong>. Revisa el procedimiento completo abajo.`;
+    update();
+}
+
+function kx(el, tex) {
+    if (!el) return;
+    if (typeof katex === 'undefined') { el.textContent = tex; return; }
+    try { katex.render(tex, el, { throwOnError: false }); }
+    catch (e) { el.textContent = tex; }
+}
+
+function renderMemoria(v, cfg, unknown, trueVal, errorMsg) {
+    const box = document.getElementById('calcContent');
+    const f1 = x => x.toFixed(1);
+    const f2 = x => x.toFixed(2);
+
+    let html = '';
+
+    if (!unknown) {
+        html = `
+        <div class="equation-step">
+            <div class="equation-title">Relaciones Fundamentales</div>
+            <div class="equation-desc">La Segunda Ley de Newton y la definición de peso.</div>
+            <div class="math-container" id="kx-1"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">Cálculos Derivados</div>
+            <div class="equation-desc">Valores obtenidos a partir de la fuerza y aceleración.</div>
+            <div class="math-container" id="kx-2"></div>
+        </div>`;
+        box.innerHTML = html;
+        kx(document.getElementById('kx-1'), `F_{res} = m \\cdot a \\\\ W = m \\cdot g`);
+        kx(document.getElementById('kx-2'), `m = \\frac{${f1(v.F)}}{${f1(v.a)}} = ${f2(v.m)}\\text{ kg} \\\\ W = ${f2(v.m)} \\cdot 9.81 = ${f1(v.W)}\\text{ N}`);
+        return;
+    }
+
+    const P = PARAMS[unknown];
+
+    html = `
+    <div class="locked-banner">
+        <i class="fas fa-shield-alt"></i>
+        Asegúrate de usar \(g = 9.81 \\text{ m/s}^2\) para el peso en la Tierra.
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">1 · Planteamiento</div>
+        <div class="equation-desc">Fórmula a utilizar según la incógnita:</div>
+        <div class="math-container" id="kx-p1"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">2 · Datos conocidos</div>
+        <div class="equation-desc">Valores del problema:</div>
+        <div class="math-container" id="kx-p2"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">3 · Despeje de ${P.name}</div>
+        <div class="equation-desc">Álgebra:</div>
+        <div class="math-container" id="kx-p3"></div>
+    </div>
+    <div class="equation-step">
+        <div class="equation-title">4 · Sustitución y resultado</div>
+        <div class="equation-desc">Cálculo final:</div>
+        <div class="math-container" id="kx-p4"></div>
+    </div>`;
+
+    box.innerHTML = html;
+
+    kx(document.getElementById('kx-p1'), unknown === 'm' ? `F_{res} = m \\cdot a` : `W = m \\cdot g \\quad \\text{y} \\quad F_{res} = m \\cdot a`);
+
+    const datos = cfg.sliders.map(k => {
+        const Q = PARAMS[k];
+        return `${Q.sym}=${fmt(v[k], Q)}\\,${Q.unit ? '\\text{' + Q.unit + '}' : ''}`;
+    }).join(',\\quad ');
+    kx(document.getElementById('kx-p2'), datos || '\\text{(ninguno)}');
+
+    kx(document.getElementById('kx-p3'), DESPEJES[unknown]);
+
+    if (!revealed || trueVal === null) {
+        const el = document.getElementById('kx-p4');
+        el.innerHTML = `<span class="hidden-note"><i class="fas fa-lock"></i> Escribe tu resultado y pulsa <strong>Verificar</strong>, o pulsa <strong>Ver solución</strong>, para desbloquear la sustitución numérica.</span>`;
+    } else {
+        let tex = '';
+        if (unknown === 'm') {
+            tex = `m = \\frac{F_{res}}{a} = \\frac{${f1(v.F)}}{${f1(v.a)}} = ${f2(trueVal)}\\;\\text{kg}`;
+        } else if (unknown === 'W') {
+            tex = `m = \\frac{${f1(v.F)}}{${f1(v.a)}} = ${f2(v.m)}\\text{ kg} \\\\ W = m \\cdot g = ${f2(v.m)} \\cdot 9.81 = ${f1(trueVal)}\\;\\text{N}`;
+        }
+        kx(document.getElementById('kx-p4'), tex);
+    }
+}
+
+/* ---------- DIBUJO ESTILO CAFÉ / DORADO / PLATEADO ---------- */
+
+function drawArrow(context, fromx, fromy, tox, toy, size, color) {
+    context.strokeStyle = color;
+    context.fillStyle = color;
+    context.lineWidth = 3;
+    context.beginPath();
+    context.moveTo(fromx, fromy);
+    context.lineTo(tox, toy);
+    context.stroke();
+    const angle = Math.atan2(toy - fromy, tox - fromx);
+    context.beginPath();
+    context.moveTo(tox, toy);
+    context.lineTo(tox - size * Math.cos(angle - Math.PI / 6), toy - size * Math.sin(angle - Math.PI / 6));
+    context.lineTo(tox - size * Math.cos(angle + Math.PI / 6), toy - size * Math.sin(angle + Math.PI / 6));
+    context.closePath();
+    context.fillStyle = color;
+    context.fill();
+}
+
+function drawSim(v, currentScen, isRevealed) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Fondo blanco limpio
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // --- Suelo tono madera con borde plateado ---
+    const groundY = canvas.height - 80;
+    ctx.fillStyle = '#7a4a2b';
+    ctx.fillRect(0, groundY, canvas.width, 80);
+
+    // Sombra/borde inferior más oscuro
+    ctx.fillStyle = '#543219';
+    ctx.fillRect(0, canvas.height - 12, canvas.width, 12);
+
+    // Borde superior plateado del suelo
+    ctx.strokeStyle = '#b8c2cc';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(0, groundY);
+    ctx.lineTo(canvas.width, groundY);
+    ctx.stroke();
+
+    // Línea interior oscura (bisel)
+    ctx.strokeStyle = '#3a2e0a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, groundY + 3);
+    ctx.lineTo(canvas.width, groundY + 3);
+    ctx.stroke();
+
+    const cx = canvas.width / 2;
+
+    // --- Bloque (Masa) con gradiente dorado, apoyado sobre el suelo y con esquinas rectas ---
+    const size = Math.min(80, Math.max(40, v.m * 15));
+    const boxX = cx - size/2;
+    const boxY = groundY - size;  // Base del bloque exactamente sobre el suelo
+
+    // Sombra suave sobre el suelo
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.beginPath();
+    ctx.ellipse(cx, groundY, size/2 + 12, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Gradiente dorado del bloque
+    const boxGrad = ctx.createLinearGradient(boxX, boxY, boxX + size, boxY + size);
+    boxGrad.addColorStop(0, '#d9b358');
+    boxGrad.addColorStop(1, '#a37f28');
+
+    ctx.fillStyle = boxGrad;
+    ctx.strokeStyle = '#3a2e0a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.rect(boxX, boxY, size, size);  // Cuadrado con esquinas rectas
+    ctx.fill();
+    ctx.stroke();
+
+    // Argolla superior metálica
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, boxY, 3.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Texto Masa dentro del bloque
+    let mDisplay = v.m.toFixed(2) + ' kg';
+    if (currentScen === 'masa' && !isRevealed) mDisplay = '? kg';
+
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 12px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(mDisplay, cx, boxY + size/2 + 4);
+
+    // Vector Fuerza Resultante (F) - rojo
+    const fLen = Math.min(100, Math.max(30, v.F * 3));
+    const arrowStartX = boxX + size + 10;
+    const arrowY = boxY + size/2;
+
+    drawArrow(ctx, arrowStartX, arrowY, arrowStartX + fLen, arrowY, 8, '#dc2626');
+
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 12px "Inter", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`F = ${v.F.toFixed(1)} N`, arrowStartX + fLen/2, arrowY - 10);
+
+    // Vector Aceleración (a) - azul
+    const aLen = Math.min(80, Math.max(20, v.a * 5));
+    const accelStartX = boxX - 10;
+
+    drawArrow(ctx, accelStartX, arrowY + 25, accelStartX + aLen, arrowY + 25, 6, '#2563eb');
+
+    ctx.fillStyle = '#2563eb';
+    ctx.fillText(`a = ${v.a.toFixed(1)} m/s²`, accelStartX + aLen/2, arrowY + 45);
+
+    // Vector Peso (W) - verde
+    const wLen = Math.min(80, Math.max(20, v.W / 5));
+    const weightStartY = boxY + size + 6;
+
+    drawArrow(ctx, cx, weightStartY, cx, weightStartY + wLen, 8, '#059669');
+
+    let wDisplay = v.W.toFixed(1) + ' N';
+    if (currentScen === 'peso' && !isRevealed) wDisplay = '? N';
+
+    ctx.fillStyle = '#059669';
+    ctx.textAlign = 'center';
+    ctx.fillText(`W = ${wDisplay}`, cx, weightStartY + wLen + 15);
+}
+
+/* ---------- DIAGRAMA DE CUERPO LIBRE (DCL) ---------- */
+
+function drawDCL(v, currentScen, isRevealed) {
+    vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+
+    // Fondo blanco limpio
+    vCtx.fillStyle = '#ffffff';
+    vCtx.fillRect(0, 0, vCanvas.width, vCanvas.height);
+
+    // Título
+    vCtx.fillStyle = '#1e293b';
+    vCtx.font = 'bold 12px "Inter", sans-serif';
+    vCtx.textAlign = 'left';
+    vCtx.fillText("DIAGRAMA DE CUERPO LIBRE (DCL)", 15, 25);
+
+    const cx = vCanvas.width / 2;
+    const cy = vCanvas.height / 2 + 20;
+
+    // --- Bloque sólido (estilo simulador_17) ---
+    const sizeA = 60;
+    vCtx.save();
+    vCtx.translate(cx, cy);
+    vCtx.fillStyle = '#2563eb';
+    vCtx.strokeStyle = '#1e40af';
+    vCtx.lineWidth = 1.5;
+    vCtx.beginPath();
+    vCtx.rect(-sizeA/2, -sizeA/2, sizeA, sizeA);
+    vCtx.fill();
+    vCtx.stroke();
+    vCtx.fillStyle = '#ffffff';
+    vCtx.font = 'bold 15px "Inter", sans-serif';
+    vCtx.textAlign = 'center';
+    vCtx.fillText('m', 0, 5);
+    vCtx.restore();
+
+    // --- Vectores con flechas triangulares rellenas ---
+
+    // 1. Peso (W) - Vertical hacia abajo (rojo)
+    const wLen = 60;
+    drawArrow(vCtx, cx, cy + sizeA/2, cx, cy + sizeA/2 + wLen, 8, '#dc2626');
+    vCtx.fillStyle = '#dc2626';
+    vCtx.font = 'bold 12px "Inter", sans-serif';
+    vCtx.textAlign = 'left';
+    vCtx.fillText('W = mg', cx + 8, cy + sizeA/2 + wLen * 0.7);
+
+    // 2. Normal (N) - Vertical hacia arriba (azul)
+    const nLen = 55;
+    drawArrow(vCtx, cx, cy - sizeA/2, cx, cy - sizeA/2 - nLen, 8, '#2563eb');
+    vCtx.fillStyle = '#2563eb';
+    vCtx.fillText('N', cx + 8, cy - sizeA/2 - nLen * 0.7);
+
+    // 3. Fuerza Resultante (F) - Horizontal hacia la derecha (verde)
+    const fLen = 55;
+    drawArrow(vCtx, cx + sizeA/2, cy, cx + sizeA/2 + fLen, cy, 8, '#059669');
+    vCtx.fillStyle = '#059669';
+    vCtx.textAlign = 'left';
+    vCtx.fillText('F = ma', cx + sizeA/2 + 8, cy - 8);
+
+    // 4. Aceleración (a) - Horizontal hacia la derecha (morado), debajo del bloque
+    const aLen = 45;
+    drawArrow(vCtx, cx + sizeA/2, cy + 22, cx + sizeA/2 + aLen, cy + 22, 6, '#7c3aed');
+    vCtx.fillStyle = '#7c3aed';
+    vCtx.textAlign = 'left';
+    vCtx.fillText('a', cx + sizeA/2 + 8, cy + 32);
+}
+
+function resetSimulador() {
+    Object.assign(sliderVals, SCENARIO_DEFAULTS[scen] || DEFAULTS);
+    answerStr = '';
+    revealed  = false;
+    buildControls();
+    clearFeedback();
+    update();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    buildScenarioButtons();
+    buildControls();
+    setTimeout(update, 120);
+});
+</script>
+</body>
+</html>
