@@ -589,7 +589,7 @@
         </div>
 
         <div class="loading-text">Comprobando estado de la protección de código…</div>
-        <div class="loading-sub">Verificando integridad del panel de profesores</div>
+        <div class="loading-sub">Verificando integridad del panel de acceso</div>
 
         <div class="loading-bar"><span id="loadingBarFill"></span></div>
         <div class="loading-percent" id="loadingPercent">0%</div>
@@ -833,7 +833,7 @@
 
     // Generar código QR para la URL del panel de profesores
     function generarQR() {
-        const url = 'https://proyectos.emiliocolor.com/lab_electromagnetismo/panel.html';
+        const url = 'https://proyectos.emiliocolor.com/lab_mecanica_electromagnetismo/login.html';
         const qrContainer = document.getElementById('qrcode');
         qrContainer.innerHTML = '';
         new QRCode(qrContainer, {
