@@ -238,6 +238,39 @@
         .footer-center-text a:hover { text-decoration: none; }
         .footer-report { flex-shrink: 0; }
         .footer-report a { color: #475569; text-decoration: none; border-bottom: 1px dashed #cbd5e1; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+
+        /* ===== NUEVOS BOTONES DEBAJO DEL QR ===== */
+        .qr-extra-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-color); }
+        .btn-info-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 14px; background: #ffffff; color: var(--btn-dark-blue); border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; cursor: pointer; width: 100%; transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease; }
+        .btn-info-action:hover { background: #f8fafc; border-color: #94a3b8; }
+        .btn-info-action:active { transform: scale(0.98); }
+        .btn-info-action i { font-size: 0.85rem; }
+
+        /* ===== MODALES ===== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); display: flex; align-items: center; justify-content: center; z-index: 10000; opacity: 0; visibility: hidden; transition: opacity 0.22s ease, visibility 0.22s ease; padding: 20px; backdrop-filter: blur(2px); }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-box { background: #ffffff; border-radius: 14px; max-width: 580px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28); overflow: hidden; transform: translateY(6px); transition: transform 0.22s ease; }
+        .modal-overlay.show .modal-box { transform: translateY(0); }
+        .modal-header { padding: 18px 22px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #f8fafc; }
+        .modal-header h3 { font-family: 'Poppins', sans-serif; font-size: 1.02rem; font-weight: 700; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 8px; }
+        .modal-header h3 i { color: var(--btn-dark-blue); }
+        .modal-close { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); background: #ffffff; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+        .modal-close:hover { background: #eef2f6; color: var(--primary); }
+        .modal-body { padding: 22px; overflow-y: auto; color: #334155; font-size: 0.88rem; line-height: 1.6; }
+        .modal-body h4 { font-family: 'Poppins', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--primary); margin: 0 0 8px 0; display: flex; align-items: center; gap: 7px; }
+        .modal-body h4 i { color: var(--btn-dark-blue); font-size: 0.85rem; }
+        .modal-body h4:not(:first-child) { margin-top: 20px; }
+        .modal-body ul { margin: 0 0 0 18px; padding: 0; }
+        .modal-body li { margin-bottom: 6px; }
+        .modal-body code { font-family: 'JetBrains Mono', monospace; background: #eef2f6; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; color: #0f172a; }
+        .modal-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: #eef2f6; border-radius: 20px; font-size: 0.78rem; font-weight: 600; color: #475569; margin: 0 6px 8px 0; }
+        .modal-badge i { color: var(--btn-dark-blue); font-size: 0.75rem; }
+        .modal-footer-note { margin-top: 20px; padding-top: 14px; border-top: 1px dashed var(--border-color); font-size: 0.8rem; color: #64748b; text-align: center; }
+        .modal-credit-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed #e9edf2; font-size: 0.86rem; }
+        .modal-credit-row:last-child { border-bottom: none; }
+        .modal-credit-row .label { color: #64748b; font-weight: 500; flex-shrink: 0; }
+        .modal-credit-row .value { color: #0f172a; font-weight: 600; text-align: right; }
+
         @media (max-width: 800px) {
             .login-split { flex-direction: column; }
             .panel-left { flex: 0 0 auto; width: 100%; }
@@ -276,7 +309,7 @@
             <span class="loading-percent" id="loadingPercent">0%</span>
         </div>
         <div class="loading-credit">
-            Desarrollado por <strong>EmilioColor®</strong> Soluciones a tu medida, en su división de
+            Almacenado digitalmente por
             <strong>Proyectos EmilioColor®</strong>.
         </div>
     </div>
@@ -313,6 +346,16 @@
                 <div id="qrcode"></div>
             </div>
             <p class="qr-label">Escanea para acceder desde tu móvil</p>
+
+            <!-- ===== NUEVOS BOTONES DEBAJO DEL QR ===== -->
+            <div class="qr-extra-actions">
+                <button type="button" class="btn-info-action" onclick="abrirModal('instrucciones')">
+                    <i class="fas fa-info-circle"></i> Ver Instrucciones
+                </button>
+                <button type="button" class="btn-info-action" onclick="abrirModal('creditos')">
+                    <i class="fas fa-award"></i> Ver Créditos
+                </button>
+            </div>
         </aside>
         <section class="panel-right">
             <div class="panel-section">
@@ -408,6 +451,107 @@
 <button type="button" class="qr-restore-btn" id="qrRestoreBtn" onclick="toggleQR()">
     <i class="fas fa-qrcode"></i> Mostrar QR
 </button>
-<script>const credencialesValidas={"s23ds":"simulador_1.html","p36mx":"simulador_2.html","t78fg":"simulador_3.html","m42kl":"simulador_4.html","d94kv":"simulador_5.html","k51rs":"simulador_6.html","a78nm":"simulador_7.html","z92qw":"simulador_8.html","s45ty":"simulador_9.html","b67gh":"simulador_10.html","c89jk":"simulador_11.html","e12lm":"simulador_12.html","f34no":"simulador_13.html","g56pq":"simulador_14.html","h78rs":"simulador_15.html","i90tu":"simulador_16.html","j12vw":"simulador_17.html","n34pq":"simulador_18.html","r56st":"simulador_19.html","u78vw":"simulador_20.html","x90yz":"simulador_21.html"};const nombresSimuladores={"simulador_1.html":"Momento de Torsión e Inducción Magnética","simulador_2.html":"Equilibrio Magnético en Plano Inclinado","simulador_3.html":"Trayectoria Helicoidal","simulador_4.html":"Conducción Magnética en Rieles Horizontales","simulador_5.html":"Dinámica de Traslación - Segunda Ley de Newton","simulador_6.html":"Dinámica de Traslación - Segunda Ley de Newton","simulador_7.html":"Masa y Peso (Conversiones)","simulador_8.html":"Peso y Masa en la Tierra y la Luna","simulador_9.html":"Peso vs. Fuerza Resultante","simulador_10.html":"Fuerza, Masa y Peso","simulador_11.html":"Plano Inclinado sin Fricción","simulador_12.html":"Fuerza entre Bloques","simulador_13.html":"Atwood con Fricción","simulador_14.html":"Máquina de Atwood Simple","simulador_15.html":"Plano Inclinado y Polea","simulador_16.html":"Tres Masas con Fricción","simulador_17.html":"Plano Inclinado sin Fricción con Bloque Colgante","simulador_18.html":"Práctica Adicional 1","simulador_19.html":"Práctica Adicional 2","simulador_20.html":"Práctica Adicional 3","simulador_21.html":"Práctica Adicional 4"};const secciones={electromagnetismo:["simulador_1.html","simulador_2.html","simulador_3.html","simulador_4.html"],mecanica:["simulador_5.html","simulador_6.html","simulador_7.html","simulador_8.html","simulador_9.html","simulador_10.html","simulador_11.html","simulador_12.html","simulador_13.html","simulador_14.html","simulador_15.html","simulador_16.html","simulador_17.html"],adicionales:["simulador_18.html","simulador_19.html","simulador_20.html","simulador_21.html"]};const _refMap=["JACM","NLGOCECYT9","MRGC","DHE"];function toggleQR(){const panel=document.getElementById('panelQR'),restoreBtn=document.getElementById('qrRestoreBtn'),wrapper=document.getElementById('loginWrapper'),isHidden=panel.classList.toggle('qr-hidden');wrapper.classList.toggle('qr-collapsed',isHidden);if(isHidden){restoreBtn.classList.add('show')}else{restoreBtn.classList.remove('show')}}function toggleAcordeon(seccion){const acordeon=document.getElementById('acordeon-'+seccion);acordeon.classList.toggle('abierto')}function validarAdmin(seccion){const input=document.getElementById('admin-'+seccion),error=document.getElementById('gate-error-'+seccion),gate=document.getElementById('gate-'+seccion),lista=document.getElementById('lista-'+seccion);const validas=Array.isArray(_refMap)?_refMap:(_refMap[seccion]||[]);if(validas.includes(input.value.trim())){error.classList.remove('show');gate.style.display='none';lista.style.display='block';mostrarCredenciales(seccion)}else{error.classList.add('show');input.value='';setTimeout(()=>error.classList.remove('show'),3000)}}function mostrarCredenciales(seccion){const container=document.getElementById('lista-'+seccion);container.innerHTML='';const simuladores=secciones[seccion]||[];simuladores.forEach(destino=>{const codigo=Object.keys(credencialesValidas).find(k=>credencialesValidas[k]===destino);if(!codigo)return;const nombreSimulador=nombresSimuladores[destino]||destino;const item=document.createElement('div');item.className='credencial-item';item.innerHTML=`<span class="codigo" title="Clic para copiar" data-codigo="${codigo}">${codigo}</span><span class="destino">${nombreSimulador}</span>`;item.querySelector('.codigo').addEventListener('click',e=>{const cod=e.target.getAttribute('data-codigo');copiarCredencial(cod,e.target)});container.appendChild(item)})}function copiarCredencial(codigo,el){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(codigo).then(()=>{el.classList.add('copiado');setTimeout(()=>el.classList.remove('copiado'),1200)}).catch(()=>copiarFallback(codigo,el))}else{copiarFallback(codigo,el)}}function copiarFallback(codigo,el){const temp=document.createElement('textarea');temp.value=codigo;temp.style.position='fixed';temp.style.opacity='0';document.body.appendChild(temp);temp.select();try{document.execCommand('copy');el.classList.add('copiado');setTimeout(()=>el.classList.remove('copiado'),1200)}catch(e){}document.body.removeChild(temp)}function generarQR(){const url='https://proyectos.emiliocolor.com/lab_mecanica_electromagnetismo/login.html';const qrContainer=document.getElementById('qrcode');qrContainer.innerHTML='';new QRCode(qrContainer,{text:url,width:140,height:140,colorDark:'#0f172a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})}function validarAcceso(event){event.preventDefault();const credencial=document.getElementById("credencial").value.trim();const destino=credencialesValidas[credencial];const errorBox=document.getElementById("errorBox");if(destino){sessionStorage.setItem("simuladorAutorizado",destino);window.location.href=destino}else{errorBox.style.display="flex";setTimeout(()=>{errorBox.style.display="none"},3000)}}const LOADING_DURATION_MS=3000;const LOADING_STEPS=25;function startLoadingProgress(){const circleFill=document.getElementById('loadingCircleFill');const pctEl=document.getElementById('loadingPercent');if(!circleFill||!pctEl)return;const circumference=2*Math.PI*52;circleFill.style.strokeDasharray=circumference;circleFill.style.strokeDashoffset=circumference;const intervalo=LOADING_DURATION_MS/LOADING_STEPS;let paso=0;const timer=setInterval(()=>{paso++;const pct=Math.min(Math.round((paso/LOADING_STEPS)*100),100);circleFill.style.strokeDashoffset=circumference*(1-pct/100);pctEl.textContent=pct+'%';if(paso>=LOADING_STEPS)clearInterval(timer)},intervalo)}function hideLoadingScreen(){const ls=document.getElementById('loadingScreen');const wrapper=document.getElementById('loginWrapper');if(ls){ls.classList.add('hidden');setTimeout(()=>{if(ls.parentNode)ls.parentNode.removeChild(ls)},400)}if(wrapper)wrapper.style.display='block';document.body.classList.remove('loading')}document.addEventListener('DOMContentLoaded',function(){generarQR();const form=document.getElementById("loginForm");form.addEventListener("submit",validarAcceso);startLoadingProgress();setTimeout(hideLoadingScreen,LOADING_DURATION_MS);setTimeout(()=>{const s=document.createElement('script');s.src='proteccion.js';document.body.appendChild(s)},LOADING_DURATION_MS+100)});</script>
+
+<!-- ===== MODAL: INSTRUCCIONES ===== -->
+<div class="modal-overlay" id="modal-instrucciones" onclick="cerrarModal(event,'instrucciones')" role="dialog" aria-modal="true" aria-labelledby="titulo-instrucciones">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 id="titulo-instrucciones"><i class="fas fa-info-circle"></i> Instrucciones de Uso</h3>
+            <button type="button" class="modal-close" onclick="cerrarModalDirecto('instrucciones')" aria-label="Cerrar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <h4><i class="fas fa-user-graduate"></i> Para alumnos</h4>
+            <ul>
+                <li>Localiza el campo <strong>Credencial de Práctica</strong> en el panel derecho.</li>
+                <li>Escribe la credencial de <strong>5 caracteres</strong> que te fue asignada (por ejemplo <code>s23ds</code>).</li>
+                <li>Presiona <strong>Ingresar al Laboratorio</strong> para abrir tu simulación correspondiente.</li>
+                <li>Si la credencial es incorrecta o no está asignada, verás un mensaje de error temporal.</li>
+            </ul>
+
+            <h4><i class="fas fa-user-shield"></i> Para administradores</h4>
+            <ul>
+                <li>Despliega la sección deseada: <strong>Electromagnetismo</strong>, <strong>Mecánica</strong> o <strong>Prácticas Adicionales</strong>.</li>
+                <li>Ingresa la <strong>meta credencial de administrador</strong> y presiona <strong>Desbloquear</strong>.</li>
+                <li>Se mostrará el listado completo de credenciales con el nombre de la práctica asociada.</li>
+                <li>Haz clic sobre cualquier credencial para <strong>copiarla al portapapeles</strong>.</li>
+            </ul>
+
+            <h4><i class="fas fa-qrcode"></i> Acceso por QR</h4>
+            <ul>
+                <li>Escanea el código QR con tu dispositivo móvil para abrir el laboratorio desde ahí.</li>
+                <li>Puedes <strong>ocultar</strong> el QR con la <i class="fas fa-times"></i> de la esquina superior del panel.</li>
+                <li>Cuando esté oculto, usa el botón flotante <strong>Mostrar QR</strong> (esquina inferior derecha) para volver a mostrarlo.</li>
+            </ul>
+
+            <h4><i class="fas fa-lightbulb"></i> Recomendaciones</h4>
+            <ul>
+                <li>Utiliza un navegador actualizado (Chrome, Edge, Firefox o Safari).</li>
+                <li>Permite las ventanas emergentes si tu navegador las bloquea.</li>
+                <li>No compartas tu credencial con otras personas.</li>
+            </ul>
+
+            <div class="modal-footer-note">
+                <i class="fas fa-envelope"></i> ¿Problemas técnicos? Contacta a tu profesor o al administrador del laboratorio.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL: CRÉDITOS ===== -->
+<div class="modal-overlay" id="modal-creditos" onclick="cerrarModal(event,'creditos')" role="dialog" aria-modal="true" aria-labelledby="titulo-creditos">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 id="titulo-creditos"><i class="fas fa-award"></i> Créditos del Proyecto</h3>
+            <button type="button" class="modal-close" onclick="cerrarModalDirecto('creditos')" aria-label="Cerrar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="text-align:center; margin-bottom: 18px;">
+                <span class="modal-badge"><i class="fas fa-code"></i> Desarrollo</span>
+                <span class="modal-badge"><i class="fas fa-graduation-cap"></i> Académico</span>
+                <span class="modal-badge"><i class="fas fa-flask"></i> Educativo</span>
+            </div>
+
+            <div class="modal-credit-row">
+                <span class="label">Desarrollador</span>
+                <span class="value">Tec. Emilio Calep Vargas Yáñez</span>
+            </div>
+            <div class="modal-credit-row">
+                <span class="label">Almacenamiento digital</span>
+                <span class="value">Proyectos EmilioColor®</span>
+            </div>
+            <div class="modal-credit-row">
+                <span class="label">Institución</span>
+                <span class="value">Instituto Politécnico Nacional</span>
+            </div>
+            <div class="modal-credit-row">
+                <span class="label">Escuela</span>
+                <span class="value">Escuela Superior de Cómputo (ESCOM)</span>
+            </div>
+            <div class="modal-credit-row">
+                <span class="label">Proyecto</span>
+                <span class="value">Laboratorio Virtual de Mecánica y Electromagnetismo</span>
+            </div>
+            <div class="modal-credit-row">
+                <span class="label">Versión</span>
+                <span class="value">v1.0</span>
+            </div>
+            <div class="modal-credit-row">
+                <span class="label">Año</span>
+                <span class="value">2026</span>
+            </div>
+
+            <div class="modal-footer-note">
+                <i class="fas fa-heart" style="color:#d01b1b;"></i>
+                Hecho con dedicación para la comunidad politécnica.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>const credencialesValidas={"s23ds":"simulador_1.html","p36mx":"simulador_2.html","t78fg":"simulador_3.html","m42kl":"simulador_4.html","d94kv":"simulador_5.html","k51rs":"simulador_6.html","a78nm":"simulador_7.html","z92qw":"simulador_8.html","s45ty":"simulador_9.html","b67gh":"simulador_10.html","c89jk":"simulador_11.html","e12lm":"simulador_12.html","f34no":"simulador_13.html","g56pq":"simulador_14.html","h78rs":"simulador_15.html","i90tu":"simulador_16.html","j12vw":"simulador_17.html","n34pq":"simulador_18.html","r56st":"simulador_19.html","u78vw":"simulador_20.html","x90yz":"simulador_21.html"};const nombresSimuladores={"simulador_1.html":"Momento de Torsión e Inducción Magnética","simulador_2.html":"Equilibrio Magnético en Plano Inclinado","simulador_3.html":"Trayectoria Helicoidal","simulador_4.html":"Conducción Magnética en Rieles Horizontales","simulador_5.html":"Dinámica de Traslación - Segunda Ley de Newton","simulador_6.html":"Dinámica de Traslación - Segunda Ley de Newton","simulador_7.html":"Masa y Peso (Conversiones)","simulador_8.html":"Peso y Masa en la Tierra y la Luna","simulador_9.html":"Peso vs. Fuerza Resultante","simulador_10.html":"Fuerza, Masa y Peso","simulador_11.html":"Plano Inclinado sin Fricción","simulador_12.html":"Fuerza entre Bloques","simulador_13.html":"Atwood con Fricción","simulador_14.html":"Máquina de Atwood Simple","simulador_15.html":"Plano Inclinado y Polea","simulador_16.html":"Tres Masas con Fricción","simulador_17.html":"Plano Inclinado sin Fricción con Bloque Colgante","simulador_18.html":"Práctica Adicional 1","simulador_19.html":"Práctica Adicional 2","simulador_20.html":"Práctica Adicional 3","simulador_21.html":"Práctica Adicional 4"};const secciones={electromagnetismo:["simulador_1.html","simulador_2.html","simulador_3.html","simulador_4.html"],mecanica:["simulador_5.html","simulador_6.html","simulador_7.html","simulador_8.html","simulador_9.html","simulador_10.html","simulador_11.html","simulador_12.html","simulador_13.html","simulador_14.html","simulador_15.html","simulador_16.html","simulador_17.html"],adicionales:["simulador_18.html","simulador_19.html","simulador_20.html","simulador_21.html"]};const _refMap=["JACM","NLGOCECYT9","MRGC","DHE"];function toggleQR(){const panel=document.getElementById('panelQR'),restoreBtn=document.getElementById('qrRestoreBtn'),wrapper=document.getElementById('loginWrapper'),isHidden=panel.classList.toggle('qr-hidden');wrapper.classList.toggle('qr-collapsed',isHidden);if(isHidden){restoreBtn.classList.add('show')}else{restoreBtn.classList.remove('show')}}function toggleAcordeon(seccion){const acordeon=document.getElementById('acordeon-'+seccion);acordeon.classList.toggle('abierto')}function validarAdmin(seccion){const input=document.getElementById('admin-'+seccion),error=document.getElementById('gate-error-'+seccion),gate=document.getElementById('gate-'+seccion),lista=document.getElementById('lista-'+seccion);const validas=Array.isArray(_refMap)?_refMap:(_refMap[seccion]||[]);if(validas.includes(input.value.trim())){error.classList.remove('show');gate.style.display='none';lista.style.display='block';mostrarCredenciales(seccion)}else{error.classList.add('show');input.value='';setTimeout(()=>error.classList.remove('show'),3000)}}function mostrarCredenciales(seccion){const container=document.getElementById('lista-'+seccion);container.innerHTML='';const simuladores=secciones[seccion]||[];simuladores.forEach(destino=>{const codigo=Object.keys(credencialesValidas).find(k=>credencialesValidas[k]===destino);if(!codigo)return;const nombreSimulador=nombresSimuladores[destino]||destino;const item=document.createElement('div');item.className='credencial-item';item.innerHTML=`<span class="codigo" title="Clic para copiar" data-codigo="${codigo}">${codigo}</span><span class="destino">${nombreSimulador}</span>`;item.querySelector('.codigo').addEventListener('click',e=>{const cod=e.target.getAttribute('data-codigo');copiarCredencial(cod,e.target)});container.appendChild(item)})}function copiarCredencial(codigo,el){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(codigo).then(()=>{el.classList.add('copiado');setTimeout(()=>el.classList.remove('copiado'),1200)}).catch(()=>copiarFallback(codigo,el))}else{copiarFallback(codigo,el)}}function copiarFallback(codigo,el){const temp=document.createElement('textarea');temp.value=codigo;temp.style.position='fixed';temp.style.opacity='0';document.body.appendChild(temp);temp.select();try{document.execCommand('copy');el.classList.add('copiado');setTimeout(()=>el.classList.remove('copiado'),1200)}catch(e){}document.body.removeChild(temp)}function generarQR(){const url='https://proyectos.emiliocolor.com/lab_mecanica_electromagnetismo/login.html';const qrContainer=document.getElementById('qrcode');qrContainer.innerHTML='';new QRCode(qrContainer,{text:url,width:140,height:140,colorDark:'#0f172a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})}function validarAcceso(event){event.preventDefault();const credencial=document.getElementById("credencial").value.trim();const destino=credencialesValidas[credencial];const errorBox=document.getElementById("errorBox");if(destino){sessionStorage.setItem("simuladorAutorizado",destino);window.location.href=destino}else{errorBox.style.display="flex";setTimeout(()=>{errorBox.style.display="none"},3000)}}function abrirModal(tipo){const m=document.getElementById('modal-'+tipo);if(m){m.classList.add('show');document.body.style.overflow='hidden'}}function cerrarModalDirecto(tipo){const m=document.getElementById('modal-'+tipo);if(m){m.classList.remove('show');document.body.style.overflow=''}}function cerrarModal(event,tipo){if(event.target.classList&&event.target.classList.contains('modal-overlay')){cerrarModalDirecto(tipo)}}document.addEventListener('keydown',function(e){if(e.key==='Escape'||e.key==='Esc'){document.querySelectorAll('.modal-overlay.show').forEach(function(m){m.classList.remove('show')});document.body.style.overflow=''}});const LOADING_DURATION_MS=3000;const LOADING_STEPS=25;function startLoadingProgress(){const circleFill=document.getElementById('loadingCircleFill');const pctEl=document.getElementById('loadingPercent');if(!circleFill||!pctEl)return;const circumference=2*Math.PI*52;circleFill.style.strokeDasharray=circumference;circleFill.style.strokeDashoffset=circumference;const intervalo=LOADING_DURATION_MS/LOADING_STEPS;let paso=0;const timer=setInterval(()=>{paso++;const pct=Math.min(Math.round((paso/LOADING_STEPS)*100),100);circleFill.style.strokeDashoffset=circumference*(1-pct/100);pctEl.textContent=pct+'%';if(paso>=LOADING_STEPS)clearInterval(timer)},intervalo)}function hideLoadingScreen(){const ls=document.getElementById('loadingScreen');const wrapper=document.getElementById('loginWrapper');if(ls){ls.classList.add('hidden');setTimeout(()=>{if(ls.parentNode)ls.parentNode.removeChild(ls)},400)}if(wrapper)wrapper.style.display='block';document.body.classList.remove('loading')}document.addEventListener('DOMContentLoaded',function(){generarQR();const form=document.getElementById("loginForm");form.addEventListener("submit",validarAcceso);startLoadingProgress();setTimeout(hideLoadingScreen,LOADING_DURATION_MS);setTimeout(()=>{const s=document.createElement('script');s.src='proteccion.js';document.body.appendChild(s)},LOADING_DURATION_MS+100)});</script>
 </body>
 </html>
