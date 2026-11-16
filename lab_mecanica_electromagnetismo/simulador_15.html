@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador - Plano Inclinado y Polea</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --inner-box-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7;
+            --btn-red: #ef4444;
+            --btn-gray: #475569;
+            --btn-gray-hover: #334155;
+            --btn-green: #16a34a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1050px; width: 100%; }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .header-logo {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 {
+            text-align: left;
+            color: #0f172a;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            flex: 1;
+        }
+
+        .btn-logout {
+            background-color: var(--btn-gray);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+        }
+        .btn-logout:hover { background-color: var(--btn-gray-hover); transform: translateY(-1px); }
+
+        .description {
+            text-align: left;
+            margin: 0 0 30px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .card-title-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .scenario-section { margin-top: 22px; }
+
+        .section-label {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(122px, 1fr));
+            gap: 10px;
+        }
+
+        .scenario-btn {
+            --sc-color: #0284c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 8px;
+            border-radius: 10px;
+            border: 1.5px solid var(--card-border);
+            background: #fff;
+            color: #475569;
+            font-weight: 600;
+            font-size: .8rem;
+            cursor: pointer;
+            transition: all .18s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .scenario-btn i { font-size: .95rem; }
+        .scenario-btn:hover { border-color: var(--sc-color); color: var(--sc-color); transform: translateY(-1px); }
+        .scenario-btn.active {
+            background: var(--sc-color);
+            border-color: var(--sc-color);
+            color: #fff;
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,.45);
+        }
+
+        .scenario-desc {
+            margin: 14px 0 0 0;
+            font-size: .87rem;
+            line-height: 1.55;
+            color: #334155;
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 0 10px 10px 0;
+        }
+        .scenario-desc i { color: #333333; margin-right: 6px; }
+
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .canvas-area-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .canvas-box-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            display: block;
+        }
+
+        #vectorCanvas {
+            max-width: 100% !important;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        #slidersZone {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            background: var(--inner-box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .label-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            outline: none;
+            margin-top: 8px;
+            accent-color: var(--primary-accent);
+            transition: background-color .15s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .value-badge {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        #unknownZone {
+            background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1.5px solid #fcd34d;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .unknown-header {
+            font-size: .86rem;
+            font-weight: 600;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .unknown-header i { font-size: 1rem; }
+        .unknown-header strong { color: #78350f; }
+
+        .unit-chip {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            background: #fff;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .unknown-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .unknown-input-row input {
+            flex: 1;
+            min-width: 130px;
+            padding: 10px 12px;
+            border-radius: 9px;
+            border: 1.5px solid #fcd34d;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .92rem;
+            outline: none;
+            background: #fff;
+            color: #0f172a;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .unknown-input-row input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, .2);
+        }
+
+        .btn-action {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .btn-action:hover { transform: translateY(-1px); opacity: .92; }
+        .btn-reset { background-color: var(--btn-red); }
+        .btn-toggle { background-color: var(--primary-accent); }
+        .btn-verify { background-color: var(--btn-green); }
+        .btn-reveal { background-color: #f59e0b; }
+
+        .feedback {
+            margin-top: 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            padding: 0;
+            line-height: 1.5;
+            border-radius: 8px;
+        }
+        .feedback.ok  { background: #dcfce7; color: #166534; padding: 10px 12px; border: 1px solid #86efac; }
+        .feedback.err { background: #fee2e2; color: #991b1b; padding: 10px 12px; border: 1px solid #fca5a5; }
+        .feedback.warn{ background: #fef3c7; color: #92400e; padding: 10px 12px; border: 1px solid #fcd34d; }
+
+        .explanation-box, .vector-insights-box {
+            background: var(--inner-box-bg);
+            padding: 20px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .explanation-box h4, .vector-insights-box h4 {
+            margin: 0 0 16px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .formula-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tel-item {
+            background: #fff;
+            border: 1px solid var(--card-border);
+            border-radius: 9px;
+            padding: 9px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .tel-label {
+            font-size: .66rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+        .tel-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .92rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .equation-step {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .equation-step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        .equation-title {
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .equation-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .math-container {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+            border: 1px solid var(--card-border);
+            overflow-x: auto;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .hidden-note {
+            font-size: .8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .locked-banner {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            font-size: .8rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 850px) {
+            .simulation-grid { grid-template-columns: 1fr; }
+            .header-container { flex-direction: column; align-items: flex-start; gap: 15px; }
+            h1 { font-size: 1.4rem; }
+            .scenario-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    (function() {
+        const sesion = sessionStorage.getItem("simuladorAutorizado");
+        const paginaActual = "simulador_15.html"; 
+        if (!sesion || sesion !== paginaActual) {
+            window.location.href = "login.html";
+        }
+    })();
+</script>
+
+<div class="container">
+    <div class="header-container">
+        <img src="log.png" alt="Logo Laboratorio" class="header-logo" onerror="this.style.display='none'">
+        <h1>Laboratorio de Mecánica</h1>
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Volver a inicio
+        </button>
+    </div>
+
+    <p class="description">
+        <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-right: 6px;"></i>
+        <strong>Plano Inclinado y Polea:</strong> El sistema descrito en la figura 4.15 parte del reposo. ¿Cuál es la aceleración si se supone una fricción de cero?
+        <br><em>Concepto clave: El bloque de 10 kg en el plano inclinado (32°) experimenta una componente de su peso hacia abajo del plano (<strong>W · sen 32°</strong>). El bloque colgante de 2 kg tira de la cuerda. La aceleración depende de la diferencia entre estas fuerzas a lo largo de la dirección del movimiento.</em>
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span><i class="fas fa-cubes" style="color: var(--primary-accent); margin-right: 8px;"></i> Sistema en Plano Inclinado</span>
+            <div class="card-title-actions">
+                <button class="btn-action btn-reset" onclick="restablecerSimulador()"><i class="fas fa-undo"></i> Valores Originales</button>
+            </div>
+        </div>
+
+        <div class="scenario-section">
+            <div class="section-label"><i class="fas fa-flask"></i> Escenario de aprendizaje</div>
+            <div class="scenario-grid" id="scenarioGrid"></div>
+            <p class="scenario-desc" id="scenarioDesc"></p>
+        </div>
+
+        <div class="simulation-grid">
+
+            <div class="canvas-area-container">
+                <div class="canvas-box-wrapper">
+                    <canvas id="simCanvas" width="420" height="320"></canvas>
+                </div>
+
+                <div class="vector-insights-box">
+                    <h4>
+                        <span><i class="fas fa-chart-line" style="color: var(--primary-accent); margin-right: 6px;"></i> Telemetría</span>
+                        <span class="formula-tag"><i class="fas fa-satellite-dish"></i> Dinámica</span>
+                    </h4>
+                    <div class="tel-grid">
+                        <div class="tel-item"><span class="tel-label">Aceleración (a)</span><span class="tel-value" id="insight-a">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Tensión (T)</span><span class="tel-value" id="insight-T">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Fuerza Neta (F_neta)</span><span class="tel-value" id="insight-Fnet">--</span></div>
+                        <div class="tel-item"><span class="tel-label">Peso Plano (W1)</span><span class="tel-value" id="insight-W1">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Canvas para el Diagrama de Cuerpo Libre -->
+                <canvas id="vectorCanvas" width="420" height="320"></canvas>
+            </div>
+
+            <div class="controls-panel">
+
+                <div id="slidersZone"></div>
+
+                <div id="unknownZone" style="display:none;"></div>
+
+                <div class="explanation-box" id="infoBox">
+                    <h4>
+                        <span><i class="fas fa-square-root-variable" style="color: var(--primary-accent); margin-right: 6px;"></i> Memoria de Cálculo</span>
+                        <button class="btn-action btn-toggle" id="toggleCalcBtn" onclick="alternarMemoriaCalculo()"><i class="fas fa-eye-slash" id="toggleIcon"></i> Ocultar</button>
+                    </h4>
+                    <div id="calcContentContainer">
+                        <div id="calcContent"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Esta función la dejo intacta porque está enganchada al sistema de login.
+    // Si le cambio el nombre o el contenido, deja de redirigir y se rompe la sesión.
+    function cerrarSesion() {
+        sessionStorage.removeItem("simuladorAutorizado");
+        window.location.href = "login.html";
+    }
+
+    // Alterno la visibilidad del panel de memoria de cálculo.
+    // Miro el display del contenedor y cambio el texto/ícono del botón para
+    // que siempre coincida con la acción que va a ejecutar el usuario.
+    function alternarMemoriaCalculo() {
+        const contenedor = document.getElementById('calcContentContainer');
+        const boton = document.getElementById('toggleCalcBtn');
+        if (contenedor.style.display === 'none') {
+            contenedor.style.display = 'block';
+            boton.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar';
+        } else {
+            contenedor.style.display = 'none';
+            boton.innerHTML = '<i class="fas fa-eye"></i> Mostrar';
+        }
+    }
+
+    // Polyfill por si el navegador no trae roundRect nativo.
+    // Lo necesito por consistencia con el resto de simuladores.
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, ancho, alto, radios) {
+            const radio = typeof radios === 'number' ? radios : (radios || 0);
+            const radioEfectivo = Math.min(radio, Math.min(ancho, alto) / 2);
+            this.moveTo(x + radioEfectivo, y);
+            this.arcTo(x + ancho, y, x + ancho, y + alto, radioEfectivo);
+            this.arcTo(x + ancho, y + alto, x, y + alto, radioEfectivo);
+            this.arcTo(x, y + alto, x, y, radioEfectivo);
+            this.arcTo(x, y, x + ancho, y, radioEfectivo);
+            return this;
+        };
+    }
+
+    /* =====================================================================
+       1. CONSTANTES FÍSICAS
+       ===================================================================== */
+
+    // Gravedad terrestre en el SI.
+    const G_TIERRA = 9.8;
+
+    /* =====================================================================
+       2. PARÁMETROS, ESCENARIOS Y VALORES POR DEFECTO
+       ===================================================================== */
+
+    // Uso las claves m1, m2, ang, a, T como identificadores internos que
+    // coinciden con los símbolos físicos del problema. No las cambio porque
+    // además están conectadas a los IDs del HTML (insight-a, val-ang, etc.).
+    const PARAMETROS = {
+        m1:  { nombre:'Masa Plano Inclinado', simbolo:'m_1', unidad:'kg',   minimo:1, maximo:20, paso:0.5, decimales:1, color:'#2563eb' },
+        m2:  { nombre:'Masa Colgante',        simbolo:'m_2', unidad:'kg',   minimo:1, maximo:20, paso:0.5, decimales:1, color:'#f59e0b' },
+        ang: { nombre:'Ángulo del Plano',     simbolo:'\\theta', unidad:'°', minimo:0, maximo:60, paso:1,   decimales:0, color:'#475569' },
+        a:   { nombre:'Aceleración',          simbolo:'a',   unidad:'m/s²', minimo:0, maximo:10, paso:0.1, decimales:2, color:'#059669' },
+        T:   { nombre:'Tensión',              simbolo:'T',   unidad:'N',    minimo:0, maximo:100, paso:0.1, decimales:2, color:'#059669' }
+    };
+
+    // Valores por defecto genéricos.
+    const VALORES_POR_DEFECTO = { m1: 10, m2: 2, ang: 32 };
+
+    // Para cada escenario guardo la combinación inicial de sus sliders.
+    const VALORES_POR_DEFECTO_ESCENARIO = {
+        aceleracion: { m1: 10, m2: 2, ang: 32 },
+        tension:     { m1: 10, m2: 2, ang: 32 },
+        libre:       { m1: 10, m2: 2, ang: 32 }
+    };
+
+    // Cada escenario declara qué variable es la incógnita y qué sliders se muestran.
+    const ESCENARIOS = {
+        aceleracion: {
+            etiqueta:'Hallar Aceleración', icono:'fa-arrow-down', color:'#059669',
+            incognita:'a',
+            deslizadores:['m1', 'm2', 'ang'],
+            descripcion:'Determina la aceleración del sistema. Usa la Segunda Ley de Newton a lo largo de la dirección del movimiento.'
+        },
+        tension: {
+            etiqueta:'Hallar Tensión', icono:'fa-link', color:'#f59e0b',
+            incognita:'T',
+            deslizadores:['m1', 'm2', 'ang'],
+            descripcion:'Determina la tensión en la cuerda. Analiza las fuerzas sobre el bloque colgante.'
+        },
+        libre: {
+            etiqueta:'Modo Libre', icono:'fa-infinity', color:'#0284c7',
+            incognita:null,
+            deslizadores:['m1', 'm2', 'ang'],
+            descripcion:'Ajusta las masas y el ángulo para observar cómo cambia la dinámica del sistema.'
+        }
+    };
+
+    // Los despejes algebraicos de cada variable. Los tengo en LaTeX porque los renderizo con KaTeX.
+    const DESPEJES = {
+        a: 'a = \\frac{m_2 g - m_1 g \\sin\\theta}{m_1 + m_2}',
+        T: 'T = m_2(g - a)'
+    };
+
+    // Calculo la incógnita a partir de los parámetros del sistema.
+    // Primero saco la fuerza neta a lo largo del plano, y de ahí la aceleración y la tensión.
+    function calcularValorVerdadero() {
+        const configuracion = ESCENARIOS[escenarioActual];
+        const base = { ...valoresDeslizadores };
+        
+        const anguloRadianes = base.ang * Math.PI / 180;
+        const peso1 = base.m1 * G_TIERRA;
+        const peso2 = base.m2 * G_TIERRA;
+        
+        // La fuerza neta es el peso colgante menos la componente paralela del peso del bloque del plano.
+        const fuerzaNeta = peso2 - (peso1 * Math.sin(anguloRadianes));
+        let aceleracion = fuerzaNeta / (base.m1 + base.m2);
+        
+        base.a = Math.abs(aceleracion);
+        base.aConSigno = aceleracion;
+        base.T = base.m2 * (G_TIERRA - aceleracion);
+        base.peso1 = peso1;
+        base.peso2 = peso2;
+
+        let valorVerdadero = null;
+        if (configuracion.incognita === 'a') valorVerdadero = base.a;
+        if (configuracion.incognita === 'T') valorVerdadero = base.T;
+        
+        return { valorVerdadero, mensajeError: '', base, aceleracion };
+    }
+
+    /* =====================================================================
+       3. ESTADO
+       ===================================================================== */
+
+    let escenarioActual = 'aceleracion';
+    const valoresDeslizadores = Object.assign({}, VALORES_POR_DEFECTO_ESCENARIO.aceleracion);
+    let respuestaTexto = '';
+    let revelado = false;
+
+    // Referencias a los dos canvas: el principal y el del diagrama de cuerpo libre.
+    const lienzo = document.getElementById('simCanvas');
+    const contexto = lienzo.getContext('2d');
+    const lienzoVectorial = document.getElementById('vectorCanvas');
+    const contextoVectorial = lienzoVectorial.getContext('2d');
+
+    /* =====================================================================
+       4. INTERFAZ
+       ===================================================================== */
+
+    // Pinto los botones de escenario en la cuadrícula superior.
+    function construirBotonesEscenario() {
+        const cuadricula = document.getElementById('scenarioGrid');
+        cuadricula.innerHTML = '';
+        Object.entries(ESCENARIOS).forEach(([clave, configuracion]) => {
+            const boton = document.createElement('button');
+            boton.className = 'scenario-btn' + (clave === escenarioActual ? ' active' : '');
+            boton.style.setProperty('--sc-color', configuracion.color);
+            boton.innerHTML = `<i class="fas ${configuracion.icono}"></i><span>${configuracion.etiqueta}</span>`;
+            boton.onclick = () => cambiarEscenario(clave);
+            cuadricula.appendChild(boton);
+        });
+        document.getElementById('scenarioDesc').innerHTML =
+            `<i class="fas fa-lightbulb"></i>${ESCENARIOS[escenarioActual].descripcion}`;
+    }
+
+    function cambiarEscenario(clave) {
+        if (escenarioActual === clave) return;
+        escenarioActual = clave;
+        
+        Object.assign(valoresDeslizadores, VALORES_POR_DEFECTO_ESCENARIO[clave]);
+        respuestaTexto = '';
+        revelado  = false;
+        
+        construirBotonesEscenario();
+        construirControles();
+        limpiarRetroalimentacion();
+        actualizar();
+    }
+
+    // Reconstruyo por completo los sliders y el panel de incógnita.
+    function construirControles() {
+        const configuracion = ESCENARIOS[escenarioActual];
+        const zona = document.getElementById('slidersZone');
+        zona.innerHTML = '';
+        
+        configuracion.deslizadores.forEach(k => {
+            const parametro = PARAMETROS[k];
+            const fila = document.createElement('div');
+            
+            fila.innerHTML = `
+                <div class="slider-label-container">
+                    <span class="label-tag" style="margin:0;">${parametro.nombre} (${parametro.simbolo})</span>
+                    <span class="value-badge" id="val-${k}" style="color:${parametro.color};">--</span>
+                </div>
+                <input type="range" id="param-${k}" min="${parametro.minimo}" max="${parametro.maximo}" step="${parametro.paso}" value="${valoresDeslizadores[k] || parametro.minimo}">
+            `;
+            const deslizador = fila.querySelector('input');
+            deslizador.addEventListener('input', (evento) => {
+                const nuevoValor = parseFloat(evento.target.value);
+                valoresDeslizadores[k] = nuevoValor;
+                revelado = false;
+                limpiarRetroalimentacion();
+                actualizar();
+            });
+            zona.appendChild(fila);
+        });
+
+        // Zona de incógnita.
+        const zonaIncognita = document.getElementById('unknownZone');
+        if (configuracion.incognita) {
+            const parametro = PARAMETROS[configuracion.incognita];
+            zonaIncognita.style.display = 'block';
+            zonaIncognita.innerHTML = `
+                <div class="unknown-header">
+                    <i class="fas fa-circle-question"></i>
+                    Incógnita a determinar: <strong>${parametro.nombre} (${parametro.simbolo})</strong>
+                    <span class="unit-chip">${parametro.unidad || 'adimensional'}</span>
+                </div>
+                <div class="unknown-input-row">
+                    <input type="number" id="answerInput" step="any" placeholder="Escribe tu resultado…" value="${respuestaTexto}">
+                    <button class="btn-action btn-verify" onclick="verificar()"><i class="fas fa-check"></i> Verificar</button>
+                    <button class="btn-action btn-reveal" onclick="revelar()"><i class="fas fa-eye"></i> Ver solución</button>
+                </div>
+                <div id="feedback" class="feedback"></div>`;
+            const entrada = document.getElementById('answerInput');
+            entrada.addEventListener('input', (evento) => {
+                respuestaTexto = evento.target.value;
+                revelado = false;
+                limpiarRetroalimentacion();
+                actualizar();
+            });
+            entrada.addEventListener('keydown', (evento) => { if (evento.key === 'Enter') verificar(); });
+        } else {
+            zonaIncognita.style.display = 'none';
+            zonaIncognita.innerHTML = '';
+        }
+    }
+
+    function limpiarRetroalimentacion() {
+        const retroalimentacion = document.getElementById('feedback');
+        if (retroalimentacion) { retroalimentacion.className = 'feedback'; retroalimentacion.innerHTML = ''; }
+    }
+
+    const formatear = (x, parametro) => (isFinite(x) ? x.toFixed(parametro.decimales) : '—');
+
+    // Construyo el paquete completo de valores para dibujar y mostrar.
+    function construirValores() {
+        const configuracion = ESCENARIOS[escenarioActual];
+        const valores = Object.assign({}, VALORES_POR_DEFECTO);
+        
+        configuracion.deslizadores.forEach(k => valores[k] = valoresDeslizadores[k]);
+
+        const anguloRadianes = valores.ang * Math.PI / 180;
+        const peso1 = valores.m1 * G_TIERRA;
+        const peso2 = valores.m2 * G_TIERRA;
+        
+        const fuerzaNeta = peso2 - (peso1 * Math.sin(anguloRadianes));
+        let aceleracion = fuerzaNeta / (valores.m1 + valores.m2);
+        
+        valores.a = Math.abs(aceleracion);
+        valores.aConSigno = aceleracion;
+        valores.T = valores.m2 * (G_TIERRA - aceleracion);
+        valores.peso1 = peso1;
+        valores.peso2 = peso2;
+
+        if (configuracion.incognita) {
+            if (revelado) {
+                const { valorVerdadero } = calcularValorVerdadero();
+                if (valorVerdadero !== null) valores[configuracion.incognita] = valorVerdadero;
+            } else {
+                const valorUsuario = parseFloat(respuestaTexto);
+                if (respuestaTexto.trim() !== '' && isFinite(valorUsuario) && valorUsuario > 0) {
+                    valores[configuracion.incognita] = valorUsuario;
+                } else {
+                    // Mientras el usuario no escriba nada, uso un valor de referencia.
+                    valores[configuracion.incognita] = (configuracion.incognita === 'a') ? 2.69 : 14.22;
+                }
+            }
+        }
+
+        return valores;
+    }
+
+    /* =====================================================================
+       5. ACTUALIZACIÓN
+       ===================================================================== */
+
+    function actualizar() {
+        const configuracion = ESCENARIOS[escenarioActual];
+        const incognita = configuracion.incognita;
+        const { valorVerdadero, mensajeError } = calcularValorVerdadero();
+        const valores = construirValores();
+
+        // Refresco el badge al lado de cada slider.
+        configuracion.deslizadores.forEach(k => {
+            const elemento = document.getElementById('val-' + k);
+            if (elemento) elemento.innerText = formatear(valores[k], PARAMETROS[k]) + (PARAMETROS[k].unidad ? ' ' + PARAMETROS[k].unidad : '');
+        });
+
+        // Telemetría: mientras no se revele la incógnita, muestro "?".
+        let textoAceleracion = valores.a.toFixed(2) + ' m/s²';
+        let textoTension = valores.T.toFixed(2) + ' N';
+
+        if (escenarioActual === 'aceleracion' && !revelado) textoAceleracion = '?';
+        if (escenarioActual === 'tension' && !revelado) textoTension = '?';
+
+        document.getElementById('insight-a').innerText = textoAceleracion;
+        document.getElementById('insight-T').innerText = textoTension;
+        document.getElementById('insight-Fnet').innerText = (valores.m2 * G_TIERRA - valores.m1 * G_TIERRA * Math.sin(valores.ang * Math.PI / 180)).toFixed(2) + ' N';
+        document.getElementById('insight-W1').innerText = valores.peso1.toFixed(2) + ' N';
+
+        dibujarSimulacion(valores, escenarioActual, revelado);
+        dibujarDiagramaCuerpoLibre(valores, escenarioActual, revelado);
+        renderizarMemoria(valores, configuracion, incognita, valorVerdadero, mensajeError);
+    }
+
+    /* =====================================================================
+       6. VERIFICACIÓN
+       ===================================================================== */
+
+    function verificar() {
+        const configuracion = ESCENARIOS[escenarioActual];
+        if (!configuracion.incognita) return;
+        const parametro = PARAMETROS[configuracion.incognita];
+        const retroalimentacion = document.getElementById('feedback');
+
+        const valorUsuario = parseFloat(respuestaTexto);
+        if (respuestaTexto.trim() === '' || !isFinite(valorUsuario)) {
+            retroalimentacion.className = 'feedback warn';
+            retroalimentacion.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Escribe un valor numérico antes de verificar.';
+            return;
+        }
+
+        const { valorVerdadero, mensajeError } = calcularValorVerdadero();
+        if (valorVerdadero === null) {
+            retroalimentacion.className = 'feedback warn';
+            retroalimentacion.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + mensajeError;
+            return;
+        }
+
+        const tolerancia = Math.max(0.02 * Math.abs(valorVerdadero), 1e-3);
+        const diferencia = Math.abs(valorUsuario - valorVerdadero);
+
+        if (diferencia <= tolerancia) {
+            retroalimentacion.className = 'feedback ok';
+            retroalimentacion.innerHTML = `<i class="fas fa-circle-check"></i> ¡Correcto! ${parametro.simbolo} = <strong>${formatear(valorVerdadero, parametro)} ${parametro.unidad}</strong>.`;
+            revelado = true;
+            actualizar();
+        } else {
+            retroalimentacion.className = 'feedback err';
+            retroalimentacion.innerHTML = `<i class="fas fa-circle-xmark"></i> Todavía no es correcto (tu valor: ${formatear(valorUsuario, parametro)} ${parametro.unidad}). Revisa el despeje e inténtalo de nuevo.`;
+        }
+    }
+
+    function revelar() {
+        const configuracion = ESCENARIOS[escenarioActual];
+        if (!configuracion.incognita) return;
+        const parametro = PARAMETROS[configuracion.incognita];
+        const retroalimentacion = document.getElementById('feedback');
+        const { valorVerdadero, mensajeError } = calcularValorVerdadero();
+
+        if (valorVerdadero === null) {
+            retroalimentacion.className = 'feedback warn';
+            retroalimentacion.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + mensajeError;
+            return;
+        }
+        revelado = true;
+        respuestaTexto = valorVerdadero.toFixed(parametro.decimales);
+        const entrada = document.getElementById('answerInput');
+        if (entrada) entrada.value = respuestaTexto;
+
+        retroalimentacion.className = 'feedback warn';
+        retroalimentacion.innerHTML = `<i class="fas fa-lightbulb"></i> Solución: ${parametro.simbolo} = <strong>${formatear(valorVerdadero, parametro)} ${parametro.unidad}</strong>. Revisa el procedimiento completo abajo.`;
+        actualizar();
+    }
+
+    /* =====================================================================
+       7. MEMORIA DE CÁLCULO
+       ===================================================================== */
+
+    // Envuelvo katex.render en un try/catch para que la app siga funcionando
+    // aunque KaTeX no haya cargado todavía.
+    function renderizarLatex(elemento, latex) {
+        if (!elemento) return;
+        if (typeof katex === 'undefined') { elemento.textContent = latex; return; }
+        try { katex.render(latex, elemento, { throwOnError: false }); }
+        catch (error) { elemento.textContent = latex; }
+    }
+
+    function renderizarMemoria(valores, configuracion, incognita, valorVerdadero, mensajeError) {
+        const caja = document.getElementById('calcContent');
+        const formato1 = x => x.toFixed(1);
+        const formato2 = x => x.toFixed(2);
+
+        let contenidoHtml = '';
+
+        // Modo libre: muestro las relaciones y los cálculos derivados.
+        if (!incognita) {
+            contenidoHtml = `
+            <div class="equation-step">
+                <div class="equation-title">Relaciones Fundamentales</div>
+                <div class="equation-desc">Aceleración del sistema y tensión.</div>
+                <div class="math-container" id="kx-1"></div>
+            </div>
+            <div class="equation-step">
+                <div class="equation-title">Cálculos Derivados</div>
+                <div class="equation-desc">Valores obtenidos a partir de los parámetros.</div>
+                <div class="math-container" id="kx-2"></div>
+            </div>`;
+            caja.innerHTML = contenidoHtml;
+            renderizarLatex(document.getElementById('kx-1'), `a = \\frac{m_2 g - m_1 g \\sin\\theta}{m_1 + m_2} \\\\ T = m_2(g - a)`);
+            renderizarLatex(document.getElementById('kx-2'), `a = \\frac{(${formato1(valores.m2)})(9.8) - (${formato1(valores.m1)})(9.8)\\sin(${valores.ang}^\\circ)}{${formato1(valores.m1)} + ${formato1(valores.m2)}} = ${formato2(valores.a)}\\text{ m/s}^2 \\\\ T = ${formato1(valores.m2)}(9.8 - ${formato2(valores.aConSigno)}) = ${formato2(valores.T)}\\text{ N}`);
+            return;
+        }
+
+        // Modo escenario: plantilla + despeje + (si se reveló) sustitución numérica.
+        const parametro = PARAMETROS[incognita];
+
+        contenidoHtml = `
+        <div class="locked-banner">
+            <i class="fas fa-shield-alt"></i>
+            Recuerda: la aceleración es la misma para ambos bloques (cuerda inextensible).
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">1 · Planteamiento</div>
+            <div class="equation-desc">Ecuación de movimiento para el sistema:</div>
+            <div class="math-container" id="kx-p1"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">2 · Datos conocidos</div>
+            <div class="equation-desc">Valores del problema:</div>
+            <div class="math-container" id="kx-p2"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">3 · Despeje de ${parametro.nombre}</div>
+            <div class="equation-desc">Álgebra:</div>
+            <div class="math-container" id="kx-p3"></div>
+        </div>
+        <div class="equation-step">
+            <div class="equation-title">4 · Sustitución y resultado</div>
+            <div class="equation-desc">Cálculo final:</div>
+            <div class="math-container" id="kx-p4"></div>
+        </div>`;
+
+        caja.innerHTML = contenidoHtml;
+
+        if (incognita === 'a') {
+            renderizarLatex(document.getElementById('kx-p1'), `m_2 g - m_1 g \\sin\\theta = (m_1 + m_2)a`);
+        } else if (incognita === 'T') {
+            renderizarLatex(document.getElementById('kx-p1'), `m_2 g - T = m_2 a \\quad \\Rightarrow \\quad T = m_2(g - a)`);
+        }
+
+        const textoDatos = configuracion.deslizadores.map(k => {
+            const parametroItem = PARAMETROS[k];
+            return `${parametroItem.simbolo}=${formatear(valores[k], parametroItem)}\\,${parametroItem.unidad ? '\\text{' + parametroItem.unidad + '}' : ''}`;
+        }).join(',\\quad ');
+        renderizarLatex(document.getElementById('kx-p2'), textoDatos || '\\text{(ninguno)}');
+
+        renderizarLatex(document.getElementById('kx-p3'), DESPEJES[incognita]);
+
+        if (!revelado || valorVerdadero === null) {
+            const elemento = document.getElementById('kx-p4');
+            elemento.innerHTML = `<span class="hidden-note"><i class="fas fa-lock"></i> Escribe tu resultado y pulsa <strong>Verificar</strong>, o pulsa <strong>Ver solución</strong>, para desbloquear la sustitución numérica.</span>`;
+        } else {
+            let latex = '';
+            const aceleracionCalculada = (valores.m2 * G_TIERRA - valores.m1 * G_TIERRA * Math.sin(valores.ang * Math.PI / 180)) / (valores.m1 + valores.m2);
+            if (incognita === 'a') {
+                latex = `a = \\frac{(${formato1(valores.m2)})(9.8) - (${formato1(valores.m1)})(9.8)\\sin(${valores.ang}^\\circ)}{${formato1(valores.m1)} + ${formato1(valores.m2)}} = ${formato2(Math.abs(aceleracionCalculada))}\\;\\text{m/s}^2`;
+            } else if (incognita === 'T') {
+                latex = `a = ${formato2(aceleracionCalculada)}\\text{ m/s}^2 \\\\ T = m_2(g - a) = ${formato1(valores.m2)}(9.8 - ${formato2(aceleracionCalculada)}) = ${formato2(valorVerdadero)}\\;\\text{N}`;
+            }
+            renderizarLatex(document.getElementById('kx-p4'), latex);
+        }
+    }
+
+    /* =====================================================================
+       8. DIBUJO
+       ===================================================================== */
+
+    // Flecha auxiliar con punta triangular rellena.
+    function dibujarFlecha(contexto, desdeX, desdeY, hastaX, hastaY, tamano, color) {
+        contexto.strokeStyle = color;
+        contexto.fillStyle = color;
+        contexto.beginPath();
+        contexto.moveTo(desdeX, desdeY);
+        contexto.lineTo(hastaX, hastaY);
+        contexto.stroke();
+        const angulo = Math.atan2(hastaY - desdeY, hastaX - desdeX);
+        contexto.beginPath();
+        contexto.moveTo(hastaX, hastaY);
+        contexto.lineTo(hastaX - tamano * Math.cos(angulo - Math.PI / 6), hastaY - tamano * Math.sin(angulo - Math.PI / 6));
+        contexto.lineTo(hastaX - tamano * Math.cos(angulo + Math.PI / 6), hastaY - tamano * Math.sin(angulo + Math.PI / 6));
+        contexto.closePath();
+        contexto.fillStyle = color;
+        contexto.fill();
+    }
+
+    // Dibujo la escena principal: plano inclinado triangular, bloque sobre el plano,
+    // polea en el vértice y bloque colgante.
+    function dibujarSimulacion(valores, escenarioEnCurso, estaRevelado) {
+        contexto.clearRect(0, 0, lienzo.width, lienzo.height);
+        
+        // Fondo limpio.
+        contexto.fillStyle = '#ffffff';
+        contexto.fillRect(0, 0, lienzo.width, lienzo.height);
+
+        // Geometría del plano inclinado (triángulo rectángulo).
+        const anguloRadianes = valores.ang * Math.PI / 180;
+        const baseX = 50;
+        const baseY = 280;
+        const baseAncho = 270;
+        const altura = baseAncho * Math.tan(anguloRadianes);
+        
+        const verticeTopX = baseX + baseAncho;
+        const verticeTopY = baseY - altura;
+
+        // Bloque triangular del plano inclinado (tono madera).
+        contexto.fillStyle = '#7a4a2b';
+        contexto.strokeStyle = '#52311b';
+        contexto.lineWidth = 1.5;
+        contexto.beginPath();
+        contexto.moveTo(baseX, baseY);
+        contexto.lineTo(verticeTopX, baseY);
+        contexto.lineTo(verticeTopX, verticeTopY);
+        contexto.closePath();
+        contexto.fill();
+        contexto.stroke();
+
+        // Etiqueta del ángulo en la esquina inferior izquierda.
+        contexto.fillStyle = '#1e293b';
+        contexto.font = '14px "Inter", sans-serif';
+        contexto.textAlign = 'left';
+        contexto.fillText(`${valores.ang}°`, baseX + 35, baseY - 8);
+
+        // Polea y soporte en el vértice superior del plano.
+        const radioPolea = 22;
+        const centroPoleaX = verticeTopX + 2;
+        const centroPoleaY = verticeTopY - 5;
+
+        // Placa/soporte de la polea.
+        contexto.fillStyle = '#7a4a2b';
+        contexto.beginPath();
+        contexto.arc(centroPoleaX, centroPoleaY, 5, 0, Math.PI * 2);
+        contexto.fill();
+
+        // Rueda metálica de la polea con degradado radial.
+        const gradientePolea = contexto.createRadialGradient(centroPoleaX, centroPoleaY, 3, centroPoleaX, centroPoleaY, radioPolea);
+        gradientePolea.addColorStop(0, '#e2e8f0');
+        gradientePolea.addColorStop(0.7, '#94a3b8');
+        gradientePolea.addColorStop(1, '#475569');
+        
+        contexto.fillStyle = gradientePolea;
+        contexto.strokeStyle = '#334155';
+        contexto.lineWidth = 1.5;
+        contexto.beginPath();
+        contexto.arc(centroPoleaX, centroPoleaY, radioPolea, 0, Math.PI * 2);
+        contexto.fill();
+        contexto.stroke();
+
+        // Tornillo central de la polea.
+        contexto.fillStyle = '#ffffff';
+        contexto.beginPath();
+        contexto.arc(centroPoleaX - 3, centroPoleaY - 3, 3, 0, Math.PI * 2);
+        contexto.fill();
+
+        // --- Bloque 1 sobre el plano inclinado ---
+        const bloque1Ancho = 55;
+        const bloque1Alto = 45;
+
+        // Posición a lo largo de la hipotenusa.
+        const longitudHipotenusa = Math.sqrt(baseAncho * baseAncho + altura * altura);
+        const distanciaHipotenusa = longitudHipotenusa * 0.52;
+
+        // Coordenadas base sobre la superficie de la rampa.
+        const posicionRampaX = baseX + distanciaHipotenusa * Math.cos(anguloRadianes);
+        const posicionRampaY = baseY - distanciaHipotenusa * Math.sin(anguloRadianes);
+
+        contexto.save();
+        contexto.translate(posicionRampaX, posicionRampaY);
+        contexto.rotate(-anguloRadianes);
+
+        // Cuerpo del bloque con gradiente dorado.
+        const gradienteBloque = contexto.createLinearGradient(-bloque1Ancho/2, -bloque1Alto, bloque1Ancho/2, 0);
+        gradienteBloque.addColorStop(0, '#d9b358');
+        gradienteBloque.addColorStop(1, '#a37f28');
+
+        contexto.fillStyle = gradienteBloque;
+        contexto.strokeStyle = '#3a2e0a';
+        contexto.lineWidth = 1.5;
+        contexto.beginPath();
+        contexto.rect(-bloque1Ancho/2, -bloque1Alto, bloque1Ancho, bloque1Alto);
+        contexto.fill();
+        contexto.stroke();
+
+        // Argolla de enganche en la cara superior derecha del bloque.
+        contexto.strokeStyle = '#475569';
+        contexto.lineWidth = 2;
+        contexto.beginPath();
+        contexto.arc(bloque1Ancho/2 + 3, -bloque1Alto/2, 4, 0, Math.PI * 2);
+        contexto.stroke();
+
+        // Texto de la masa dentro del bloque.
+        contexto.fillStyle = '#0f172a';
+        contexto.font = 'bold 14px "Inter", sans-serif';
+        contexto.textAlign = 'center';
+        contexto.fillText(`${valores.m1} kg`, 0, -bloque1Alto/2 + 5);
+
+        contexto.restore();
+
+        // --- Bloque 2 colgante ---
+        const bloque2Ancho = 20;
+        const bloque2Alto = 75;
+        const bloque2X = centroPoleaX + radioPolea - bloque2Ancho/2;
+        const bloque2Y = centroPoleaY + 55;
+
+        // Cuerpo alargado del bloque 2 con gradiente dorado.
+        const gradienteBloque2 = contexto.createLinearGradient(bloque2X, bloque2Y, bloque2X + bloque2Ancho, bloque2Y);
+        gradienteBloque2.addColorStop(0, '#d9b358');
+        gradienteBloque2.addColorStop(1, '#a37f28');
+
+        contexto.fillStyle = gradienteBloque2;
+        contexto.strokeStyle = '#3a2e0a';
+        contexto.lineWidth = 1.5;
+        contexto.beginPath();
+        contexto.rect(bloque2X, bloque2Y, bloque2Ancho, bloque2Alto);
+        contexto.fill();
+        contexto.stroke();
+
+        // Argolla del bloque 2.
+        contexto.strokeStyle = '#475569';
+        contexto.lineWidth = 2;
+        contexto.beginPath();
+        contexto.arc(bloque2X + bloque2Ancho/2, bloque2Y - 3, 3, 0, Math.PI * 2);
+        contexto.stroke();
+
+        // Texto de la masa del bloque 2.
+        contexto.fillStyle = '#0f172a';
+        contexto.font = 'bold 13px "Inter", sans-serif';
+        contexto.textAlign = 'left';
+        contexto.fillText(`${valores.m2} kg`, bloque2X + bloque2Ancho + 8, bloque2Y + bloque2Alto/2 + 4);
+
+        // --- Cuerda que une ambos bloques pasando por la polea ---
+        contexto.strokeStyle = '#5c4827';
+        contexto.lineWidth = 2.2;
+        contexto.beginPath();
+
+        // Punto de enganche de la argolla del bloque 1 en coordenadas reales de pantalla.
+        const argolla1X = posicionRampaX + (bloque1Ancho/2 + 6) * Math.cos(-anguloRadianes) - (-bloque1Alto/2) * Math.sin(-anguloRadianes);
+        const argolla1Y = posicionRampaY + (bloque1Ancho/2 + 6) * Math.sin(-anguloRadianes) + (-bloque1Alto/2) * Math.cos(-anguloRadianes);
+
+        // Punto tangente de la cuerda sobre la polea.
+        const tangentePoleaX = centroPoleaX - radioPolea * Math.sin(anguloRadianes);
+        const tangentePoleaY = centroPoleaY - radioPolea * Math.cos(anguloRadianes);
+
+        contexto.moveTo(argolla1X, argolla1Y);
+        contexto.lineTo(tangentePoleaX, tangentePoleaY);
+
+        // Arco sobre la polea.
+        contexto.arc(centroPoleaX, centroPoleaY, radioPolea, -Math.PI/2 - anguloRadianes, 0, false);
+
+        // Tramo vertical de la cuerda hasta el bloque 2.
+        contexto.lineTo(bloque2X + bloque2Ancho/2, bloque2Y - 6);
+        contexto.stroke();
+    }
+
+    // Diagrama de cuerpo libre: los dos bloques con sus tensiones y pesos.
+    function dibujarDiagramaCuerpoLibre(valores, escenarioEnCurso, estaRevelado) {
+        contextoVectorial.clearRect(0, 0, lienzoVectorial.width, lienzoVectorial.height);
+        
+        // Título del DCL.
+        contextoVectorial.fillStyle = '#1e293b';
+        contextoVectorial.font = 'bold 12px "Inter", sans-serif';
+        contextoVectorial.textAlign = 'left';
+        contextoVectorial.fillText("DIAGRAMA DE CUERPO LIBRE", 15, 25);
+
+        // --- Bloque 1 (sobre el plano inclinado) ---
+        contextoVectorial.fillStyle = '#1e293b';
+        contextoVectorial.font = 'bold 11px "Inter", sans-serif';
+        contextoVectorial.textAlign = 'center';
+        contextoVectorial.fillText("Bloque 1 (m1)", 110, 50);
+
+        const bloque1X = 80;
+        const bloque1Y = 90; 
+        const tamanoA = 60;
+        contextoVectorial.fillStyle = '#2563eb';
+        contextoVectorial.beginPath();
+        contextoVectorial.rect(bloque1X, bloque1Y, tamanoA, tamanoA);
+        contextoVectorial.fill();
+        contextoVectorial.fillStyle = '#fff';
+        contextoVectorial.font = 'bold 16px Inter';
+        contextoVectorial.fillText('m1', bloque1X + tamanoA/2, bloque1Y + tamanoA/2 + 5);
+
+        // Normal (hacia arriba).
+        dibujarFlecha(contextoVectorial, bloque1X + tamanoA/2, bloque1Y, bloque1X + tamanoA/2, bloque1Y - 30, 6, '#2563eb');
+        contextoVectorial.fillStyle = '#2563eb';
+        contextoVectorial.font = 'bold 12px Inter';
+        contextoVectorial.fillText('N', bloque1X + tamanoA/2 + 15, bloque1Y - 15);
+        
+        // Peso (hacia abajo).
+        dibujarFlecha(contextoVectorial, bloque1X + tamanoA/2, bloque1Y + tamanoA, bloque1X + tamanoA/2, bloque1Y + tamanoA + 30, 6, '#dc2626');
+        contextoVectorial.fillStyle = '#dc2626';
+        contextoVectorial.fillText('W_1', bloque1X + tamanoA/2 + 20, bloque1Y + tamanoA + 20);
+
+        // Tensión (hacia la derecha).
+        dibujarFlecha(contextoVectorial, bloque1X + tamanoA, bloque1Y + tamanoA/2, bloque1X + tamanoA + 40, bloque1Y + tamanoA/2, 6, '#059669');
+        contextoVectorial.fillStyle = '#059669';
+        contextoVectorial.fillText('T', bloque1X + tamanoA + 20, bloque1Y + tamanoA/2 - 10);
+
+        // --- Bloque 2 (colgante) ---
+        contextoVectorial.fillStyle = '#1e293b';
+        contextoVectorial.textAlign = 'center';
+        contextoVectorial.fillText("Bloque 2 (m2)", 310, 50);
+
+        const bloque2X = 280;
+        const bloque2Y = 90; 
+        const tamanoB = 60;
+        contextoVectorial.fillStyle = '#f59e0b';
+        contextoVectorial.beginPath();
+        contextoVectorial.rect(bloque2X, bloque2Y, tamanoB, tamanoB);
+        contextoVectorial.fill();
+        contextoVectorial.fillStyle = '#fff';
+        contextoVectorial.fillText('m2', bloque2X + tamanoB/2, bloque2Y + tamanoB/2 + 5);
+
+        // Tensión (hacia arriba).
+        dibujarFlecha(contextoVectorial, bloque2X + tamanoB/2, bloque2Y, bloque2X + tamanoB/2, bloque2Y - 30, 6, '#059669');
+        contextoVectorial.fillStyle = '#059669';
+        contextoVectorial.font = 'bold 12px Inter';
+        contextoVectorial.fillText('T', bloque2X + tamanoB/2 + 15, bloque2Y - 15);
+
+        // Peso (hacia abajo).
+        dibujarFlecha(contextoVectorial, bloque2X + tamanoB/2, bloque2Y + tamanoB, bloque2X + tamanoB/2, bloque2Y + tamanoB + 30, 6, '#dc2626');
+        contextoVectorial.fillStyle = '#dc2626';
+        contextoVectorial.fillText('W_2', bloque2X + tamanoB/2 + 20, bloque2Y + tamanoB + 20);
+    }
+
+    /* =====================================================================
+       9. RESET E INICIALIZACIÓN
+       ===================================================================== */
+
+    function restablecerSimulador() {
+        Object.assign(valoresDeslizadores, VALORES_POR_DEFECTO_ESCENARIO[escenarioActual] || VALORES_POR_DEFECTO);
+        respuestaTexto = '';
+        revelado  = false;
+        construirControles();
+        limpiarRetroalimentacion();
+        actualizar();
+    }
+
+    // Arranco todo en cuanto el DOM esté listo.
+    window.addEventListener('DOMContentLoaded', () => {
+        construirBotonesEscenario();
+        construirControles();
+        setTimeout(actualizar, 120);
+    });
+</script>
+</body>
+</html>

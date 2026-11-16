@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png">
+    <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Conducción Magnética en Rieles Horizontales</title>
+    
+    <!-- Fuentes y Iconos (Incluyendo Poppins y JetBrains Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --inner-box-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7;
+            
+            --btn-blue: #0284c7;
+            --btn-blue-hover: #0369a1;
+            --btn-red: #ef4444;
+            --btn-red-hover: #dc2626;
+            --btn-teal: #0d9488;
+            --btn-orange: #ea580c;
+            --btn-gray: #475569;
+            --btn-gray-hover: #334155;
+
+            --vector-fm: #059669;
+            --vector-b: #dc2626;
+            --vector-i: #8b5cf6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .header-logo {
+            max-height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        h1 { 
+            text-align: left; 
+            color: #0f172a; 
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            flex: 1;
+        }
+
+        .btn-logout {
+            background-color: var(--btn-gray);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+        }
+
+        .btn-logout:hover {
+            background-color: var(--btn-gray-hover);
+            transform: translateY(-1px);
+        }
+
+        .description {
+            text-align: left;
+            margin: 0 0 30px 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            background: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0;
+            padding-bottom: 20px;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .canvas-area-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .canvas-box-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff; 
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            display: block;
+        }
+
+        #simCanvas {
+            cursor: crosshair;
+        }
+
+        #vectorCanvas {
+            max-width: 100% !important;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .controls-subgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            background: var(--inner-box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .label-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            outline: none;
+            margin-top: 8px;
+            accent-color: var(--primary-accent);
+            transition: background-color .15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s ease, background-color 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .value-badge {
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .explanation-box, .vector-insights-box {
+            background: var(--inner-box-bg);
+            padding: 20px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .explanation-box h4, .vector-insights-box h4 {
+            margin: 0 0 16px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .formula-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .equation-step {
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .equation-step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .equation-title {
+            font-weight: 700;
+            font-size: 0.78rem;
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .equation-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+
+        .math-container {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            min-height: 38px;
+            border: 1px solid var(--card-border);
+            overflow-x: auto;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .btn-action {
+            padding: 9px 14px;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .btn-action:hover { 
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        .btn-reset {
+            background-color: var(--btn-red);
+        }
+
+        .vector-row {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            padding-left: 16px;
+            position: relative;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        .vector-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .vector-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .row-ilb::before { background-color: var(--vector-fm); }
+        .row-b::before { background-color: var(--vector-b); }
+        .row-vel::before { background-color: var(--btn-orange); }
+
+        .mono-val {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (max-width: 850px) {
+            .simulation-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls-subgrid {
+                grid-template-columns: 1fr;
+            }
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== VERIFICACIÓN DE SESIÓN ========== -->
+<script>
+    (function() {
+        const sesion = sessionStorage.getItem("simuladorAutorizado");
+        const paginaActual = "simulador_4.html";
+        if (!sesion || sesion !== paginaActual) {
+            window.location.href = "login.html";
+        }
+    })();
+</script>
+<!-- =========================================== -->
+
+<div class="container">
+    <div class="header-container">
+        <img src="log.png" alt="Logo Laboratorio" class="header-logo" onerror="this.style.display='none'">
+        <h1>Laboratorio de Mecánica y Electromagnetismo</h1>
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Volver a inicio
+        </button>
+    </div>
+
+    <p class="description">
+        <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-right: 6px;"></i>
+        Modelador físico interactivo para calcular la aceleración, fuerza magnética y velocidad de una barra conductora que se desliza sin fricción sobre rieles paralelos. Pasa el cursor sobre los vectores en movimiento para examinar magnitudes dinámicas.
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span><i class="fas fa-magnet" style="color: var(--primary-accent); margin-right: 8px;"></i> Fuerza de Lorentz: Movimiento de un Alambre en Rieles Horizontales</span>
+            <button class="btn-action btn-reset" onclick="restablecerValores()"><i class="fas fa-undo"></i> Valores Originales</button>
+        </div>
+
+        <div class="simulation-grid">
+            
+            <div class="canvas-area-container">
+                <div class="canvas-box-wrapper" id="canvasWrapper">
+                    <canvas id="simCanvas" width="420" height="420"></canvas>
+                </div>
+
+                <div class="vector-insights-box">
+                    <h4>
+                        <span><i class="fas fa-chart-line" style="color: var(--primary-accent); margin-right: 6px;"></i> Vectores Dinámicos</span>
+                        <span class="formula-tag"><i class="fas fa-satellite-dish"></i> Telemetría</span>
+                    </h4>
+                    <div class="vector-row row-ilb">
+                        <strong>Fuerza Magnética (F<sub>m</sub>):</strong> 
+                        Provocada por la interacción de la corriente y el campo vertical. 
+                        Magnitud de <span id="insight-fm" class="mono-val" style="color: var(--vector-fm); font-weight: bold;">0.000</span> N 
+                        calculada como <strong style="color:var(--vector-fm);">F<sub>m</sub> = i · d · B</strong>.
+                    </div>
+                    <div class="vector-row row-b">
+                        <strong>Campo Magnético (B):</strong> 
+                        Vector vertical ascendente (⊙ sale) 
+                        con intensidad constante de <span id="insight-b" class="mono-val" style="color: var(--vector-b); font-weight: bold;">0.00</span> T.
+                    </div>
+                    <div class="vector-row row-vel">
+                        <strong>Cinemática:</strong> Aceleración de <span id="insight-acc" class="mono-val" style="color: var(--primary-accent); font-weight: bold;">0.00 m/s²</span>. Velocidad a los <span id="insight-time-lbl" class="mono-val" style="font-weight: bold;">t</span> s: <span id="insight-vel" class="mono-val" style="color: var(--btn-orange); font-weight: bold;">0.00 m/s</span>.
+                    </div>
+                </div>
+
+                <canvas id="vectorCanvas" width="420" height="200"></canvas>
+            </div>
+
+            <div class="controls-panel">
+                <div class="controls-subgrid" style="padding: 15px;">
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Masa (m)</span>
+                            <span id="val-m" class="value-badge" style="color: var(--btn-red);">150 g</span>
+                        </div>
+                        <input type="range" id="param-m" min="50" max="500" value="150" step="1">
+                    </div>
+                    
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Tiempo (t)</span>
+                            <span id="val-t" class="value-badge" style="color: var(--btn-teal);">2.0 s</span>
+                        </div>
+                        <input type="range" id="param-t" min="0" max="10" value="2" step="0.1">
+                    </div>
+                </div>
+
+                <div class="controls-subgrid">
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Campo B</span>
+                            <span id="val-B" class="value-badge" style="color: var(--primary-accent);">350 mT</span>
+                        </div>
+                        <input type="range" id="param-B" min="50" max="1500" value="350" step="5">
+                    </div>
+
+                    <div>
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Corriente (i)</span>
+                            <span id="val-i" class="value-badge" style="color: var(--vector-i);">4.5 A</span>
+                        </div>
+                        <input type="range" id="param-i" min="0.5" max="10" value="4.5" step="0.1">
+                    </div>
+
+                    <div style="grid-column: span 2;">
+                        <div class="slider-label-container">
+                            <span class="label-tag" style="margin:0;">Distancia Rieles (d)</span>
+                            <span id="val-d" class="value-badge" style="color: var(--btn-gray);">25.0 cm</span>
+                        </div>
+                        <input type="range" id="param-d" min="10.0" max="60.0" value="25.0" step="0.5">
+                    </div>
+                </div>
+
+                <div class="explanation-box" id="infoBox">
+                    <h4>
+                        <span><i class="fas fa-square-root-variable" style="color: var(--primary-accent); margin-right: 6px;"></i> Resultados y Memoria de Cálculo</span>
+                        <span class="formula-tag"><i class="fas fa-calculator"></i> Métricas</span>
+                    </h4>
+                    
+                    <div class="equation-step">
+                        <div class="equation-title">1. Fuerza Magnética de Lorentz (F<sub>m</sub>)</div>
+                        <div class="equation-desc">Determinada mediante el producto vectorial de la corriente por el campo magnético:</div>
+                        <div class="math-container" id="katex-fm"></div>
+                    </div>
+
+                    <div class="equation-step">
+                        <div class="equation-title">2. Segunda Ley de Newton (Aceleración)</div>
+                        <div class="equation-desc">Al no existir fricción, la fuerza magnética acelera la masa total de la varilla:</div>
+                        <div class="math-container" id="katex-acc"></div>
+                    </div>
+
+                    <div class="equation-step">
+                        <div class="equation-title">3. Velocidad en Función del Tiempo (v)</div>
+                        <div class="equation-desc">Partiendo del reposo absoluto, la rapidez se incrementa linealmente:</div>
+                        <div class="math-container" id="katex-vel"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Esta función la dejo intacta porque está conectada al login.
+    // Si cambio su nombre o su contenido, deja de redirigir y se rompe la sesión.
+    function cerrarSesion() {
+        sessionStorage.removeItem("simuladorAutorizado");
+        window.location.href = "login.html";
+    }
+
+    // --- Polyfill de roundRect ---
+    // Lo dejo aquí por si algún navegador viejo no trae el método nativo.
+    // Así puedo usar esquinas redondeadas en el tooltip sin romper nada.
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, ancho, alto, radios) {
+            const radio = typeof radios === 'number' ? radios : (radios || 0);
+            const radioEfectivo = Math.min(radio, Math.min(ancho, alto) / 2);
+            this.moveTo(x + radioEfectivo, y);
+            this.arcTo(x + ancho, y, x + ancho, y + alto, radioEfectivo);
+            this.arcTo(x + ancho, y + alto, x, y + alto, radioEfectivo);
+            this.arcTo(x, y + alto, x, y, radioEfectivo);
+            this.arcTo(x, y, x + ancho, y, radioEfectivo);
+            return this;
+        };
+    }
+
+    // --- Referencias a los dos canvas ---
+    // En el principal dibujo los rieles, la barra, el generador y los vectores.
+    const lienzo = document.getElementById('simCanvas');
+    const contexto = lienzo.getContext('2d');
+
+    // En el segundo dibujo los vectores aislados desde un mismo origen.
+    const lienzoVectorial = document.getElementById('vectorCanvas');
+    const contextoVectorial = lienzoVectorial.getContext('2d');
+
+    // Etiquetas del panel de telemetría que voy actualizando en vivo.
+    const indicadorFm = document.getElementById('insight-fm');
+    const indicadorB = document.getElementById('insight-b');
+    const indicadorAceleracion = document.getElementById('insight-acc');
+    const indicadorEtiquetaTiempo = document.getElementById('insight-time-lbl');
+    const indicadorVelocidad = document.getElementById('insight-vel');
+
+    // Guardaré las puntas de los vectores para detectar hover y mostrar tooltip.
+    let posicionVectorFm = { x: 0, y: 0, valor: "" };
+    let posicionVectorB = { x: 0, y: 0, valor: "" };
+    let posicionVectorCorriente = { x: 0, y: 0, valor: "" };
+    let posicionRaton = { x: -100, y: -100 };
+
+    // Contenedores de KaTeX para la memoria de cálculo.
+    const katexFuerza = document.getElementById('katex-fm');
+    const katexAceleracion = document.getElementById('katex-acc');
+    const katexVelocidad = document.getElementById('katex-vel');
+
+    // Sliders de entrada del sistema físico.
+    const entradas = {
+        masa: document.getElementById('param-m'),
+        tiempo: document.getElementById('param-t'),
+        campo: document.getElementById('param-B'),
+        corriente: document.getElementById('param-i'),
+        distancia: document.getElementById('param-d')
+    };
+
+    // Badges donde muestro el valor actual de cada slider.
+    const salidas = {
+        masa: document.getElementById('val-m'),
+        tiempo: document.getElementById('val-t'),
+        campo: document.getElementById('val-B'),
+        corriente: document.getElementById('val-i'),
+        distancia: document.getElementById('val-d')
+    };
+
+    // --- Función principal de dibujo ---
+    // La llamo cada vez que cambia un slider o se mueve el ratón sobre el lienzo.
+    function dibujar() {
+        // Leo los valores de los controles.
+        const masaGramos = parseFloat(entradas.masa.value);
+        const tiempoSegundos = parseFloat(entradas.tiempo.value);
+        const miliTesla = parseFloat(entradas.campo.value);
+        const corrienteAmperios = parseFloat(entradas.corriente.value);
+        const distanciaCm = parseFloat(entradas.distancia.value);
+
+        // Refresco las etiquetas al lado de cada slider.
+        salidas.masa.innerText = masaGramos + " g";
+        salidas.tiempo.innerText = tiempoSegundos.toFixed(1) + " s";
+        salidas.campo.innerText = miliTesla + " mT";
+        salidas.corriente.innerText = corrienteAmperios + " A";
+        salidas.distancia.innerText = distanciaCm + " cm";
+
+        // Paso todo al SI antes de calcular.
+        const masa = masaGramos / 1000;
+        const campo = miliTesla / 1000;
+        const distancia = distanciaCm / 1000;
+        const corriente = corrienteAmperios;
+
+        // --- Cálculos físicos ---
+        // Fuerza magnética sobre la barra: F = i·d·B.
+        const fuerzaMagnetica = corriente * distancia * campo;
+        // Aceleración por la segunda ley de Newton, sin fricción.
+        const aceleracion = fuerzaMagnetica / masa;
+        // Velocidad suponiendo que parte del reposo.
+        const velocidad = aceleracion * tiempoSegundos;
+
+        // --- Fórmulas con KaTeX ---
+        if (typeof katex !== 'undefined') {
+            katex.render(`F_m = i \\cdot d \\cdot B = ${corriente.toFixed(1)}\\text{ A} \\cdot ${distancia.toFixed(3)}\\text{ m} \\cdot ${campo.toFixed(3)}\\text{ T} = ${fuerzaMagnetica.toFixed(4)}\\text{ N}`, katexFuerza);
+            katex.render(`a = \\frac{F_m}{m} = \\frac{${fuerzaMagnetica.toFixed(4)}\\text{ N}}{${masa.toFixed(3)}\\text{ kg}} = ${aceleracion.toFixed(3)}\\text{ m/s}^2`, katexAceleracion);
+            katex.render(`v(t) = a \\cdot t = ${aceleracion.toFixed(3)} \\cdot ${tiempoSegundos.toFixed(1)} = ${velocidad.toFixed(2)}\\text{ m/s}`, katexVelocidad);
+        }
+
+        // Vuelco los resultados al panel de telemetría.
+        indicadorFm.innerText = fuerzaMagnetica.toFixed(4);
+        indicadorB.innerText = campo.toFixed(3);
+        indicadorAceleracion.innerText = aceleracion.toFixed(2) + " m/s²";
+        indicadorEtiquetaTiempo.innerText = tiempoSegundos.toFixed(1) + " s";
+        indicadorVelocidad.innerText = velocidad.toFixed(2) + " m/s";
+
+        contexto.clearRect(0, 0, lienzo.width, lienzo.height);
+
+        // --- Guías de campo B de fondo ---
+        // Las pinto verticales con una puntita arriba para dar sensación de salida.
+        contexto.strokeStyle = 'rgba(220, 38, 38, 0.12)';
+        contexto.lineWidth = 1.5;
+        for (let x = 30; x < lienzo.width; x += 55) {
+            for (let y = 80; y < lienzo.height - 40; y += 80) {
+                contexto.beginPath();
+                contexto.moveTo(x, y + 40);
+                contexto.lineTo(x, y - 30);
+                contexto.stroke();
+                
+                // Punta de flecha.
+                contexto.fillStyle = 'rgba(220, 38, 38, 0.3)';
+                contexto.beginPath();
+                contexto.moveTo(x, y - 30);
+                contexto.lineTo(x - 3, y - 23);
+                contexto.lineTo(x + 3, y - 23);
+                contexto.fill();
+            }
+        }
+        // Etiqueta "B" para identificar el campo.
+        contexto.fillStyle = '#dc2626';
+        contexto.font = 'italic bold 16px "Inter", sans-serif';
+        contexto.fillText('B (vertical)', lienzo.width - 110, 40);
+
+        // --- Rieles ---
+        // La separación visual de los rieles depende de la distancia d.
+        const rielSuperiorY = 140;
+        const rielInferiorY = rielSuperiorY + (distanciaCm * 3);
+        
+        contexto.strokeStyle = '#64748b';
+        contexto.lineWidth = 5;
+        
+        contexto.beginPath();
+        contexto.moveTo(30, rielSuperiorY);
+        contexto.lineTo(380, rielSuperiorY);
+        contexto.stroke();
+
+        contexto.beginPath();
+        contexto.moveTo(30, rielInferiorY);
+        contexto.lineTo(380, rielInferiorY);
+        contexto.stroke();
+
+        // --- Conexiones al generador ---
+        contexto.strokeStyle = '#334155';
+        contexto.lineWidth = 2;
+        contexto.beginPath();
+        contexto.moveTo(378, rielSuperiorY);
+        contexto.lineTo(400, rielSuperiorY);
+        contexto.lineTo(400, (rielSuperiorY + rielInferiorY)/2 - 15);
+        contexto.stroke();
+
+        contexto.beginPath();
+        contexto.moveTo(378, rielInferiorY);
+        contexto.lineTo(400, rielInferiorY);
+        contexto.lineTo(400, (rielSuperiorY + rielInferiorY)/2 + 15);
+        contexto.stroke();
+
+        // Círculo del generador con la "G" dentro.
+        const generadorY = (rielSuperiorY + rielInferiorY)/2;
+        contexto.fillStyle = '#ffffff';
+        contexto.strokeStyle = '#1e293b';
+        contexto.lineWidth = 3;
+        contexto.beginPath();
+        contexto.arc(400, generadorY, 15, 0, 2*Math.PI);
+        contexto.fill();
+        contexto.stroke();
+        contexto.fillStyle = '#1e293b';
+        contexto.font = 'bold 14px "Inter", sans-serif';
+        contexto.fillText('G', 395, generadorY + 5);
+
+        // --- Posición de la barra ---
+        // Sale del reposo y avanza hacia la izquierda con movimiento acelerado.
+        // Uso un factor de escala para que el desplazamiento se note en pantalla.
+        const posicionInicialX = 330; 
+        const factorEscalaMovimiento = 6; 
+        let posicionActualX = posicionInicialX - (0.5 * aceleracion * tiempoSegundos * tiempoSegundos * factorEscalaMovimiento);
+        
+        // Le pongo un tope para que la barra no se salga del canvas.
+        if (posicionActualX < 60) posicionActualX = 60;
+
+        contexto.strokeStyle = '#475569';
+        contexto.lineWidth = 7;
+        contexto.lineCap = 'round';
+        contexto.beginPath();
+        contexto.moveTo(posicionActualX, rielSuperiorY - 10);
+        contexto.lineTo(posicionActualX, rielInferiorY + 10);
+        contexto.stroke();
+        
+        // Etiqueta "m" debajo de la barra.
+        contexto.fillStyle = '#1e293b';
+        contexto.font = 'italic bold 13px "Inter", sans-serif';
+        contexto.fillText('m', posicionActualX - 5, rielInferiorY + 25);
+
+        // --- Corriente que atraviesa la barra ---
+        contexto.strokeStyle = '#8b5cf6';
+        contexto.lineWidth = 2;
+        dibujarFlecha(contexto, posicionActualX, rielSuperiorY + 20, posicionActualX, rielInferiorY - 20, 6);
+        contexto.fillStyle = '#8b5cf6';
+        contexto.font = 'italic bold 14px "Inter", sans-serif';
+        contexto.fillText('i', posicionActualX + 12, (rielSuperiorY + rielInferiorY)/2);
+
+        // Pequeñas flechas que indican el sentido del circuito por los rieles.
+        dibujarFlecha(contexto, posicionActualX + 40, rielSuperiorY, posicionActualX + 10, rielSuperiorY, 5);
+        dibujarFlecha(contexto, posicionActualX + 10, rielInferiorY, posicionActualX + 40, rielInferiorY, 5);
+
+        const origenX = posicionActualX;
+        const origenY = (rielSuperiorY + rielInferiorY) / 2;
+
+        // --- Vector B (vertical hacia arriba) ---
+        posicionVectorB = { x: origenX, y: origenY - 60, valor: `${campo.toFixed(3)} T` };
+        contexto.strokeStyle = '#dc2626';
+        contexto.lineWidth = 3;
+        contexto.beginPath(); contexto.moveTo(origenX, origenY); contexto.lineTo(posicionVectorB.x, posicionVectorB.y); contexto.stroke();
+        dibujarPuntaFlecha(contexto, posicionVectorB.x, posicionVectorB.y, 'ARRIBA');
+
+        // --- Corriente sobre el riel inferior (para el hover) ---
+        posicionVectorCorriente = { x: origenX, y: rielInferiorY, valor: `${corriente.toFixed(1)} A` };
+
+        // --- Vector F_m (apunta a la izquierda) ---
+        const longitudFm = 40 + fuerzaMagnetica * 50;
+        posicionVectorFm = { x: origenX - longitudFm, y: origenY, valor: `${fuerzaMagnetica.toFixed(4)} N` };
+        contexto.strokeStyle = '#059669';
+        contexto.lineWidth = 3.5;
+        contexto.beginPath(); contexto.moveTo(origenX, origenY); contexto.lineTo(posicionVectorFm.x, posicionVectorFm.y); contexto.stroke();
+        dibujarPuntaFlecha(contexto, posicionVectorFm.x, posicionVectorFm.y, 'IZQUIERDA');
+        contexto.fillStyle = '#059669';
+        contexto.font = 'bold 13px "Inter", sans-serif';
+        contexto.fillText('F_m', posicionVectorFm.x - 5, posicionVectorFm.y - 10);
+
+        // --- Vector velocidad (solo si ya hay movimiento) ---
+        if (velocidad > 0) {
+            const longitudVelocidad = Math.min(70, velocidad * 10);
+            contexto.strokeStyle = '#ea580c';
+            contexto.lineWidth = 3;
+            contexto.beginPath();
+            contexto.moveTo(origenX, origenY + 25);
+            contexto.lineTo(origenX - longitudVelocidad, origenY + 25);
+            contexto.stroke();
+            dibujarPuntaFlecha(contexto, origenX - longitudVelocidad, origenY + 25, 'IZQUIERDA');
+            contexto.fillStyle = '#ea580c';
+            contexto.font = 'italic 12px "Inter", sans-serif';
+            contexto.fillText(`v = ${velocidad.toFixed(1)} m/s`, origenX - longitudVelocidad - 10, origenY + 42);
+        }
+
+        // --- Cota de la distancia entre rieles ---
+        contexto.strokeStyle = '#64748b';
+        contexto.lineWidth = 1;
+        contexto.beginPath();
+        contexto.moveTo(45, rielSuperiorY); contexto.lineTo(45, rielInferiorY);
+        contexto.stroke();
+        contexto.fillStyle = '#64748b';
+        contexto.font = '11px "JetBrains Mono", monospace';
+        contexto.fillText(`d = ${distanciaCm} cm`, 52, (rielSuperiorY + rielInferiorY)/2 + 4);
+
+        // Pinto el tooltip y el diagrama de vectores aislados.
+        dibujarEtiqueta();
+        dibujarVectoresAislados(fuerzaMagnetica, campo, corriente, distancia);
+    }
+
+    // --- Flecha auxiliar con punta calculada por ángulo ---
+    // La uso para los vectores de corriente que van a lo largo de un tramo.
+    function dibujarFlecha(contexto, desdeX, desdeY, hastaX, hastaY, tamano) {
+        contexto.beginPath();
+        contexto.moveTo(desdeX, desdeY);
+        contexto.lineTo(hastaX, hastaY);
+        contexto.stroke();
+        
+        const angulo = Math.atan2(hastaY - desdeY, hastaX - desdeX);
+        contexto.beginPath();
+        contexto.moveTo(hastaX, hastaY);
+        contexto.lineTo(hastaX - tamano * Math.cos(angulo - Math.PI / 6), hastaY - tamano * Math.sin(angulo - Math.PI / 6));
+        contexto.lineTo(hastaX - tamano * Math.cos(angulo + Math.PI / 6), hastaY - tamano * Math.sin(angulo + Math.PI / 6));
+        contexto.closePath();
+        contexto.fillStyle = contexto.strokeStyle;
+        contexto.fill();
+    }
+
+    // --- Punta de flecha recta hacia una de las cuatro direcciones ---
+    // La reutilizo para los vectores B, F_m y v que van en línea recta.
+    function dibujarPuntaFlecha(contexto, x, y, direccion) {
+        contexto.fillStyle = contexto.strokeStyle;
+        contexto.beginPath();
+        if (direccion === 'ARRIBA') {
+            contexto.moveTo(x, y); contexto.lineTo(x - 5, y + 8); contexto.lineTo(x + 5, y + 8);
+        } else if (direccion === 'IZQUIERDA') {
+            contexto.moveTo(x, y); contexto.lineTo(x + 8, y - 5); contexto.lineTo(x + 8, y + 5);
+        }
+        contexto.fill();
+    }
+
+    // --- Símbolo de campo saliendo de la pantalla (⊙) ---
+    // Lo dibujo como un círculo con un punto dentro.
+    function dibujarPuntoB(contexto, centroX, centroY, radio, color) {
+        contexto.save();
+        contexto.strokeStyle = color;
+        contexto.fillStyle = color;
+        contexto.lineWidth = 2.5;
+        contexto.beginPath();
+        contexto.arc(centroX, centroY, radio, 0, 2 * Math.PI);
+        contexto.stroke();
+        contexto.beginPath();
+        contexto.arc(centroX, centroY, radio * 0.25, 0, 2 * Math.PI);
+        contexto.fill();
+        contexto.restore();
+    }
+
+    // --- Diagrama de vectores libres ---
+    // Aquí dibujo i·d, B y F_m desde el mismo origen para aplicar la regla de la mano derecha.
+    function dibujarVectoresAislados(fuerzaMagnetica, campo, corriente, distancia) {
+        contextoVectorial.clearRect(0, 0, lienzoVectorial.width, lienzoVectorial.height);
+        
+        const centroVectorX = lienzoVectorial.width / 2;
+        const centroVectorY = lienzoVectorial.height / 2;
+        const colorEtiqueta = '#475569';
+
+        // Ejes tenues de referencia.
+        contextoVectorial.strokeStyle = 'rgba(0,0,0,0.06)';
+        contextoVectorial.lineWidth = 1;
+        contextoVectorial.beginPath();
+        contextoVectorial.moveTo(centroVectorX - 140, centroVectorY); contextoVectorial.lineTo(centroVectorX + 140, centroVectorY);
+        contextoVectorial.moveTo(centroVectorX, centroVectorY - 80); contextoVectorial.lineTo(centroVectorX, centroVectorY + 80);
+        contextoVectorial.stroke();
+
+        // --- Símbolo de B (⊙) ---
+        const radioB = 20 + campo * 15;
+        dibujarPuntoB(contextoVectorial, centroVectorX, centroVectorY - radioB - 10, 14, '#dc2626');
+        contextoVectorial.fillStyle = '#dc2626';
+        contextoVectorial.font = 'bold 13px "Inter", sans-serif';
+        contextoVectorial.fillText('B (⊙ sale)', centroVectorX + 20, centroVectorY - radioB - 5);
+
+        // --- Vector i·d hacia abajo ---
+        contextoVectorial.strokeStyle = '#8b5cf6';
+        contextoVectorial.lineWidth = 3;
+        contextoVectorial.beginPath(); contextoVectorial.moveTo(centroVectorX, centroVectorY); contextoVectorial.lineTo(centroVectorX, centroVectorY + 55); contextoVectorial.stroke();
+        contextoVectorial.fillStyle = '#8b5cf6';
+        contextoVectorial.beginPath(); contextoVectorial.moveTo(centroVectorX, centroVectorY + 55); contextoVectorial.lineTo(centroVectorX-4, centroVectorY+47); contextoVectorial.lineTo(centroVectorX+4, centroVectorY+47); contextoVectorial.fill();
+        contextoVectorial.fillText('i·d', centroVectorX + 8, centroVectorY + 50);
+
+        // --- Vector F_m hacia la izquierda ---
+        const longitudFm = 50 + fuerzaMagnetica * 60;
+        contextoVectorial.strokeStyle = '#059669';
+        contextoVectorial.lineWidth = 3.5;
+        contextoVectorial.beginPath(); contextoVectorial.moveTo(centroVectorX, centroVectorY); contextoVectorial.lineTo(centroVectorX - longitudFm, centroVectorY); contextoVectorial.stroke();
+        dibujarPuntaFlecha(contextoVectorial, centroVectorX - longitudFm, centroVectorY, 'IZQUIERDA');
+        contextoVectorial.fillStyle = '#059669';
+        contextoVectorial.fillText('F_m', centroVectorX - longitudFm, centroVectorY - 10);
+
+        // Título y fórmula recordatoria.
+        contextoVectorial.fillStyle = colorEtiqueta;
+        contextoVectorial.font = '600 11px "Inter", sans-serif';
+        contextoVectorial.fillText("DIAGRAMA DE ESPACIO VECTORIAL (REGLA DE LA MANO DERECHA)", 15, 22);
+
+        contextoVectorial.fillStyle = '#059669';
+        contextoVectorial.font = 'italic 12px "Inter", sans-serif';
+        contextoVectorial.fillText('F_m = i · d · B', 15, 42);
+    }
+
+    // --- Tooltip de los vectores ---
+    // Si el ratón pasa cerca de la punta de F_m, B o i, muestro una cajita con el valor.
+    function dibujarEtiqueta() {
+        const distanciaFm = Math.hypot(posicionRaton.x - posicionVectorFm.x, posicionRaton.y - posicionVectorFm.y);
+        const distanciaB = Math.hypot(posicionRaton.x - posicionVectorB.x, posicionRaton.y - posicionVectorB.y);
+        const distanciaCorriente = Math.hypot(posicionRaton.x - posicionVectorCorriente.x, posicionRaton.y - posicionVectorCorriente.y);
+        
+        let etiqueta = "";
+        let textoValor = "";
+        let cajaX = posicionRaton.x + 15;
+        let cajaY = posicionRaton.y + 15;
+
+        if (distanciaFm < 20) {
+            etiqueta = "Fuerza Magnética (F_m)";
+            textoValor = "Magnitud: " + posicionVectorFm.valor + " (F_m = i·d·B)";
+        } else if (distanciaB < 20) {
+            etiqueta = "Campo Magnético (B)";
+            textoValor = "Magnitud: " + posicionVectorB.valor + " (⊙ sale)";
+        } else if (distanciaCorriente < 20) {
+            etiqueta = "Corriente Conducida (i)";
+            textoValor = "Intensidad: " + posicionVectorCorriente.valor;
+        }
+
+        if (etiqueta !== "") {
+            contexto.save();
+            contexto.fillStyle = "rgba(15, 23, 42, 0.95)";
+            contexto.strokeStyle = "#0284c7";
+            contexto.lineWidth = 1;
+            
+            contexto.beginPath();
+            contexto.roundRect(cajaX, cajaY, 240, 48, 6);
+            contexto.fill();
+            contexto.stroke();
+
+            contexto.fillStyle = "#ffffff";
+            contexto.font = "bold 11px 'Inter', sans-serif";
+            contexto.fillText(etiqueta, cajaX + 10, cajaY + 18);
+            contexto.fillStyle = "#cbd5e1";
+            contexto.font = "11px 'JetBrains Mono', monospace";
+            contexto.fillText(textoValor, cajaX + 10, cajaY + 36);
+            contexto.restore();
+        }
+    }
+
+    // Escucho el movimiento del ratón sobre el lienzo para actualizar el tooltip.
+    lienzo.addEventListener('mousemove', (evento) => {
+        const rectangulo = lienzo.getBoundingClientRect();
+        posicionRaton.x = (evento.clientX - rectangulo.left) * (lienzo.width / rectangulo.width);
+        posicionRaton.y = (evento.clientY - rectangulo.top) * (lienzo.height / rectangulo.height);
+        dibujar();
+    });
+
+    // Cuando el ratón sale, alejo la posición para que no quede el tooltip colgado.
+    lienzo.addEventListener('mouseleave', () => {
+        posicionRaton = { x: -100, y: -100 };
+        dibujar();
+    });
+
+    // Vuelvo a poner todos los controles en sus valores por defecto.
+    function restablecerValores() {
+        entradas.masa.value = "150";
+        entradas.tiempo.value = "2.0";
+        entradas.campo.value = "350";
+        entradas.corriente.value = "4.5";
+        entradas.distancia.value = "25.0";
+        dibujar();
+    }
+
+    // Cada vez que se mueve un slider, recálculo y repinto.
+    Object.values(entradas).forEach(entrada => {
+        entrada.addEventListener('input', dibujar);
+    });
+
+    // Arranco la simulación en cuanto el DOM esté listo.
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(dibujar, 100);
+    });
+</script>
+</body>
+</html>
