@@ -8,7 +8,7 @@
     <link rel="canonical" href="https://proyectos.emiliocolor.com/" />
 
     <title>Proyectos Educativos · EmilioColor</title>
-    <meta name="description" content="Proyectos educativos de EmilioColor: Comunidad de Estudios Independiente Juan de Dios Bátiz, Laboratorio Virtual de Programación, Laboratorio Virtual de Electromagnetismo y Repositorio Electrónico de Acceso Abierto (REAA)." />
+    <meta name="description" content="Proyectos educativos de EmilioColor: Comunidad de Estudios Independiente Juan de Dios Bátiz y Laboratorio Virtual de Mecánica y Electromagnetismo. Cotiza proyectos similares." />
 
     <link rel="icon" type="image/png" href="https://emiliocolor.com/img-logos/favicon.png" />
     <link rel="apple-touch-icon" href="https://emiliocolor.com/img-logos/favicon.png" />
@@ -161,7 +161,7 @@
 
         .client-head p { font-size: 1.15rem; color: var(--text-muted); }
 
-        /* Cuadrícula 2×2 en escritorio por tener 4 proyectos */
+        /* Cuadrícula 2 columnas (2 proyectos) */
         .brand-options {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -221,7 +221,6 @@
             margin-bottom: 22px;
         }
 
-        /* Etiqueta informativa (antes estaba embebida en el HTML) */
         .brand-option .fecha {
             display: inline-block;
             font-size: 0.78rem;
@@ -231,19 +230,6 @@
             padding: 3px 12px;
             border-radius: 12px;
             margin-bottom: 20px;
-        }
-
-        .brand-option .etiqueta {
-            display: inline-block;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--blue-primary);
-            background: var(--blue-soft);
-            padding: 3px 12px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
         }
 
         .brand-option .brand-cta {
@@ -273,40 +259,113 @@
 
         .brand-option:hover .brand-cta i { transform: translateX(4px); }
 
-        /* Tarjeta con enlace principal + enlace secundario interno */
-        .stretched-link::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            border-radius: inherit;
+        /* ============ SECCIÓN DE COTIZACIÓN ============ */
+        .quote-section {
+            max-width: 720px;
+            margin: 60px auto 0;
+            padding: 40px 32px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: 22px;
+            box-shadow: var(--shadow-sm);
         }
 
-        /* Enlace secundario (antes parecía botón) — ahora estilo enlace */
-        .brand-acceso {
-            position: relative;
-            z-index: 2;
+        .quote-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .quote-section h2 span { color: var(--blue-primary); }
+
+        .quote-section > p {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
+
+        .quote-form input,
+        .quote-form textarea {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            color: var(--text-dark);
+            font-family: var(--font);
+            font-size: 0.95rem;
+            transition: 0.3s;
+        }
+
+        .quote-form input:focus,
+        .quote-form textarea:focus {
+            outline: none;
+            border-color: var(--blue-primary);
+            box-shadow: 0 0 0 3px rgba(14, 66, 238, 0.1);
+        }
+
+        .quote-form textarea {
+            height: 130px;
+            resize: vertical;
+        }
+
+        .quote-form .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 24px;
+            padding: 14px 18px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .quote-form .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.92rem;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .quote-form .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--blue-primary);
+            cursor: pointer;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .quote-form .btn-primary {
+            width: 100%;
+            justify-content: center;
+            background: var(--blue-primary);
+            color: #fff;
+            padding: 14px 36px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            margin-top: 18px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--blue-primary);
-            padding-bottom: 2px;
-            border-bottom: 1px dashed currentColor;
-            transition: color 0.25s ease, border-color 0.25s ease, border-style 0.25s ease;
+            gap: 10px;
+            box-shadow: 0 4px 14px rgba(14, 66, 238, 0.25);
         }
 
-        .brand-acceso i { font-size: 0.78rem; opacity: 0.9; }
-
-        .brand-acceso:hover,
-        .brand-acceso:focus-visible {
-            color: var(--blue-dark);
-            border-bottom-style: solid;
-            outline: none;
+        .quote-form .btn-primary:hover {
+            background: var(--blue-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(14, 66, 238, 0.35);
         }
 
+        /* ============ AYUDA ============ */
         .client-help {
             display: flex;
             align-items: center;
@@ -380,13 +439,19 @@
             .client-head p { font-size: 1.02rem; }
             .client-head { margin-bottom: 40px; }
             .footer-bottom { flex-direction: column; text-align: center; }
+            .quote-section { padding: 28px 20px; margin-top: 44px; }
+            .quote-form .checkbox-group {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
         }
 
         @media (max-width: 480px) {
             .client-head h1 { font-size: 1.8rem; }
             .brand-option { padding: 32px 20px 28px; }
             .brand-option .brand-cta { width: 100%; justify-content: center; }
-            .brand-acceso { width: auto; }
+            .quote-section h2 { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -423,44 +488,24 @@
 
             <div class="brand-options">
 
-                                <!-- 4. Repositorio Electrónico de Acceso Abierto (REAA) -->
+                <!-- Laboratorio Virtual de Mecánica y Electromagnetismo -->
                 <a class="brand-option"
-                   href="https://proyectos.emiliocolor.com/reaa/inicio"
-                   data-proyecto="Repositorio Electrónico de Acceso Abierto">
+                   href="https://proyectos.emiliocolor.com/lab_mecanica_electromagnetismo/login"
+                   data-proyecto="Laboratorio Virtual de Mecánica y Electromagnetismo">
                     <div class="brand-logo">
-                        <i class="fas fa-book-open"></i>
+                        <i class="fas fa-magnet"></i>
                     </div>
-                    <h2>Repositorio Electrónico de Acceso Abierto (REAA)</h2>
-                    <p>Colección digital de documentos, publicaciones y materiales educativos de libre consulta y descarga para la comunidad.</p>
+                    <h2>Laboratorio Virtual de Mecánica y Electromagnetismo</h2>
+                    <span class="fecha">
+                        <i class="fas fa-circle-info"></i> Difusión Informativa
+                    </span>
+                    <p>Simulaciones y recursos interactivos para explorar y comprender los fenómenos de la mecánica y el electromagnetismo.</p>
                     <span class="brand-cta">
                         Entrar <i class="fas fa-arrow-right"></i>
                     </span>
                 </a>
 
-                <!-- 3. Laboratorio Virtual de Electromagnetismo -->
-                <div class="brand-option"
-                     data-proyecto="Laboratorio Virtual de Electromagnetismo">
-                    <div class="brand-logo">
-                        <i class="fas fa-magnet"></i>
-                    </div>
-                    <h2>Laboratorio Virtual de Electromagnetismo</h2>
-                    <p>Simulaciones y recursos interactivos para explorar y comprender los fenómenos del electromagnetismo.</p>
-
-                    <!-- Enlace secundario con estilo de enlace (no botón) -->
-                    <a class="brand-acceso"
-                       href="https://proyectos.emiliocolor.com/lab_electromagnetismo/panel_profesores"
-                       aria-label="Claves de acceso de las prácticas del Laboratorio de Electromagnetismo">
-                        <i class="fas fa-key"></i> Claves de acceso de las prácticas
-                    </a>
-
-                    <a class="brand-cta stretched-link"
-                       href="https://proyectos.emiliocolor.com/lab_electromagnetismo/panel"
-                       aria-label="Entrar al Laboratorio Virtual de Electromagnetismo">
-                        Entrar <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                                <!-- 1. Comunidad de Estudios Independiente -->
+                <!-- Comunidad de Estudios Independiente -->
                 <a class="brand-option"
                    href="https://proyectos.emiliocolor.com/cei-jdb/inicio"
                    data-proyecto="Comunidad de Estudios Independiente">
@@ -480,6 +525,55 @@
                         Entrar <i class="fas fa-arrow-right"></i>
                     </span>
                 </a>
+            </div>
+
+            <!-- ============ FORMULARIO: COTIZA PROYECTOS SIMILARES ============ -->
+            <div class="quote-section" id="cotiza">
+                <h2>Cotiza <span>proyectos similares</span></h2>
+                <p>¿Tienes una idea o un proyecto educativo en mente? Cuéntanos y te ayudamos a hacerlo realidad.</p>
+
+                <form class="quote-form" id="quoteForm">
+                    <input type="text" id="quoteNombre" placeholder="Nombre completo" required />
+                    <input type="email" id="quoteEmail" placeholder="Correo electrónico" required />
+                    <input type="tel" id="quoteTelefono" placeholder="Teléfono de contacto" />
+
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="quoteTipo" value="Sitio web" />
+                            Sitio web
+                        </label>
+                        <label>
+                            <input type="checkbox" name="quoteTipo" value="Plataforma educativa" />
+                            Plataforma educativa
+                        </label>
+                        <label>
+                            <input type="checkbox" name="quoteTipo" value="Laboratorio virtual" />
+                            Laboratorio virtual
+                        </label>
+                        <label>
+                            <input type="checkbox" name="quoteTipo" value="Repositorio digital" />
+                            Repositorio digital
+                        </label>
+                        <label>
+                            <input type="checkbox" name="quoteTipo" value="Buscador" />
+                            Buscador
+                        </label>
+                                                <label>
+                            <input type="checkbox" name="quoteTipo" value="Simulador" />
+                            Simulador
+                        </label>
+                                                <label>
+                            <input type="checkbox" name="quoteTipo" value="Otro" />
+                            Otro
+                        </label>
+                    </div>
+
+                    <textarea id="quoteMensaje" placeholder="Cuéntanos sobre tu proyecto..." required></textarea>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Solicitar cotización
+                    </button>
+                </form>
             </div>
 
             <div class="client-help">
@@ -532,6 +626,41 @@
         ejecutar('anio', function () {
             var el = document.getElementById('current-year');
             if (el) el.textContent = new Date().getFullYear();
+        });
+
+        /* ---------- Formulario de cotización → WhatsApp ---------- */
+        ejecutar('cotizacion', function () {
+            var form = document.getElementById('quoteForm');
+            if (!form) return;
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                var nombre  = (document.getElementById('quoteNombre').value || '').trim();
+                var email   = (document.getElementById('quoteEmail').value || '').trim();
+                var tel     = (document.getElementById('quoteTelefono').value || '').trim();
+                var mensaje = (document.getElementById('quoteMensaje').value || '').trim();
+
+                var tipos = [];
+                form.querySelectorAll('input[name="quoteTipo"]:checked').forEach(function (cb) {
+                    tipos.push(cb.value);
+                });
+
+                if (!nombre || !email || !mensaje) {
+                    alert('Por favor completa nombre, correo y descripción del proyecto.');
+                    return;
+                }
+
+                var texto = 'Hola, quiero cotizar un proyecto digital.\n\n'
+                    + 'Nombre: ' + nombre + '\n'
+                    + 'Correo: ' + email + '\n'
+                    + (tel ? 'Teléfono: ' + tel + '\n' : '')
+                    + (tipos.length ? 'Tipo de proyecto: ' + tipos.join(', ') + '\n' : '')
+                    + '\nDescripción:\n' + mensaje;
+
+                var url = 'https://wa.me/525655333139?text=' + encodeURIComponent(texto);
+                window.open(url, '_blank');
+            });
         });
 
         if (window.console && console.log) console.log('EmilioColor · Proyectos Educativos');
